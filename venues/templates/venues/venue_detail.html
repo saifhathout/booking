@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}{{ venue.name }}{% endblock %}
+{% block content %}
+
+<div class="mb-8">
+    <h1 class="text-3xl font-bold mb-2">{{ venue.name }}</h1>
+    <p class="text-gray-400">
+        <i class="fas fa-map-marker-alt mr-2"></i>{{ venue.address }}, {{ venue.city }}
+        <span class="mx-2">•</span>
+        <i class="fas fa-futbol mr-2"></i>{{ venue.get_sport_type_display }}
+    </p>
+</div>
+
+<div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold">Fields</h2>
+    <a href="{% url 'venues:field_create' venue.id %}" class="btn-primary">
+        <i class="fas fa-plus mr-2"></i> Add Field
+    </a>
+</div>
+
+{% if fields %}
+    <div class="glass overflow-hidden">
+        <table class="w-full">
+            <thead>
+                <tr class="border-b border-gray-700">
+                    <th class="p-4 text-left text-gray-400 text-sm">Field Name</th>
+                    <th class="p-4 text-left text-gray-400 text-sm">Sport</th>
+                    <th class="p-4 text-left text-gray-400 text-sm">Price/Hour</th>
+                    <th class="p-4 text-left text-gray-400 text-sm">Status</th>
+                    <th class="p-4 text-left text-gray-400 text-sm">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for field in fields %}
+                    <tr class="border-b border-gray-700/50 hover:bg-white/5 transition">
+                        <td class="p-4 font-medium">{{ field.name }}</td>
+                        <td class="p-4">{{ field.get_sport_type_display }}</td>
+                        <td class="p-4 text-green-400 font-bold">${{ field.price_per_hour }}</td>
+                        <td class="p-4">
+                            {% if field.is_active %}
+                                <span class="badge badge-success">Active</span>
+                            {% else %}
+                                <span class="badge badge-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td class="p-4">
+                            <a href="{% url 'venues:slot_calendar' field.id %}" class="text-purple-400 hover:text-purple-300 mr-3">
+                                <i class="fas fa-calendar-alt mr-1"></i> Schedule
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="glass p-12 text-center">
+        <i class="fas fa-futbol text-6xl text-gray-600 mb-4"></i>
+        <h3 class="text-xl font-bold mb-2">No fields yet</h3>
+        <p class="text-gray-400 mb-4">Add your first field to get started</p>
+        <a href="{% url 'venues:field_create' venue.id %}" class="btn-primary inline-block">
+            <i class="fas fa-plus mr-2"></i> Add Field
+        </a>
+    </div>
+{% endif %}
+
+{% endblock %}

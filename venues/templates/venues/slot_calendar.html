@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}{{ field.name }} - Schedule{% endblock %}
+{% block content %}
+
+<div class="animate-fade-up">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10">
+        <div>
+            <p class="text-sm text-gray-500 font-semibold tracking-widest uppercase mb-2">Schedule</p>
+            <h1 class="text-4xl md:text-5xl font-black tracking-tighter">{{ field.name }}</h1>
+            <p class="text-gray-400 mt-2">{{ field.venue.name }} · <span class="text-[#00FF88] font-bold">${{ field.price_per_hour }}/hr</span></p>
+        </div>
+    </div>
+
+    <!-- Block Form -->
+    <div class="energy-card p-6 mb-8">
+        <h3 class="font-bold text-lg mb-4">BLOCK A SLOT</h3>
+        <form method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="block">
+            <input type="date" name="date" required class="input-fire">
+            <select name="hour" required class="input-fire">
+                <option value="">SELECT TIME</option>
+                <option value="6">06:00 AM</option><option value="7">07:00 AM</option>
+                <option value="8">08:00 AM</option><option value="9">09:00 AM</option>
+                <option value="10">10:00 AM</option><option value="11">11:00 AM</option>
+                <option value="12">12:00 PM</option><option value="13">01:00 PM</option>
+                <option value="14">02:00 PM</option><option value="15">03:00 PM</option>
+                <option value="16">04:00 PM</option><option value="17">05:00 PM</option>
+                <option value="18">06:00 PM</option><option value="19">07:00 PM</option>
+                <option value="20">08:00 PM</option><option value="21">09:00 PM</option>
+                <option value="22">10:00 PM</option>
+            </select>
+            <button type="submit" class="bg-[#FF4757] text-white rounded-xl py-3 font-bold hover:bg-[#FF4757]/80 transition">
+                BLOCK SLOT
+            </button>
+        </form>
+    </div>
+
+    <!-- Blocked Slots -->
+    <div class="energy-card overflow-hidden">
+        <div class="px-6 py-4 border-b border-white/5 flex justify-between items-center">
+            <h3 class="font-bold text-lg">BLOCKED SLOTS</h3>
+            <span class="text-sm text-gray-500">{{ blocked_slots|length }} blocked</span>
+        </div>
+        {% if blocked_slots %}
+            <div class="divide-y divide-white/5">
+                {% for slot in blocked_slots %}
+                    <div class="p-4 flex justify-between items-center hover:bg-white/[0.02] transition">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-2xl">🔴</span>
+                            <div>
+                                <p class="font-bold">{{ slot.date|date:"l, F j" }}</p>
+                                <p class="text-sm text-gray-400">{{ slot.start_time|time:"g:i A" }} - {{ slot.end_time|time:"g:i A" }}</p>
+                            </div>
+                        </div>
+                        <a href="{% url 'venues:unblock_slot' field.id slot.date.isoformat slot.start_time.hour %}" 
+                           class="text-[#00FF88] hover:bg-[#00FF88]/10 px-4 py-2 rounded-xl text-sm font-bold transition">
+                            OPEN SLOT
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="p-12 text-center">
+                <span class="text-5xl mb-4 block">✅</span>
+                <p class="font-bold text-lg">ALL SLOTS AVAILABLE</p>
+                <p class="text-sm text-gray-500">No blocked slots</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

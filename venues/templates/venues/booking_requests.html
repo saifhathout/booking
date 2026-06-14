@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Bookings{% endblock %}
+{% block content %}
+
+<div class="mb-8">
+    <h1 class="text-3xl font-bold mb-2">📋 Booking Requests</h1>
+    <p class="text-gray-400">See all your field bookings</p>
+</div>
+
+{% if bookings %}
+    <div class="glass overflow-hidden">
+        <table class="w-full">
+            <thead>
+                <tr class="border-b border-gray-700">
+                    <th class="p-4 text-left text-gray-400 text-sm">Field</th>
+                    <th class="p-4 text-left text-gray-400 text-sm">Player</th>
+                    <th class="p-4 text-left text-gray-400 text-sm">Date</th>
+                    <th class="p-4 text-left text-gray-400 text-sm">Time</th>
+                    <th class="p-4 text-left text-gray-400 text-sm">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                    <tr class="border-b border-gray-700/50 hover:bg-white/5 transition">
+                        <td class="p-4 font-medium">{{ booking.field.name }}</td>
+                        <td class="p-4 text-gray-300">{{ booking.player.email }}</td>
+                        <td class="p-4">{{ booking.booking_date }}</td>
+                        <td class="p-4">{{ booking.start_time }} - {{ booking.end_time }}</td>
+                        <td class="p-4">
+                            <span class="badge badge-success">Confirmed ✅</span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="glass p-12 text-center">
+        <i class="fas fa-inbox text-6xl text-gray-600 mb-4"></i>
+        <h3 class="text-xl font-bold mb-2">No bookings yet</h3>
+        <p class="text-gray-400">Bookings will appear here when players reserve your fields</p>
+    </div>
+{% endif %}
+
+{% endblock %}

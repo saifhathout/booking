@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Time Slots - {{ venue.name }}{% endblock %}
+{% block content %}
+<h1>Time Slots - {{ venue.name }}</h1>
+<hr>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">Add New Slot</div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label>Field</label>
+                        {{ form.field }}
+                    </div>
+                    <div class="mb-3">
+                        <label>Date</label>
+                        {{ form.date }}
+                    </div>
+                    <div class="mb-3">
+                        <label>Start Time</label>
+                        {{ form.start_time }}
+                    </div>
+                    <div class="mb-3">
+                        <label>End Time</label>
+                        {{ form.end_time }}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Add Slot</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <h4>Existing Slots</h4>
+        {% if slots %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for slot in slots %}
+                        <tr>
+                            <td>{{ slot.field.name }}</td>
+                            <td>{{ slot.date }}</td>
+                            <td>{{ slot.start_time }} - {{ slot.end_time }}</td>
+                            <td>{% if slot.is_available %}🟢 Available{% else %}🔴 Booked{% endif %}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No slots created yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

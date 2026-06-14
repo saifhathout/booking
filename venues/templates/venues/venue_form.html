@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Add Venue{% endblock %}
+{% block content %}
+
+<div class="max-w-2xl mx-auto">
+    <div class="glass p-8">
+        <h1 class="text-3xl font-bold mb-2">🏟️ Add New Venue</h1>
+        <p class="text-gray-400 mb-8">Fill in your venue details</p>
+        
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            
+            <div>
+                <label class="text-sm text-gray-400 mb-1 block">Venue Name</label>
+                {{ form.name }}
+            </div>
+            
+            <div>
+                <label class="text-sm text-gray-400 mb-1 block">Address</label>
+                {{ form.address }}
+            </div>
+            
+            <div>
+                <label class="text-sm text-gray-400 mb-1 block">City</label>
+                {{ form.city }}
+            </div>
+            
+            <div>
+                <label class="text-sm text-gray-400 mb-1 block">Sport Type</label>
+                {{ form.sport_type }}
+            </div>
+            
+            <div>
+                <label class="text-sm text-gray-400 mb-1 block">Description</label>
+                {{ form.description }}
+            </div>
+            
+            <div class="flex space-x-4">
+                <button type="submit" class="btn-primary flex-1">
+                    <i class="fas fa-check mr-2"></i> Save Venue
+                </button>
+                <a href="{% url 'venues:list' %}" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-xl font-medium transition text-center">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
