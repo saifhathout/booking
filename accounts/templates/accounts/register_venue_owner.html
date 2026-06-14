@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}List Your Venue{% endblock %}
+{% block content %}
+
+<div class="min-h-[80vh] flex items-center justify-center py-8">
+    <div class="w-full max-w-md animate-fade-up">
+        
+        <div class="text-center mb-10">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#00D4AA] to-[#00B894] flex items-center justify-center mx-auto mb-6 shadow-lg shadow-[#00D4AA]/20">
+                <i class="fas fa-building text-2xl text-black"></i>
+            </div>
+            <h1 class="text-3xl font-extrabold tracking-tight">List Your Venue</h1>
+            <p class="text-gray-500 mt-2">Start earning today</p>
+        </div>
+
+        <div class="premium-card p-8">
+            <form method="POST" class="space-y-4">
+                {% csrf_token %}
+                
+                <div>
+                    <label class="text-sm font-medium text-gray-400 mb-2 block">Email</label>
+                    <input type="email" name="email" class="input-premium" placeholder="your@business.com" required>
+                </div>
+                
+                <div>
+                    <label class="text-sm font-medium text-gray-400 mb-2 block">Full Name</label>
+                    <input type="text" name="full_name" class="input-premium" placeholder="Your full name" required>
+                </div>
+                
+                <div>
+                    <label class="text-sm font-medium text-gray-400 mb-2 block">Phone</label>
+                    <input type="text" name="phone" class="input-premium" placeholder="+20 1XX XXX XXXX" required>
+                </div>
+                
+                <div>
+                    <label class="text-sm font-medium text-gray-400 mb-2 block">Business Name</label>
+                    <input type="text" name="business_name" class="input-premium" placeholder="Your venue name" required>
+                </div>
+                
+                <div>
+                    <label class="text-sm font-medium text-gray-400 mb-2 block">Business Address</label>
+                    <textarea name="business_address" rows="2" class="input-premium" placeholder="Full address" required></textarea>
+                </div>
+                
+                <div>
+                    <label class="text-sm font-medium text-gray-400 mb-2 block">City</label>
+                    <input type="text" name="business_city" class="input-premium" placeholder="City" required>
+                </div>
+                
+                <div>
+                    <label class="text-sm font-medium text-gray-400 mb-2 block">Password</label>
+                    <input type="password" name="password" class="input-premium" placeholder="Min 8 characters" required>
+                </div>
+                
+                <button type="submit" class="btn-gradient w-full py-4 text-base mt-4">
+                    <i class="fas fa-rocket mr-2"></i> Create Account
+                </button>
+            </form>
+        </div>
+
+        <p class="text-center text-sm text-gray-500 mt-6">
+            Already have an account? <a href="{% url 'accounts:login' %}" class="text-[#00D4AA] hover:underline font-semibold">Sign In</a>
+        </p>
+    </div>
+</div>
+
+{% endblock %}

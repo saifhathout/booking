@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Venue Dashboard{% endblock %}
+{% block content %}
+
+<div class="text-center mb-12">
+    <h1 class="text-4xl font-bold mb-2">🏟️ <span class="neon-text">Venue Manager</span></h1>
+    <p class="text-gray-400">Manage your sports empire</p>
+</div>
+
+<!-- Stats -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+    <div class="glass p-6 text-center">
+        <i class="fas fa-building text-3xl neon-text mb-2"></i>
+        <h2 class="text-2xl font-bold">0</h2>
+        <p class="text-gray-400 text-sm">Venues</p>
+    </div>
+    <div class="glass p-6 text-center">
+        <i class="fas fa-futbol text-3xl text-green-400 mb-2"></i>
+        <h2 class="text-2xl font-bold">0</h2>
+        <p class="text-gray-400 text-sm">Fields</p>
+    </div>
+    <div class="glass p-6 text-center">
+        <i class="fas fa-calendar-check text-3xl text-blue-400 mb-2"></i>
+        <h2 class="text-2xl font-bold">0</h2>
+        <p class="text-gray-400 text-sm">Bookings</p>
+    </div>
+    <div class="glass p-6 text-center">
+        <i class="fas fa-dollar-sign text-3xl text-yellow-400 mb-2"></i>
+        <h2 class="text-2xl font-bold">$0</h2>
+        <p class="text-gray-400 text-sm">Revenue</p>
+    </div>
+</div>
+
+<!-- Actions -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <a href="{% url 'venues:list' %}" class="glass p-8 text-center block">
+        <i class="fas fa-building text-4xl neon-text mb-3"></i>
+        <h3 class="text-xl font-bold">Manage Venues</h3>
+        <p class="text-gray-400">Add & edit your venues</p>
+    </a>
+    <a href="{% url 'venues:booking_requests' %}" class="glass p-8 text-center block">
+        <i class="fas fa-calendar text-4xl text-green-400 mb-3"></i>
+        <h3 class="text-xl font-bold">View Bookings</h3>
+        <p class="text-gray-400">See who's playing</p>
+    </a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Book Field{% endblock %}
+{% block content %}
+<h1>Book Field</h1>
+<hr>
+<div class="card">
+    <div class="card-body">
+        <form method="POST">
+            {% csrf_token %}
+            <p>Booking form will be here.</p>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}{{ field.name }}{% endblock %}
+{% block content %}
+
+<div class="animate-fade-up">
+    <!-- Field Info -->
+    <div class="premium-card p-8 mb-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div class="flex items-start space-x-4">
+                <div class="w-16 h-16 rounded-2xl bg-[#00D4AA]/10 flex items-center justify-center text-3xl">
+                    {% if field.sport_type == 'FOOTBALL' %}⚽{% elif field.sport_type == 'CRICKET' %}🏏{% elif field.sport_type == 'BASKETBALL' %}🏀{% elif field.sport_type == 'TENNIS' %}🎾{% else %}🏟️{% endif %}
+                </div>
+                <div>
+                    <h1 class="text-3xl font-extrabold">{{ field.name }}</h1>
+                    <p class="text-gray-400">{{ field.venue.name }} · {{ field.venue.city }}</p>
+                    <p class="text-sm text-gray-500 mt-1">{{ field.venue.address }}</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-3xl font-extrabold text-[#00D4AA]">${{ field.price_per_hour }}</p>
+                <p class="text-sm text-gray-500">per hour</p>
+                <span class="badge-premium badge-success mt-2 inline-block">Available</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Available Slots -->
+    <h2 class="text-2xl font-extrabold mb-6">Available Slots <span class="text-gray-500 text-lg font-normal">· Next 7 days</span></h2>
+    
+    {% if available_slots %}
+        {% regroup available_slots by date as slots_by_date %}
+        <div class="space-y-6">
+            {% for group in slots_by_date %}
+                <div class="premium-card overflow-hidden">
+                    <div class="px-6 py-4 border-b border-[#2A2A2A] flex items-center justify-between">
+                        <h3 class="font-bold text-lg">
+                            {{ group.grouper|date:"l, F j" }}
+                            {% if group.grouper == today %}<span class="badge-premium badge-success text-xs ml-2">Today</span>{% endif %}
+                        </h3>
+                        <span class="text-sm text-gray-500">{{ group.list|length }} slots</span>
+                    </div>
+                    <div class="p-6 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                        {% for slot in group.list %}
+                            <a href="{% url 'booking:book_slot' slot.id %}" 
+                               class="bg-[#00D4AA]/5 border border-[#00D4AA]/20 rounded-xl p-3 text-center hover:bg-[#00D4AA]/10 hover:border-[#00D4AA]/40 transition-all group">
+                                <span class="text-sm font-bold text-[#00D4AA]">{{ slot.start_time }}</span>
+                                <span class="text-[10px] text-gray-500 block mt-1">to {{ slot.end_time }}</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="premium-card p-20 text-center">
+            <span class="text-6xl mb-6 block">📅</span>
+            <h3 class="text-2xl font-bold mb-3">No slots available</h3>
+            <p class="text-gray-500 mb-6">All booked or blocked</p>
+            <a href="{% url 'booking:browse' %}" class="btn-outline inline-block">Browse Other Fields</a>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}  

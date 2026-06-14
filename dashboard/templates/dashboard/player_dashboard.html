@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<div class="animate-fade-up">
+    <!-- Greeting -->
+    <div class="mb-16">
+        <p class="text-sm text-gray-500 mb-2 font-semibold tracking-widest uppercase">{{ today|date:"l, F j" }}</p>
+        <h1 class="text-6xl font-black tracking-tighter">
+            READY TO<br><span class="text-[#00FF88]">PLAY?</span>
+        </h1>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+        <a href="{% url 'booking:browse' %}" class="energy-card p-8 group">
+            <div class="card-icon-energy icon-green mb-6">
+                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2zm0 3.5L18.5 19h-13L12 5.5z"/></svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-2">BOOK FIELD</h3>
+            <p class="text-gray-400 text-sm">Find & reserve instantly</p>
+            <div class="mt-6 flex items-center text-[#00FF88] text-sm font-bold tracking-widest uppercase">
+                Book Now <i class="fas fa-arrow-right ml-2 group-hover:translate-x-2 transition"></i>
+            </div>
+        </a>
+        
+        <a href="{% url 'teams:list' %}" class="energy-card p-8 group">
+            <div class="card-icon-energy icon-purple mb-6">
+                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><circle cx="15" cy="7" r="4"/><path d="M1 21v-2c0-2.5 5-4 8-4s8 1.5 8 4v2H1zm14 0v-2c0-2.5 2.5-3.5 5-3.5s5 1 5 3.5v2h-10z"/></svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-2">FIND SQUAD</h3>
+            <p class="text-gray-400 text-sm">Join or create teams</p>
+            <div class="mt-6 flex items-center text-purple-400 text-sm font-bold tracking-widest uppercase">
+                Explore <i class="fas fa-arrow-right ml-2 group-hover:translate-x-2 transition"></i>
+            </div>
+        </a>
+        
+        <a href="{% url 'tournaments:list' %}" class="energy-card p-8 group">
+            <div class="card-icon-energy icon-orange mb-6">
+                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.86L12 17.77l-6.18 3.23L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-2">TOURNAMENTS</h3>
+            <p class="text-gray-400 text-sm">Compete & win big</p>
+            <div class="mt-6 flex items-center text-amber-400 text-sm font-bold tracking-widest uppercase">
+                View All <i class="fas fa-arrow-right ml-2 group-hover:translate-x-2 transition"></i>
+            </div>
+        </a>
+    </div>
+
+    <!-- Bottom Actions -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="energy-card p-8">
+            <h3 class="text-xl font-bold mb-4 flex items-center">
+                <div class="card-icon-energy icon-blue w-10 h-10 rounded-xl mr-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                RECENT BOOKINGS
+            </h3>
+            <a href="{% url 'booking:history' %}" class="btn-ghost w-full text-center block mt-4">
+                VIEW HISTORY <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+        
+        <div class="energy-card p-8">
+            <h3 class="text-xl font-bold mb-4 flex items-center">
+                <div class="card-icon-energy icon-pink w-10 h-10 rounded-xl mr-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+                QUICK MATCH
+            </h3>
+            <a href="{% url 'booking:browse' %}" class="btn-fire w-full text-center block mt-4">
+                FIND INSTANT SLOT <i class="fas fa-bolt ml-2"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
