@@ -160,3 +160,23 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 # WhiteNoise for static files
 MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+
+
+ALLOWED_HOSTS = [
+    'booking-production-6604.up.railway.app',
+    '*.railway.app',
+    'localhost',
+    '127.0.0.1',
+]
+
+
+
+# CSRF Settings
+CSRF_TRUSTED_ORIGINS = [
+    'https://booking-production-6604.up.railway.app',
+    'https://*.railway.app',
+    'https://*.up.railway.app',
+]
+
+# Security Settings
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
