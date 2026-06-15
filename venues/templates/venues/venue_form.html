@@ -2,45 +2,52 @@
 {% block title %}Add Venue{% endblock %}
 {% block content %}
 
-<div class="max-w-2xl mx-auto">
-    <div class="glass p-8">
-        <h1 class="text-3xl font-bold mb-2">🏟️ Add New Venue</h1>
-        <p class="text-gray-400 mb-8">Fill in your venue details</p>
-        
-        <form method="POST" class="space-y-6">
+<div class="max-w-2xl mx-auto animate-fade-up">
+    <div class="text-center mb-10">
+        <div class="card-icon-energy icon-green w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <svg class="w-10 h-10 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+        </div>
+        <h1 class="text-4xl font-black tracking-tighter">ADD<br><span class="text-[#00FF88]">VENUE</span></h1>
+        <p class="text-gray-400 mt-2">Fill in your venue details</p>
+    </div>
+
+    <div class="energy-card p-8">
+        <form method="POST" class="space-y-5">
             {% csrf_token %}
             
             <div>
-                <label class="text-sm text-gray-400 mb-1 block">Venue Name</label>
+                <label class="text-sm font-bold text-gray-400 mb-2 block tracking-widest uppercase">Venue Name</label>
                 {{ form.name }}
             </div>
             
             <div>
-                <label class="text-sm text-gray-400 mb-1 block">Address</label>
+                <label class="text-sm font-bold text-gray-400 mb-2 block tracking-widest uppercase">Address</label>
                 {{ form.address }}
             </div>
             
             <div>
-                <label class="text-sm text-gray-400 mb-1 block">City</label>
+                <label class="text-sm font-bold text-gray-400 mb-2 block tracking-widest uppercase">City</label>
                 {{ form.city }}
             </div>
             
             <div>
-                <label class="text-sm text-gray-400 mb-1 block">Sport Type</label>
+                <label class="text-sm font-bold text-gray-400 mb-2 block tracking-widest uppercase">Sport Type</label>
                 {{ form.sport_type }}
             </div>
             
             <div>
-                <label class="text-sm text-gray-400 mb-1 block">Description</label>
+                <label class="text-sm font-bold text-gray-400 mb-2 block tracking-widest uppercase">Description</label>
                 {{ form.description }}
             </div>
             
-            <div class="flex space-x-4">
-                <button type="submit" class="btn-primary flex-1">
-                    <i class="fas fa-check mr-2"></i> Save Venue
+            <div class="flex gap-4 pt-4">
+                <button type="submit" class="btn-fire flex-1 py-4 text-base font-black">
+                    <i class="fas fa-check mr-2"></i> SAVE VENUE
                 </button>
-                <a href="{% url 'venues:list' %}" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-xl font-medium transition text-center">
-                    Cancel
+                <a href="{% url 'venues:list' %}" class="btn-ghost flex-1 py-4 text-base font-black text-center">
+                    CANCEL
                 </a>
             </div>
         </form>
