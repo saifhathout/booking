@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}My Teams{% endblock %}
+{% block content %}
+<h1>My Teams</h1>
+<hr>
+<a href="#" class="btn btn-primary mb-3" onclick="alert('Team creation coming soon!')">Create Team</a>
+
+<a href="/teams/find/" class="btn btn-success mb-3">Find Teams</a>
+<div class="card">
+    <div class="card-body">
+        <p>You haven't joined any teams yet.</p>
+    </div>
+</div>
+{% endblock %}

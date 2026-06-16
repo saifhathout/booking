@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}Venue Dashboard{% endblock %}
+{% block content %}
+
+<div class="animate-fade-up">
+    <!-- Header -->
+    <div class="mb-12">
+        <p class="text-sm text-gray-500 font-semibold tracking-widest uppercase mb-2">Venue Manager</p>
+        <h1 class="text-5xl md:text-6xl font-black tracking-tighter">
+            YOUR<br><span class="text-[#00FF88]">EMPIRE</span>
+        </h1>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+        <div class="energy-card p-6 text-center">
+            <div class="card-icon-energy icon-green w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                </svg>
+            </div>
+            <p class="text-3xl font-black">{{ total_venues|default:0 }}</p>
+            <p class="text-xs text-gray-500 mt-1 uppercase tracking-widest">Venues</p>
+        </div>
+        
+        <div class="energy-card p-6 text-center">
+            <div class="card-icon-energy icon-purple w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                </svg>
+            </div>
+            <p class="text-3xl font-black">{{ total_fields|default:0 }}</p>
+            <p class="text-xs text-gray-500 mt-1 uppercase tracking-widest">Fields</p>
+        </div>
+        
+        <div class="energy-card p-6 text-center">
+            <div class="card-icon-energy icon-blue w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+            </div>
+            <p class="text-3xl font-black">{{ total_bookings|default:0 }}</p>
+            <p class="text-xs text-gray-500 mt-1 uppercase tracking-widest">Bookings</p>
+        </div>
+        
+        <div class="energy-card p-6 text-center">
+            <div class="card-icon-energy icon-orange w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+            </div>
+            <p class="text-3xl font-black">${{ total_revenue|default:0 }}</p>
+            <p class="text-xs text-gray-500 mt-1 uppercase tracking-widest">Revenue</p>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+        <a href="{% url 'venues:list' %}" class="energy-card p-8 group">
+            <div class="card-icon-energy icon-green w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-all">
+                <svg class="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-2">MANAGE VENUES</h3>
+            <p class="text-gray-400 text-sm">Add & edit your venues</p>
+            <div class="mt-6 flex items-center text-[#00FF88] text-sm font-bold tracking-widest uppercase">
+                Manage <i class="fas fa-arrow-right ml-2 group-hover:translate-x-2 transition"></i>
+            </div>
+        </a>
+        
+        <a href="{% url 'venues:booking_requests' %}" class="energy-card p-8 group">
+            <div class="card-icon-energy icon-purple w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-all">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-2">VIEW BOOKINGS</h3>
+            <p class="text-gray-400 text-sm">See who's playing today</p>
+            <div class="mt-6 flex items-center text-purple-400 text-sm font-bold tracking-widest uppercase">
+                View <i class="fas fa-arrow-right ml-2 group-hover:translate-x-2 transition"></i>
+            </div>
+        </a>
+    </div>
+
+    <!-- Bottom Buttons -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <a href="{% url 'venues:create' %}" class="btn-fire w-full text-center py-6 text-lg font-black">
+            <i class="fas fa-plus mr-2"></i> ADD NEW VENUE
+        </a>
+        <a href="{% url 'tournaments:list' %}" class="btn-ghost w-full text-center py-6 text-lg font-black">
+            <i class="fas fa-trophy mr-2"></i> VIEW TOURNAMENTS
+        </a>
+    </div>
+</div>
+
+{% endblock %}

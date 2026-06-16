@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameOn - {% block title %}{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+   <style>
+    * { 
+        font-family: 'Space Grotesk', sans-serif; 
+        -webkit-font-smoothing: antialiased;
+    }
+    
+    body {
+        background: #0F0F0F;
+        color: #FFFFFF;
+        overflow-x: hidden;
+    }
+    
+    /* Animated Grid - lighter */
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: 
+            linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px),
+            linear-gradient(0deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+        background-size: 60px 60px;
+        animation: gridMove 20s linear infinite;
+        pointer-events: none;
+        z-index: 0;
+    }
+    
+    @keyframes gridMove {
+        0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+        100% { transform: perspective(500px) rotateX(60deg) translateY(60px); }
+    }
+    
+    body::after {
+        content: '';
+        position: fixed;
+        top: -200px;
+        right: -200px;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(0,255,136,0.06) 0%, transparent 70%);
+        border-radius: 50%;
+        animation: orbFloat 8s ease-in-out infinite;
+        pointer-events: none;
+        z-index: 0;
+    }
+    
+    @keyframes orbFloat {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        25% { transform: translate(-50px, 50px) scale(1.1); }
+        50% { transform: translate(-100px, 0) scale(0.9); }
+        75% { transform: translate(-50px, -50px) scale(1.05); }
+    }
+    
+    main {
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* ENERGY CARD - Lighter */
+    .energy-card {
+        background: #1A1A1A;
+        border: 1px solid #2A2A2A;
+        border-radius: 24px;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .energy-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 24px;
+        background: linear-gradient(135deg, #00FF88, #00D4AA, #00B894, #00FF88);
+        background-size: 400% 400%;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        z-index: -1;
+        animation: gradientShift 3s ease infinite;
+    }
+    
+    @keyframes gradientShift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+    
+    .energy-card:hover::before {
+        opacity: 0.1;
+    }
+    
+    .energy-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        border-color: rgba(0, 255, 136, 0.3);
+        background: #1F1F1F;
+        box-shadow: 
+            0 0 40px rgba(0, 255, 136, 0.1),
+            0 20px 60px rgba(0, 0, 0, 0.3),
+            0 0 0 1px rgba(0, 255, 136, 0.08) inset;
+    }
+    
+    .energy-card::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        transform: rotate(45deg);
+    }
+    
+    .energy-card:hover::after {
+        opacity: 1;
+        animation: shine 0.6s ease forwards;
+    }
+    
+    @keyframes shine {
+        from { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        to { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+    
+    .card-icon-energy {
+        width: 60px;
+        height: 60px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+    }
+    
+    .energy-card:hover .card-icon-energy {
+        transform: scale(1.15) rotate(-10deg);
+        animation: bounce 0.6s ease;
+    }
+    
+    @keyframes bounce {
+        0%, 100% { transform: scale(1.15) rotate(-10deg) translateY(0); }
+        50% { transform: scale(1.15) rotate(-10deg) translateY(-8px); }
+    }
+    
+    .icon-green { background: #00FF88; color: #000; }
+    .icon-purple { background: #A855F7; color: #FFF; }
+    .icon-orange { background: #FF6B35; color: #000; }
+    .icon-pink { background: #FF006E; color: #FFF; }
+    .icon-blue { background: #00D4FF; color: #000; }
+    
+    .btn-fire {
+        background: #00FF88;
+        color: #000;
+        padding: 16px 32px;
+        border-radius: 16px;
+        font-weight: 700;
+        font-size: 16px;
+        letter-spacing: -0.5px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .btn-fire:hover {
+        background: #00FF99;
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 
+            0 10px 40px rgba(0, 255, 136, 0.3),
+            0 0 60px rgba(0, 255, 136, 0.1);
+    }
+    
+    .btn-ghost {
+        background: transparent;
+        border: 2px solid #333;
+        color: #FFF;
+        padding: 16px 32px;
+        border-radius: 16px;
+        font-weight: 700;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-ghost:hover {
+        border-color: #00FF88;
+        color: #00FF88;
+        background: rgba(0, 255, 136, 0.05);
+    }
+    
+    .input-fire {
+        background: #1A1A1A;
+        border: 2px solid #2A2A2A;
+        border-radius: 14px;
+        padding: 16px 20px;
+        color: #FFF;
+        width: 100%;
+        font-size: 16px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .input-fire:focus {
+        outline: none;
+        border-color: #00FF88;
+        box-shadow: 0 0 30px rgba(0, 255, 136, 0.15);
+        background: #111;
+    }
+    
+    .input-fire::placeholder { color: #555; }
+    
+    .badge-fire {
+        padding: 8px 16px;
+        border-radius: 100px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .badge-green { background: #00FF88; color: #000; }
+    .badge-gold { background: #FFD700; color: #000; }
+    .badge-red { background: #FF4757; color: #FFF; }
+    
+    /* Navbar - lighter */
+    nav {
+        background: #111 !important;
+        border-bottom: 1px solid #222 !important;
+    }
+    
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-fade-up { animation: fadeUp 0.6s ease forwards; }
+    
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0F0F0F; }
+    ::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #00FF88; }
+    
+    ::selection { background: rgba(0, 255, 136, 0.3); color: #FFF; }
+    
+    .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    
+    .particle {
+        position: absolute;
+        width: 3px;
+        height: 3px;
+        background: #00FF88;
+        border-radius: 50%;
+        animation: particleFloat 6s ease-in-out infinite;
+        opacity: 0;
+    }
+    
+    @keyframes particleFloat {
+        0% { opacity: 0; transform: translateY(100vh) scale(0); }
+        20% { opacity: 0.6; }
+        80% { opacity: 0.2; }
+        100% { opacity: 0; transform: translateY(-100px) scale(1); }
+    }
+</style>
+</head>
+<body>
+    <!-- Floating Particles -->
+    <div class="particles">
+        <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="left: 20%; animation-delay: 1s;"></div>
+        <div class="particle" style="left: 30%; animation-delay: 2s;"></div>
+        <div class="particle" style="left: 40%; animation-delay: 0.5s;"></div>
+        <div class="particle" style="left: 50%; animation-delay: 1.5s;"></div>
+        <div class="particle" style="left: 60%; animation-delay: 3s;"></div>
+        <div class="particle" style="left: 70%; animation-delay: 2.5s;"></div>
+        <div class="particle" style="left: 80%; animation-delay: 1.8s;"></div>
+        <div class="particle" style="left: 90%; animation-delay: 0.8s;"></div>
+        <div class="particle" style="left: 15%; animation-delay: 3.5s;"></div>
+    </div>
+
+    {% include 'navbar.html' %}
+    
+    <main class="container mx-auto px-4 py-8 max-w-7xl">
+        {% include 'messages.html' %}
+        {% block content %}{% endblock %}
+    </main>
+    
+    {% if user.is_authenticated %}
+        {% include 'mobile_nav.html' %}
+    {% endif %}
+</body>
+</html>

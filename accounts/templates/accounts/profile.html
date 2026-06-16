@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<h1>My Profile</h1>
+<hr>
+<div class="card">
+    <div class="card-body">
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Role:</strong> {{ user.get_role_display }}</p>
+        <a href="/accounts/profile/edit/" class="btn btn-primary">Edit Profile</a>
+    </div>
+</div>
+{% endblock %}

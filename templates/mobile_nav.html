@@ -1,0 +1,45 @@
+<!-- Mobile Bottom Navigation -->
+<div class="fixed bottom-0 left-0 right-0 glass md:hidden" style="z-index: 1000; border-radius: 20px 20px 0 0;">
+    <div class="flex justify-around py-3">
+        {% if user.is_authenticated %}
+            {% if user.is_player %}
+                <a href="{% url 'dashboard:player_dashboard' %}" class="flex flex-col items-center text-gray-400 hover:text-white">
+                    <i class="fas fa-home text-xl"></i>
+                    <span class="text-xs mt-1">Home</span>
+                </a>
+                <a href="{% url 'booking:browse' %}" class="flex flex-col items-center text-gray-400 hover:text-white">
+                    <i class="fas fa-futbol text-xl"></i>
+                    <span class="text-xs mt-1">Book</span>
+                </a>
+                <a href="{% url 'teams:list' %}" class="flex flex-col items-center text-gray-400 hover:text-white">
+                    <i class="fas fa-users text-xl"></i>
+                    <span class="text-xs mt-1">Teams</span>
+                </a>
+                <a href="{% url 'booking:history' %}" class="flex flex-col items-center text-gray-400 hover:text-white">
+                    <i class="fas fa-clock text-xl"></i>
+                    <span class="text-xs mt-1">Bookings</span>
+                </a>
+            {% elif user.is_venue_owner %}
+                <a href="{% url 'dashboard:owner_dashboard' %}" class="flex flex-col items-center text-gray-400 hover:text-white">
+                    <i class="fas fa-home text-xl"></i>
+                    <span class="text-xs mt-1">Home</span>
+                </a>
+                <a href="{% url 'venues:list' %}" class="flex flex-col items-center text-gray-400 hover:text-white">
+                    <i class="fas fa-building text-xl"></i>
+                    <span class="text-xs mt-1">Venues</span>
+                </a>
+                <a href="{% url 'venues:booking_requests' %}" class="flex flex-col items-center text-gray-400 hover:text-white">
+                    <i class="fas fa-calendar text-xl"></i>
+                    <span class="text-xs mt-1">Bookings</span>
+                </a>
+            {% endif %}
+            <a href="{% url 'accounts:logout' %}" class="flex flex-col items-center text-red-400 hover:text-red-300">
+                <i class="fas fa-sign-out-alt text-xl"></i>
+                <span class="text-xs mt-1">Logout</span>
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Add padding for mobile nav -->
+<div class="md:hidden h-20"></div>
