@@ -71,7 +71,8 @@ def slot_calendar(request, field_id):
                 date=date_str,
                 start_time=f"{hour_val}:00:00",
                 end_time=f"{hour_val+1}:00:00",
-                is_available=False
+                is_available=False,
+                slot_type='BLOCKED'
             )
             messages.success(request, f'Blocked: {date_str} at {hour_val}:00')
             return redirect('venues:slot_calendar', field_id=field.id)
@@ -111,3 +112,88 @@ def unblock_slot(request, field_id, date, hour):
     
     messages.success(request, f'Opened: {date} at {hour}:00')
     return redirect('venues:slot_calendar', field_id=field.id)
+
+@venue_owner_required
+def field_schedule_view(request, field_id):
+    from datetime import datetime, date, timedelta
+    
+    field = get_object_or_404(Field, id=field_id, venue__owner=request.user)
+    
+    today = date.today()
+    now = datetime.now()
+    current_hour = now.hour
+    
+    all_slots = VenueSlot.objects.filter(
+        field=field,
+        date__gte=today,
+        date__lte=today + timedelta(days=6)
+    )
+    
+    bookings = Booking.objects.filter(
+        field=field,
+        booking_date__gte=today,
+        status='CONFIRMED'
+    ).select_related('player', 'player__player_profile')
+    
+    booking_map = {}
+    for b in bookings:
+        hour = b.start_time.hour
+        key = f"{b.booking_date}_{hour}"
+        booking_map[key] = {
+            'player_email': b.player.email,
+            'player_name': b.player.player_profile.full_name if hasattr(b.player, 'player_profile') else b.player.email,
+            'booking_id': b.id,
+        }
+    
+    slot_type_map = {}
+    for slot in all_slots:
+        if not slot.is_available:
+            hour = slot.start_time.hour
+            key = f"{slot.date}_{hour}"
+            slot_type_map[key] = slot.slot_type if slot.slot_type else 'BLOCKED'
+    
+    def format_time(hour):
+        if hour == 0 or hour == 24: return "12:00 AM"
+        elif hour < 12: return f"{hour}:00 AM"
+        elif hour == 12: return "12:00 PM"
+        else: return f"{hour-12}:00 PM"
+    
+    all_slots_list = []
+    for i in range(7):
+        day = today + timedelta(days=i)
+        day_slots = []
+        
+        for hour in range(1, 25):
+            key = f"{day}_{hour}"
+            slot_type = slot_type_map.get(key)
+            booking_info = booking_map.get(key)
+            
+            day_slots.append({
+                'hour': hour,
+                'time': format_time(hour % 24),
+                'slot_type': slot_type,
+                'booking': booking_info,
+            })
+        
+        all_slots_list.append({'date': day, 'slots': day_slots})
+    
+    return render(request, 'venues/field_schedule.html', {
+        'field': field,
+        'all_slots_list': all_slots_list,
+        'today': today,
+        'current_hour': current_hour,
+    })
+
+@venue_owner_required
+def booking_details(request, booking_id):
+    booking = get_object_or_404(
+        Booking.objects.select_related('field', 'field__venue', 'player', 'player__player_profile', 'slot'),
+        id=booking_id,
+        field__venue__owner=request.user  # التأكد إن صاحب الملعب هو اللي شايف
+    )
+    
+    return render(request, 'venues/booking_details.html', {
+        'booking': booking,
+    })
+
+

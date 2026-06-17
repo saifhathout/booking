@@ -99,7 +99,7 @@ def book_slot(request, slot_id):
     
     field = get_object_or_404(Field, id=field_id, is_active=True)
     
-    if hour > 24:
+    if hour >= 24:
         messages.error(request, 'Invalid time slot.')
         return redirect('booking:field_detail', field_id=field.id)
     
@@ -134,12 +134,14 @@ def book_slot(request, slot_id):
     if request.method == 'POST':
         end_hour = hour + 1 if hour < 24 else 1
         
+        # CREATE SLOT AS BOOKED
         slot = VenueSlot.objects.create(
             field=field,
             date=date_str,
             start_time=f"{hour}:00:00",
-            end_time=f"{end_hour}:00:00" if end_hour <= 24 else "1:00:00",
-            is_available=False
+            end_time=f"{end_hour}:00:00",
+            is_available=False,
+            slot_type='BOOKED'  # ← IMPORTANT: Mark as booked
         )
         
         booking = Booking.objects.create(
@@ -148,7 +150,7 @@ def book_slot(request, slot_id):
             slot=slot,
             booking_date=date_str,
             start_time=f"{hour}:00",
-            end_time=f"{end_hour}:00" if end_hour <= 24 else "1:00",
+            end_time=f"{end_hour}:00",
             status='CONFIRMED'
         )
         
@@ -161,6 +163,7 @@ def book_slot(request, slot_id):
         'hour': hour,
         'time_display': format_time(hour),
     })
+
 
 @player_required
 def booking_history(request):

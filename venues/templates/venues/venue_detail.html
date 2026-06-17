@@ -41,8 +41,8 @@
                             {% else %}
                                 <span class="badge-fire badge-red text-[10px]">INACTIVE</span>
                             {% endif %}
-                            <a href="{% url 'venues:slot_calendar' field.id %}" class="text-[#00FF88] hover:bg-[#00FF88]/10 px-4 py-2 rounded-xl text-sm font-bold transition">
-                                <i class="fas fa-calendar mr-1"></i> SCHEDULE
+                            <a href="{% url 'venues:field_schedule' field.id %}" class="text-blue-400 hover:bg-blue-400/10 px-4 py-2 rounded-xl text-sm font-bold transition">
+                                  <i class="fas fa-eye mr-1"></i> VIEW SCHEDULE
                             </a>
                         </div>
                     </div>

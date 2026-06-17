@@ -13,49 +13,48 @@
         </div>
     </div>
 
-    <div class="flex gap-4 mb-4 text-xs">
-        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-[#00FF88]/30 border border-[#00FF88]"></span> Available</span>
-        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-[#FF4757]/20 border border-[#FF4757] flex items-center justify-center text-[#FF4757] text-[8px] font-black">✕</span> Booked</span>
-        <!-- <span class="flex items-center gap-1 text-gray-500"><span class="w-3 h-3 rounded bg-gray-500/20 border border-gray-500"></span> Past</span> -->
+    <div class="flex gap-6 mb-4 text-xs">
+        <span class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-[#00FF88]/30 border border-[#00FF88]"></span> Available</span>
+        <span class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-gray-500/20 border border-gray-500"></span> Unavailable</span>
+        <span class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-[#FF4757]/20 border border-[#FF4757] flex items-center justify-center text-[#FF4757] text-[8px] font-black">✕</span> Booked</span>
     </div>
 
-    {% for day_data in all_slots_list %}
-        <div class="energy-card mb-3 overflow-hidden">
-            <div class="px-4 py-2 border-b border-white/5">
-                <h3 class="font-bold text-sm">
-                    {{ day_data.date|date:"D, M j" }}
-                    {% if day_data.date == today %}
-                        <span class="badge-fire badge-green text-[10px] ml-2">TODAY</span>
-                        <!-- <span class="text-xs text-gray-500 ml-2">· Starting from {{ current_hour|add:"1" }}:00</span> -->
-                    {% endif %}
-                </h3>
+    {% if all_slots_list %}
+        {% for day_data in all_slots_list %}
+            <div class="energy-card mb-3 overflow-hidden">
+                <div class="px-4 py-2 border-b border-white/5">
+                    <h3 class="font-bold text-sm">
+                        {{ day_data.date|date:"D, M j" }}
+                        {% if day_data.date == today %}<span class="badge-fire badge-green text-[10px] ml-2">TODAY</span>{% endif %}
+                    </h3>
+                </div>
+                <div class="p-3 grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+                    {% for slot in day_data.slots %}
+                        {% if slot.is_booked %}
+                            <div class="bg-[#FF4757]/5 border border-[#FF4757]/20 rounded-lg p-2 text-center opacity-40 cursor-not-allowed relative">
+                                <span class="text-[11px] font-bold text-[#FF4757] line-through">{{ slot.time }}</span>
+                                <span class="absolute top-0.5 right-1 text-[#FF4757] text-xs font-black">✕</span>
+                            </div>
+                        {% elif slot.hour <= current_hour and day_data.date == today %}
+                            <div class="bg-gray-500/5 border border-gray-500/10 rounded-lg p-2 text-center opacity-30 cursor-not-allowed">
+                                <span class="text-[11px] text-gray-500">{{ slot.time }}</span>
+                            </div>
+                        {% else %}
+                            <a href="{% url 'booking:book_slot' slot.slot_id %}" 
+                               class="bg-[#00FF88]/5 border border-[#00FF88]/20 rounded-lg p-2 text-center hover:bg-[#00FF88]/15 hover:border-[#00FF88]/40 transition-all">
+                                <span class="text-[11px] font-bold text-[#00FF88]">{{ slot.time }}</span>
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             </div>
-            <div class="p-3 grid grid-cols-6 md:grid-cols-9 gap-1.5">
-                {% for slot in day_data.slots %}
-                    {% if slot.is_booked %}
-                        <div class="bg-[#FF4757]/5 border border-[#FF4757]/20 rounded-lg p-1.5 text-center opacity-40 cursor-not-allowed relative">
-                            <span class="text-[11px] font-bold text-[#FF4757] line-through">{{ slot.time }}</span>
-                            <span class="absolute top-0.5 right-1 text-[#FF4757] text-xs font-black">✕</span>
-                        </div>
-                    {% elif slot.hour <= current_hour and day_data.date == today %}
-                        <div class="bg-gray-500/5 border border-gray-500/10 rounded-lg p-1.5 text-center opacity-30 cursor-not-allowed">
-                            <span class="text-[11px] text-gray-500">{{ slot.time }}</span>
-                        </div>
-                    {% else %}
-                        <a href="{% url 'booking:book_slot' slot.slot_id %}" 
-                           class="bg-[#00FF88]/5 border border-[#00FF88]/20 rounded-lg p-1.5 text-center hover:bg-[#00FF88]/15 hover:border-[#00FF88]/40 transition-all">
-                            <span class="text-[11px] font-bold text-[#00FF88]">{{ slot.time }}</span>
-                        </a>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        </div>
-    {% empty %}
+        {% endfor %}
+    {% else %}
         <div class="energy-card p-16 text-center">
             <span class="text-5xl mb-4 block">📅</span>
             <p class="text-xl font-bold">No available slots</p>
         </div>
-    {% endfor %}
+    {% endif %}
 </div>
 
 {% endblock %}
