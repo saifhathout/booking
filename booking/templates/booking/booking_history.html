@@ -3,42 +3,108 @@
 {% block content %}
 
 <div class="animate-fade-up">
-    <div class="mb-12">
+    <div class="mb-10">
         <p class="text-sm text-gray-500 font-semibold tracking-widest uppercase mb-2">Your Matches</p>
         <h1 class="text-5xl md:text-6xl font-black tracking-tighter">
             MY<br><span class="text-[#00FF88]">BOOKINGS</span>
         </h1>
     </div>
 
-    {% if bookings %}
-        <div class="space-y-4">
-            {% for booking in bookings %}
-                <div class="energy-card p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div class="flex items-center space-x-4">
-                        <div class="card-icon-energy icon-green w-12 h-12 rounded-xl">
-                            <span class="text-xl">⚽</span>
+    <!-- Upcoming Bookings -->
+    <div class="mb-12">
+        <h2 class="text-2xl font-extrabold mb-6 flex items-center">
+            <span class="card-icon-energy icon-green w-10 h-10 rounded-xl flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+            </span>
+            UPCOMING
+            <span class="badge-fire badge-green text-xs ml-3">{{ upcoming_bookings|length }}</span>
+        </h2>
+        
+        {% if upcoming_bookings %}
+            <div class="space-y-3">
+                {% for booking in upcoming_bookings %}
+                    <div class="energy-card p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="card-icon-energy icon-green w-12 h-12 rounded-xl flex items-center justify-center text-xl">
+                                {% if booking.field.sport_type == 'FOOTBALL' %}⚽
+                                {% elif booking.field.sport_type == 'CRICKET' %}🏏
+                                {% elif booking.field.sport_type == 'BASKETBALL' %}🏀
+                                {% elif booking.field.sport_type == 'TENNIS' %}🎾
+                                {% else %}🏟️{% endif %}
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg">{{ booking.field.name }}</h3>
+                                <p class="text-sm text-gray-400">{{ booking.field.venue.name }}</p>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    <i class="far fa-calendar mr-1"></i> {{ booking.booking_date|date:"D, M j" }}
+                                    <span class="mx-2">·</span>
+                                    <i class="far fa-clock mr-1"></i> {{ booking.start_time }}
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <h3 class="font-bold text-lg">{{ booking.field.name }}</h3>
-                            <p class="text-sm text-gray-400">{{ booking.field.venue.name }}</p>
-                            <p class="text-xs text-gray-600 mt-1">{{ booking.booking_date }} · {{ booking.start_time }}</p>
+                        <div class="flex items-center space-x-3">
+                            <span class="text-xl font-black text-[#00FF88]">${{ booking.field.price_per_hour }}</span>
+                            <span class="badge-fire badge-green text-xs">CONFIRMED ✓</span>
                         </div>
                     </div>
-                    <div class="flex items-center space-x-4">
-                        <span class="text-xl font-black text-[#00FF88]">${{ booking.field.price_per_hour }}</span>
-                        <span class="badge-fire badge-green">CONFIRMED ✓</span>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="energy-card p-10 text-center">
+                <span class="text-4xl mb-3 block">📅</span>
+                <p class="text-gray-400">No upcoming bookings</p>
+                <a href="{% url 'booking:browse' %}" class="btn-fire inline-block mt-4 text-sm">BOOK A FIELD</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Past Bookings -->
+    <div>
+        <h2 class="text-2xl font-extrabold mb-6 flex items-center">
+            <span class="card-icon-energy icon-purple w-10 h-10 rounded-xl flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </span>
+            PAST
+            <span class="badge-fire badge-red text-xs ml-3">{{ past_bookings|length }}</span>
+        </h2>
+        
+        {% if past_bookings %}
+            <div class="space-y-3 opacity-70">
+                {% for booking in past_bookings %}
+                    <div class="energy-card p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="card-icon-energy icon-purple w-12 h-12 rounded-xl flex items-center justify-center text-xl opacity-50">
+                                {% if booking.field.sport_type == 'FOOTBALL' %}⚽
+                                {% elif booking.field.sport_type == 'CRICKET' %}🏏
+                                {% elif booking.field.sport_type == 'BASKETBALL' %}🏀
+                                {% elif booking.field.sport_type == 'TENNIS' %}🎾
+                                {% else %}🏟️{% endif %}
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-gray-400">{{ booking.field.name }}</h3>
+                                <p class="text-sm text-gray-500">{{ booking.field.venue.name }}</p>
+                                <p class="text-xs text-gray-600 mt-1">
+                                    <i class="far fa-calendar mr-1"></i> {{ booking.booking_date|date:"D, M j" }}
+                                    <span class="mx-2">·</span>
+                                    <i class="far fa-clock mr-1"></i> {{ booking.start_time }}
+                                </p>
+                            </div>
+                        </div>
+                        <span class="badge-fire badge-red text-xs">COMPLETED ✓</span>
                     </div>
-                </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="energy-card p-20 text-center">
-            <span class="text-7xl mb-6 block">📭</span>
-            <h3 class="text-3xl font-black mb-3">NO BOOKINGS</h3>
-            <p class="text-gray-500 mb-6">Ready to play?</p>
-            <a href="{% url 'booking:browse' %}" class="btn-fire inline-block">FIND A FIELD</a>
-        </div>
-    {% endif %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="energy-card p-10 text-center">
+                <span class="text-4xl mb-3 block">📭</span>
+                <p class="text-gray-400">No past bookings</p>
+            </div>
+        {% endif %}
+    </div>
 </div>
 
 {% endblock %}

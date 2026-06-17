@@ -29,10 +29,14 @@ def browse_fields(request):
 
 @player_required
 def field_detail(request, field_id):
+    from datetime import datetime
+    
     field = get_object_or_404(Field, id=field_id, is_active=True)
     
     today = date.today()
     tomorrow = today + timedelta(days=1)
+    now = datetime.now()
+    current_hour = now.hour
     
     all_slots = VenueSlot.objects.filter(
         field=field,
@@ -59,26 +63,32 @@ def field_detail(request, field_id):
     for i in range(7):
         day = today + timedelta(days=i)
         day_slots = []
-        for hour in range(1, 25):  # 1 AM to 12 AM (midnight)
+        
+        # لو النهارده - ابدأ من الساعة الجاية
+        # لو يوم تاني - ابدأ من 1 AM
+        start_hour = current_hour + 1 if day == today else 1
+        
+        for hour in range(start_hour, 25):
             is_booked = f"{day}_{hour}" in booked_set
-            # hour 24 = midnight of next day
-            display_hour = hour if hour < 24 else 0
             day_slots.append({
                 'hour': hour,
                 'time': format_time(hour % 24),
                 'is_booked': is_booked,
                 'slot_id': f"{field_id}_{day}_{hour}" if not is_booked else None,
             })
-        all_slots_list.append({
-            'date': day,
-            'slots': day_slots,
-        })
+        
+        if day_slots:  # بس لو فيه مواعيد متاحة
+            all_slots_list.append({
+                'date': day,
+                'slots': day_slots,
+            })
     
     return render(request, 'booking/field_detail.html', {
         'field': field,
         'all_slots_list': all_slots_list,
         'today': today,
         'tomorrow': tomorrow,
+        'current_hour': current_hour,
     })
 @player_required
 def book_slot(request, slot_id):
@@ -154,5 +164,33 @@ def book_slot(request, slot_id):
 
 @player_required
 def booking_history(request):
-    bookings = Booking.objects.filter(player=request.user).order_by('-created_at')
-    return render(request, 'booking/booking_history.html', {'bookings': bookings})
+    from datetime import date, datetime
+    
+    today = date.today()
+    now = datetime.now().time()
+    
+    all_bookings = Booking.objects.select_related(
+        'field', 'field__venue', 'player'
+    ).filter(player=request.user).order_by('booking_date', 'start_time')
+    
+    # Upcoming bookings (future dates OR today with future time)
+    upcoming_bookings = []
+    past_bookings = []
+    
+    for booking in all_bookings:
+        if booking.booking_date > today:
+            upcoming_bookings.append(booking)
+        elif booking.booking_date == today:
+            # Parse the time
+            booking_time = datetime.strptime(str(booking.start_time), '%H:%M:%S').time()
+            if booking_time >= now:
+                upcoming_bookings.append(booking)
+            else:
+                past_bookings.append(booking)
+        else:
+            past_bookings.append(booking)
+    
+    return render(request, 'booking/booking_history.html', {
+        'upcoming_bookings': upcoming_bookings,
+        'past_bookings': past_bookings,
+    })
