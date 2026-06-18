@@ -65,23 +65,19 @@ def chat_view(request, post_id):
         return redirect('teams:find_players')
     
     if request.method == 'POST':
-        msg = request.POST.get('message')
-        if msg:
-            ChatMessage.objects.create(post=post, sender=request.user, message=msg)
-        # Stay on same page - don't redirect
-        messages_list = post.messages.all().order_by('created_at')
+        action = request.POST.get('action', '')
         
-        if is_owner:
-            req = PlayerRequest.objects.filter(post=post).first()
-            other = req.player if req else None
-        else:
-            other = post.player
+        if action == 'send':
+            msg = request.POST.get('message')
+            if msg:
+                ChatMessage.objects.create(post=post, sender=request.user, message=msg)
         
-        return render(request, 'teams/chat.html', {
-            'post': post,
-            'messages_list': messages_list,
-            'other': other,
-        })
+        elif action == 'delete_chat':
+            ChatMessage.objects.filter(post=post).delete()
+            PlayerRequest.objects.filter(post=post).delete()
+            post.delete()
+            messages.success(request, 'Chat deleted.')
+            return redirect('teams:my_chats')
     
     messages_list = post.messages.all().order_by('created_at')
     
@@ -107,3 +103,22 @@ def my_chats(request):
     chats = list(posts1) + list(posts2)
     
     return render(request, 'teams/my_chats.html', {'chats': chats})
+
+
+
+@player_required
+def delete_chat(request, post_id):
+    post = get_object_or_404(PlayerPost, id=post_id)
+    
+    is_owner = post.player == request.user
+    is_joined = PlayerRequest.objects.filter(post=post, player=request.user).exists()
+    
+    if not is_owner and not is_joined:
+        return redirect('teams:find_players')
+    
+    ChatMessage.objects.filter(post=post).delete()
+    PlayerRequest.objects.filter(post=post).delete()
+    post.delete()
+    
+    messages.success(request, 'Chat deleted!')
+    return redirect('teams:find_players')
