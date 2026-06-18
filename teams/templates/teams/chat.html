@@ -38,7 +38,7 @@
         <!-- Input -->
         <form method="POST" class="p-4 border-t border-white/5 flex gap-2">
             {% csrf_token %}
-            <input type="text" name="message" class="input-fire flex-1" placeholder="Type a message..." required>
+            <input type="text" name="message" class="input-fire flex-1" placeholder="Type a message..." autocomplete="off" required autofocus>  
             <button type="submit" class="btn-fire px-6">
                 <i class="fas fa-paper-plane"></i>
             </button>

@@ -58,7 +58,6 @@ def join_post(request, post_id):
 def chat_view(request, post_id):
     post = get_object_or_404(PlayerPost, id=post_id)
     
-    # Check access
     is_owner = post.player == request.user
     is_joined = PlayerRequest.objects.filter(post=post, player=request.user).exists()
     
@@ -69,11 +68,23 @@ def chat_view(request, post_id):
         msg = request.POST.get('message')
         if msg:
             ChatMessage.objects.create(post=post, sender=request.user, message=msg)
-        return redirect('teams:chat', post_id=post.id)
+        # Stay on same page - don't redirect
+        messages_list = post.messages.all().order_by('created_at')
+        
+        if is_owner:
+            req = PlayerRequest.objects.filter(post=post).first()
+            other = req.player if req else None
+        else:
+            other = post.player
+        
+        return render(request, 'teams/chat.html', {
+            'post': post,
+            'messages_list': messages_list,
+            'other': other,
+        })
     
     messages_list = post.messages.all().order_by('created_at')
     
-    # Other person
     if is_owner:
         req = PlayerRequest.objects.filter(post=post).first()
         other = req.player if req else None

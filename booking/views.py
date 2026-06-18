@@ -174,9 +174,8 @@ def booking_history(request):
     
     all_bookings = Booking.objects.select_related(
         'field', 'field__venue', 'player'
-    ).filter(player=request.user).order_by('booking_date', 'start_time')
+    ).filter(player=request.user).exclude(status='CANCELLED').order_by('booking_date', 'start_time')
     
-    # Upcoming bookings (future dates OR today with future time)
     upcoming_bookings = []
     past_bookings = []
     
@@ -184,7 +183,6 @@ def booking_history(request):
         if booking.booking_date > today:
             upcoming_bookings.append(booking)
         elif booking.booking_date == today:
-            # Parse the time
             booking_time = datetime.strptime(str(booking.start_time), '%H:%M:%S').time()
             if booking_time >= now:
                 upcoming_bookings.append(booking)
@@ -197,3 +195,16 @@ def booking_history(request):
         'upcoming_bookings': upcoming_bookings,
         'past_bookings': past_bookings,
     })
+
+@player_required
+def cancel_booking(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, player=request.user)
+    
+    booking.status = 'CANCELLED'
+    booking.save()
+    
+    # Delete the slot so it becomes available again
+    booking.slot.delete()
+    
+    messages.success(request, 'Booking cancelled.')
+    return redirect('booking:history')
