@@ -70,17 +70,19 @@
 </div>
 
 <script>
-// Send message via AJAX - no refresh
+let lastMessageCount = document.getElementById('chatMessages').children.length;;
+const currentUsername = "{{ request.user.username }}";
+const otherUsername = "{{ other.username }}";
+
+// Send message via AJAX
 document.getElementById('chatForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    const form = e.target;
     const message = document.getElementById('messageInput').value;
-    const csrf = form.querySelector('[name=csrfmiddlewaretoken]').value;
+    const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
     
     if (!message.trim()) return;
     
-    // Send via fetch
     fetch(window.location.href, {
         method: 'POST',
         headers: {
@@ -89,33 +91,40 @@ document.getElementById('chatForm').addEventListener('submit', function(e) {
         },
         body: 'action=send&message=' + encodeURIComponent(message) + '&csrfmiddlewaretoken=' + csrf
     })
-    .then(response => {
-        // Add message to chat immediately
-        const chatDiv = document.getElementById('chatMessages');
-        const emptyDiv = document.getElementById('emptyChat');
-        if (emptyDiv) emptyDiv.remove();
-        
-        const now = new Date();
-        const time = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-        
-        const msgHTML = `
-            <div class="flex justify-end">
-                <div class="max-w-[75%] bg-[#00FF88] text-black rounded-2xl px-4 py-2">
-                    <p class="text-xs opacity-50 mb-1">{{ request.user.username }}</p>
-                    <p class="text-sm">${message}</p>
-                    <p class="text-[10px] mt-1 opacity-50 text-right">${time}</p>
-                </div>
-            </div>
-        `;
-        
-        chatDiv.insertAdjacentHTML('beforeend', msgHTML);
-        chatDiv.scrollTop = chatDiv.scrollHeight;
-        
+    .then(() => {
         // Clear input
         document.getElementById('messageInput').value = '';
         document.getElementById('messageInput').focus();
+        // Poll for new messages
+        checkNewMessages();
     });
 });
+
+// Poll for new messages every 2 seconds
+function checkNewMessages() {
+    fetch(window.location.href)
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const messagesContainer = doc.getElementById('chatMessages');
+            
+            if (messagesContainer) {
+                const newMessages = messagesContainer.innerHTML;
+                const currentContainer = document.getElementById('chatMessages');
+                
+                // Only update if messages changed
+                if (messagesContainer.children.length !== lastMessageCount) {
+                    currentContainer.innerHTML = newMessages;
+                    currentContainer.scrollTop = currentContainer.scrollHeight;
+                    lastMessageCount = messagesContainer.children.length;
+                }
+            }
+        });
+}
+
+// Check every 2 seconds
+setInterval(checkNewMessages, 2000);
 
 function openModal(id) {
     document.getElementById(id).classList.remove('hidden');
