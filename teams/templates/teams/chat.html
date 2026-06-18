@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Chat{% endblock %}
+{% block content %}
+
+<div class="max-w-2xl mx-auto animate-fade-up">
+    <a href="{% url 'teams:my_chats' %}" class="text-gray-400 hover:text-white mb-4 inline-block">
+        <i class="fas fa-arrow-left mr-2"></i> Back
+    </a>
+
+    <div class="energy-card overflow-hidden">
+        <!-- Header -->
+        <div class="p-4 border-b border-white/5 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-[#00FF88] flex items-center justify-center text-black font-bold">
+                {{ other.email|first|upper }}
+            </div>
+            <div>
+                <h3 class="font-bold">{{ other.username }}</h3>
+                <p class="text-xs text-gray-500">{{ post.get_sport_type_display }} · {{ post.city }} · {{ post.date }}</p>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="p-4 h-96 overflow-y-auto space-y-3">
+            {% for msg in messages_list %}
+                <div class="flex {% if msg.sender == request.user %}justify-end{% else %}justify-start{% endif %}">
+                    <div class="max-w-[75%] {% if msg.sender == request.user %}bg-[#00FF88] text-black{% else %}bg-white/10{% endif %} rounded-2xl px-4 py-2">
+                        <p class="text-sm">{{ msg.message }}</p>
+                        <p class="text-[10px] mt-1 opacity-50 {% if msg.sender == request.user %}text-right{% endif %}">
+                            {{ msg.created_at|time:"H:i" }}
+                        </p>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-center text-gray-500 py-20">Say hi! 👋</p>
+            {% endfor %}
+        </div>
+
+        <!-- Input -->
+        <form method="POST" class="p-4 border-t border-white/5 flex gap-2">
+            {% csrf_token %}
+            <input type="text" name="message" class="input-fire flex-1" placeholder="Type a message..." required>
+            <button type="submit" class="btn-fire px-6">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}  

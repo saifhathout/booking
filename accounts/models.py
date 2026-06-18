@@ -28,6 +28,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     ]
     
     email = models.EmailField(unique=True, db_index=True)
+    username = models.CharField(max_length=50, unique=True, null=True, blank=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='PLAYER')
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -61,6 +62,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         elif self.role == 'VENUE_OWNER':
             return 'dashboard:owner_dashboard'
         return 'admin:index'
+
+
+
+
 
 
 class PlayerProfile(models.Model):
@@ -105,6 +110,9 @@ class VenueOwnerProfile(models.Model):
         indexes = [
             models.Index(fields=['business_city']),
         ]
+
+
+
     
     def __str__(self):
         return f"{self.business_name} - {self.full_name}"

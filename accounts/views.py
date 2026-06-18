@@ -13,16 +13,34 @@ def login_view(request):
         return redirect('dashboard:home')
     
     if request.method == 'POST':
-        email = request.POST.get('username')
+        login_input = request.POST.get('username')  # username or email
         password = request.POST.get('password')
-        user = authenticate(request, username=email, password=password)
+        
+        # Try to find user by email first, then by username
+        from accounts.models import User
+        user = None
+        
+        if '@' in login_input:
+            # Login with email
+            try:
+                user_obj = User.objects.get(email=login_input)
+                user = authenticate(request, username=user_obj.email, password=password)
+            except User.DoesNotExist:
+                pass
+        else:
+            # Login with username
+            try:
+                user_obj = User.objects.get(username=login_input)
+                user = authenticate(request, username=user_obj.email, password=password)
+            except User.DoesNotExist:
+                pass
         
         if user is not None:
             login(request, user)
-            messages.success(request, f'Welcome back, {email}!')
+            messages.success(request, f'Welcome back, {user.username or user.email}!')
             return redirect('dashboard:home')
         else:
-            messages.error(request, 'Invalid email or password.')
+            messages.error(request, 'Invalid username/email or password.')
     
     return render(request, 'accounts/login.html')
 
@@ -36,6 +54,7 @@ def logout_view(request):
 def register_player(request):
     if request.method == 'POST':
         email = request.POST.get('email')
+        username = request.POST.get('username')
         password = request.POST.get('password')
         full_name = request.POST.get('full_name')
         phone = request.POST.get('phone')
@@ -43,9 +62,12 @@ def register_player(request):
         
         if User.objects.filter(email=email).exists():
             messages.error(request, 'Email already registered.')
+        elif User.objects.filter(username=username).exists():
+            messages.error(request, 'Username already taken.')
         else:
             user = User.objects.create_user(
                 email=email, 
+                username=username,
                 password=password, 
                 role='PLAYER'
             )
@@ -61,10 +83,10 @@ def register_player(request):
     
     return render(request, 'accounts/register_player.html')
 
-
 def register_venue_owner(request):
     if request.method == 'POST':
         email = request.POST.get('email')
+        username = request.POST.get('username')
         password = request.POST.get('password')
         full_name = request.POST.get('full_name')
         phone = request.POST.get('phone')
@@ -74,9 +96,12 @@ def register_venue_owner(request):
         
         if User.objects.filter(email=email).exists():
             messages.error(request, 'Email already registered.')
+        elif User.objects.filter(username=username).exists():
+            messages.error(request, 'Username already taken.')
         else:
             user = User.objects.create_user(
                 email=email,
+                username=username,
                 password=password,
                 role='VENUE_OWNER'
             )
@@ -93,8 +118,6 @@ def register_venue_owner(request):
             return redirect('dashboard:owner_dashboard')
     
     return render(request, 'accounts/register_venue_owner.html')
-
-
 @login_required
 def profile_view(request):
     return render(request, 'accounts/profile.html')

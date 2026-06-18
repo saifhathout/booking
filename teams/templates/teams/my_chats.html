@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}My Chats{% endblock %}
+{% block content %}
+
+<div class="max-w-2xl mx-auto animate-fade-up">
+    <h1 class="text-4xl font-black mb-8">My <span class="text-[#00FF88]">Chats</span></h1>
+
+    {% if chats %}
+        <div class="space-y-3">
+            {% for chat in chats %}
+                <a href="{% url 'teams:chat' chat.id %}" class="energy-card p-4 flex items-center gap-4 block">
+                    <div class="w-12 h-12 rounded-full bg-[#00FF88] flex items-center justify-center text-black font-bold text-lg">
+                        {% with chat.requests.first as req %}
+                            {% if req.player != request.user %}
+                                {{ req.player.email|first|upper }}
+                            {% else %}
+                                {{ chat.player.email|first|upper }}
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold">{{ chat.get_sport_type_display }} · {{ chat.city }}</h3>
+                        <p class="text-sm text-gray-400 truncate">{{ chat.messages.last.message|default:"No messages" }}</p>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-600"></i>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="energy-card p-16 text-center">
+            <span class="text-5xl mb-4 block">💬</span>
+            <p class="text-xl font-bold">No chats yet</p>
+            <a href="{% url 'teams:find_players' %}" class="btn-fire inline-block mt-4">Find Players</a>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -16,7 +16,7 @@
         <div class="energy-card p-8">
             <form method="POST" class="space-y-4">
                 {% csrf_token %}
-                
+                <input type="text" name="username" class="input-fire" placeholder="USERNAME" required>
                 <input type="email" name="email" class="input-fire" placeholder="EMAIL" required>
                 <input type="text" name="full_name" class="input-fire" placeholder="FULL NAME" required>
                 <input type="text" name="phone" class="input-fire" placeholder="PHONE" required>

@@ -2,76 +2,76 @@
 {% block title %}Dashboard{% endblock %}
 {% block content %}
 
-<div class="animate-fade-up">
-    <!-- Greeting -->
-    <div class="mb-16">
-        <p class="text-sm text-gray-500 mb-2 font-semibold tracking-widest uppercase">{{ today|date:"l, F j" }}</p>
-        <h1 class="text-6xl font-black tracking-tighter">
-            READY TO<br><span class="text-[#00FF88]">PLAY?</span>
+<div class="animate-fade-up max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="mb-10">
+        <h1 class="text-5xl md:text-6xl font-black tracking-tighter">
+            Ready, <span class="text-[#00FF88]">{{ user.username }}
+</span>?
         </h1>
+        <p class="text-gray-500 mt-2 text-lg">{{ today|date:"l, F j" }}</p>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-        <a href="{% url 'booking:browse' %}" class="energy-card p-8 group">
-            <div class="card-icon-energy icon-green mb-6">
-                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2zm0 3.5L18.5 19h-13L12 5.5z"/></svg>
+    <!-- BOOK FIELD - Big Hero Card -->
+    <a href="{% url 'booking:browse' %}" 
+       class="group block relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#00FF88] to-[#00B894] p-8 md:p-10 mb-4 hover:scale-[1.01] transition-all duration-300">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-black/60 text-sm font-bold uppercase tracking-widest mb-2">Main Feature</p>
+                <h2 class="text-4xl md:text-5xl font-black text-black">Book a Field</h2>
+                <p class="text-black/70 mt-2 font-medium">Find nearby venues & reserve instantly</p>
             </div>
-            <h3 class="text-2xl font-bold mb-2">BOOK FIELD</h3>
-            <p class="text-gray-400 text-sm">Find & reserve instantly</p>
-            <div class="mt-6 flex items-center text-[#00FF88] text-sm font-bold tracking-widest uppercase">
-                Book Now <i class="fas fa-arrow-right ml-2 group-hover:translate-x-2 transition"></i>
+            <div class="hidden md:block">
+                <div class="w-16 h-16 bg-black rounded-full flex items-center justify-center group-hover:scale-110 transition">
+                    <i class="fas fa-arrow-right text-[#00FF88] text-2xl group-hover:translate-x-1 transition"></i>
+                </div>
+            </div>
+        </div>
+    </a>
+
+    <!-- Two Smaller Cards -->
+    <div class="grid grid-cols-2 gap-4 mb-4">
+        <a href="{% url 'teams:find_players' %}" 
+           class="group block relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-600 to-purple-800 p-6 hover:scale-[1.02] transition-all duration-300">
+            <p class="text-purple-200 text-xs font-bold uppercase tracking-widest mb-1">Squad</p>
+            <h2 class="text-3xl font-black text-white mb-1">Find Squad</h2>
+            <p class="text-purple-200/70 text-sm">Build your team</p>
+            <div class="flex justify-end mt-4">
+                <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center group-hover:scale-110 transition">
+                    <i class="fas fa-arrow-right text-white group-hover:translate-x-1 transition"></i>
+                </div>
             </div>
         </a>
-        
-        <a href="{% url 'teams:list' %}" class="energy-card p-8 group">
-            <div class="card-icon-energy icon-purple mb-6">
-                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><circle cx="15" cy="7" r="4"/><path d="M1 21v-2c0-2.5 5-4 8-4s8 1.5 8 4v2H1zm14 0v-2c0-2.5 2.5-3.5 5-3.5s5 1 5 3.5v2h-10z"/></svg>
-            </div>
-            <h3 class="text-2xl font-bold mb-2">FIND SQUAD</h3>
-            <p class="text-gray-400 text-sm">Join or create teams</p>
-            <div class="mt-6 flex items-center text-purple-400 text-sm font-bold tracking-widest uppercase">
-                Explore <i class="fas fa-arrow-right ml-2 group-hover:translate-x-2 transition"></i>
-            </div>
-        </a>
-        
-        <a href="{% url 'tournaments:list' %}" class="energy-card p-8 group">
-            <div class="card-icon-energy icon-orange mb-6">
-                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.86L12 17.77l-6.18 3.23L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-            </div>
-            <h3 class="text-2xl font-bold mb-2">TOURNAMENTS</h3>
-            <p class="text-gray-400 text-sm">Compete & win big</p>
-            <div class="mt-6 flex items-center text-amber-400 text-sm font-bold tracking-widest uppercase">
-                View All <i class="fas fa-arrow-right ml-2 group-hover:translate-x-2 transition"></i>
+
+        <a href="{% url 'tournaments:list' %}" 
+           class="group block relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-500 to-orange-600 p-6 hover:scale-[1.02] transition-all duration-300">
+            <p class="text-amber-100 text-xs font-bold uppercase tracking-widest mb-1">Compete</p>
+            <h2 class="text-3xl font-black text-black mb-1">Tournaments</h2>
+            <p class="text-black/70 text-sm">Win prizes</p>
+            <div class="flex justify-end mt-4">
+                <div class="w-10 h-10 bg-black/20 rounded-full flex items-center justify-center group-hover:scale-110 transition">
+                    <i class="fas fa-arrow-right text-black group-hover:translate-x-1 transition"></i>
+                </div>
             </div>
         </a>
     </div>
 
-    <!-- Bottom Actions -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="energy-card p-8">
-            <h3 class="text-xl font-bold mb-4 flex items-center">
-                <div class="card-icon-energy icon-blue w-10 h-10 rounded-xl mr-3">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    <!-- Bottom Row -->
+    <div class="grid grid-cols-2 gap-4">
+        <a href="{% url 'booking:history' %}" 
+           class="group block bg-[#141414] border border-[#222] rounded-3xl p-6 hover:border-[#333] transition-all">
+            <div class="flex items-center gap-4">
+                <span class="text-3xl">📋</span>
+                <div class="flex-1">
+                    <h3 class="font-bold">My Bookings</h3>
+                    <p class="text-sm text-gray-500">View schedule</p>
                 </div>
-                RECENT BOOKINGS
-            </h3>
-            <a href="{% url 'booking:history' %}" class="btn-ghost w-full text-center block mt-4">
-                VIEW HISTORY <i class="fas fa-arrow-right ml-2"></i>
-            </a>
-        </div>
+                <i class="fas fa-arrow-right text-gray-600 group-hover:text-white group-hover:translate-x-1 transition"></i>
+            </div>
+        </a>
         
-        <div class="energy-card p-8">
-            <h3 class="text-xl font-bold mb-4 flex items-center">
-                <div class="card-icon-energy icon-pink w-10 h-10 rounded-xl mr-3">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                </div>
-                QUICK MATCH
-            </h3>
-            <a href="{% url 'booking:browse' %}" class="btn-fire w-full text-center block mt-4">
-                FIND INSTANT SLOT <i class="fas fa-bolt ml-2"></i>
-            </a>
-        </div>
+        
+        
     </div>
 </div>
 
