@@ -68,7 +68,7 @@ def field_detail(request, field_id):
         # لو يوم تاني - ابدأ من 1 AM
         start_hour = current_hour + 1 if day == today else 1
         
-        for hour in range(start_hour, 25):
+        for hour in range(start_hour, 24):
             is_booked = f"{day}_{hour}" in booked_set
             day_slots.append({
                 'hour': hour,
@@ -99,6 +99,7 @@ def book_slot(request, slot_id):
     
     field = get_object_or_404(Field, id=field_id, is_active=True)
     
+    # Limit to 23 max
     if hour >= 24:
         messages.error(request, 'Invalid time slot.')
         return redirect('booking:field_detail', field_id=field.id)
@@ -125,23 +126,16 @@ def book_slot(request, slot_id):
         messages.error(request, '⚠️ You already have a booking at this time!')
         return redirect('booking:history')
     
-    def format_time(h):
-        if h == 0 or h == 24: return "12:00 AM"
-        elif h < 12: return f"{h}:00 AM"
-        elif h == 12: return "12:00 PM"
-        else: return f"{h-12}:00 PM"
-    
     if request.method == 'POST':
-        end_hour = hour + 1 if hour < 24 else 1
+        end_hour = hour + 1 if hour < 23 else 23  # Max 23:00
         
-        # CREATE SLOT AS BOOKED
         slot = VenueSlot.objects.create(
             field=field,
             date=date_str,
             start_time=f"{hour}:00:00",
             end_time=f"{end_hour}:00:00",
             is_available=False,
-            slot_type='BOOKED'  # ← IMPORTANT: Mark as booked
+            slot_type='BOOKED'
         )
         
         booking = Booking.objects.create(
@@ -161,10 +155,7 @@ def book_slot(request, slot_id):
         'field': field,
         'date': date_str,
         'hour': hour,
-        'time_display': format_time(hour),
     })
-
-
 @player_required
 def booking_history(request):
     from datetime import date, datetime
