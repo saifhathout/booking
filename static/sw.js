@@ -1,46 +1,48 @@
-const CACHE_NAME = 'gameon-v1';
-const ASSETS = [
-  '/',
-  '/static/css/style.css',
-];
+const CACHE_NAME = 'gameon-v2';
 
-// Install service worker
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
-    })
-  );
+    self.skipWaiting();
 });
 
-// Activate service worker
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
+    event.waitUntil(clients.claim());
 });
 
-// Fetch strategy: Network first, fallback to cache
+// Push notification
+self.addEventListener('push', function(event) {
+    let data = { title: 'GameOn', body: 'New notification', url: '/' };
+    
+    if (event.data) {
+        data = event.data.json();
+    }
+    
+    const options = {
+        body: data.body,
+        icon: data.icon || '/static/icons/icon-192x192.png',
+        badge: data.badge || '/static/icons/icon-72x72.png',
+        vibrate: [200, 100, 200],
+        data: {
+            url: data.url || '/'
+        },
+        requireInteraction: true
+    };
+    
+    event.waitUntil(
+        self.registration.showNotification(data.title, options)
+    );
+});
+
+// Click notification
+self.addEventListener('notificationclick', function(event) {
+    event.notification.close();
+    event.waitUntil(
+        clients.openWindow(event.notification.data.url || '/')
+    );
+});
+
+// Fetch
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        const responseClone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseClone);
-        });
-        return response;
-      })
-      .catch(() => {
-        return caches.match(event.request);
-      })
-  );
+    event.respondWith(
+        fetch(event.request).catch(() => caches.match(event.request))
+    );
 });

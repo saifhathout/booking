@@ -29,8 +29,6 @@ def browse_fields(request):
 
 @player_required
 def field_detail(request, field_id):
-    from datetime import datetime
-    
     field = get_object_or_404(Field, id=field_id, is_active=True)
     
     today = date.today()
@@ -64,8 +62,6 @@ def field_detail(request, field_id):
         day = today + timedelta(days=i)
         day_slots = []
         
-        # لو النهارده - ابدأ من الساعة الجاية
-        # لو يوم تاني - ابدأ من 1 AM
         start_hour = current_hour + 1 if day == today else 1
         
         for hour in range(start_hour, 24):
@@ -77,7 +73,7 @@ def field_detail(request, field_id):
                 'slot_id': f"{field_id}_{day}_{hour}" if not is_booked else None,
             })
         
-        if day_slots:  # بس لو فيه مواعيد متاحة
+        if day_slots:
             all_slots_list.append({
                 'date': day,
                 'slots': day_slots,
@@ -90,6 +86,8 @@ def field_detail(request, field_id):
         'tomorrow': tomorrow,
         'current_hour': current_hour,
     })
+
+
 @player_required
 def book_slot(request, slot_id):
     parts = slot_id.split('_')
@@ -99,7 +97,6 @@ def book_slot(request, slot_id):
     
     field = get_object_or_404(Field, id=field_id, is_active=True)
     
-    # Limit to 23 max
     if hour >= 24:
         messages.error(request, 'Invalid time slot.')
         return redirect('booking:field_detail', field_id=field.id)
@@ -127,7 +124,7 @@ def book_slot(request, slot_id):
         return redirect('booking:history')
     
     if request.method == 'POST':
-        end_hour = hour + 1 if hour < 23 else 23  # Max 23:00
+        end_hour = hour + 1 if hour < 23 else 23
         
         slot = VenueSlot.objects.create(
             field=field,
@@ -148,6 +145,23 @@ def book_slot(request, slot_id):
             status='CONFIRMED'
         )
         
+        # Send push notifications
+        from notifications.utils import send_push_notification
+        
+        send_push_notification(
+            user=request.user,
+            title='✅ Booking Confirmed!',
+            body=f'{field.name} on {date_str} at {hour}:00',
+            url='/booking/history/'
+        )
+        
+        send_push_notification(
+            user=field.venue.owner,
+            title='🔔 New Booking!',
+            body=f'{request.user.username} booked {field.name}',
+            url='/venues/booking_requests/'
+        )
+        
         messages.success(request, '⚡ Field booked successfully!')
         return redirect('booking:history')
     
@@ -156,10 +170,10 @@ def book_slot(request, slot_id):
         'date': date_str,
         'hour': hour,
     })
+
+
 @player_required
 def booking_history(request):
-    from datetime import date, datetime
-    
     today = date.today()
     now = datetime.now().time()
     
@@ -187,6 +201,7 @@ def booking_history(request):
         'past_bookings': past_bookings,
     })
 
+
 @player_required
 def cancel_booking(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, player=request.user)
@@ -194,7 +209,6 @@ def cancel_booking(request, booking_id):
     booking.status = 'CANCELLED'
     booking.save()
     
-    # Delete the slot so it becomes available again
     booking.slot.delete()
     
     messages.success(request, 'Booking cancelled.')

@@ -16,6 +16,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'notifications',
     
     # Third-party
     'crispy_forms',
@@ -43,7 +44,9 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'sports_booking.urls'
 
 TEMPLATES = [
+    
     {
+
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
@@ -53,9 +56,12 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                 'notifications.context_processors.webpush_settings',
             ],
+            
         },
     },
+    
 ]
 
 WSGI_APPLICATION = 'sports_booking.wsgi.application'
@@ -172,3 +178,12 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 # # WhiteNoise for static files
 # MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+
+
+
+
+WEBPUSH_VAPID_PRIVATE_KEY = 'your-private-key'
+WEBPUSH_VAPID_PUBLIC_KEY = 'your-public-key'
+WEBPUSH_VAPID_CLAIMS = {
+    'sub': 'mailto:your@email.com'
+}
