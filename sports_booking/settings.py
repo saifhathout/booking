@@ -17,7 +17,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'notifications',
-    
+    'webpush',
     # Third-party
     'crispy_forms',
     'crispy_bootstrap5',
