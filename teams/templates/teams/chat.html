@@ -63,8 +63,25 @@
 </div>
 
 <script>
-function openModal(id) { document.getElementById(id).style.display = 'flex'; document.getElementById(id).classList.remove('hidden'); }
-function closeModal(id) { document.getElementById(id).style.display = 'none'; document.getElementById(id).classList.add('hidden'); }
-</script>
+// Poll for new messages every 2 seconds
+let lastMessageCount = document.querySelectorAll('#chatMessages > div').length;
 
+function checkNewMessages() {
+    fetch(window.location.href)
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newMessages = doc.getElementById('chatMessages');
+            
+            if (newMessages && newMessages.children.length > lastMessageCount) {
+                document.getElementById('chatMessages').innerHTML = newMessages.innerHTML;
+                document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                lastMessageCount = newMessages.children.length;
+            }
+        });
+}
+
+setInterval(checkNewMessages, 1000);
+</script>
 {% endblock %}
