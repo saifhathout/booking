@@ -156,17 +156,9 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # Railway settings
 import os
 
-ALLOWED_HOSTS = [
-    'booking-production-ca09.up.railway.app',  # ← الدومين الجديد
-    'booking-production-6604.up.railway.app',   # ← الدومين القديم
-    '*.railway.app',
-    'localhost',
-    '127.0.0.1',
-]
+ALLOWED_HOSTS = ['*']
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://booking-production-ca09.up.railway.app',  # ← الدومين الجديد
-    'https://booking-production-6604.up.railway.app',   # ← الدومين القديم
     'https://*.railway.app',
     'https://*.up.railway.app',
 ]
