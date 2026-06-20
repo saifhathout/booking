@@ -8,6 +8,10 @@ SECRET_KEY = 'django-insecure-dev-key-change-in-production-12345'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.railway.app',
+    'https://*.up.railway.app',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -156,9 +160,17 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # Railway settings
 import os
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'booking-production-ca09.up.railway.app',  # ← الدومين الجديد
+    'booking-production-6604.up.railway.app',   # ← الدومين القديم
+    '*.railway.app',
+    'localhost',
+    '127.0.0.1',
+]
 
 CSRF_TRUSTED_ORIGINS = [
+    'https://booking-production-ca09.up.railway.app',  # ← الدومين الجديد
+    'https://booking-production-6604.up.railway.app',   # ← الدومين القديم
     'https://*.railway.app',
     'https://*.up.railway.app',
 ]
