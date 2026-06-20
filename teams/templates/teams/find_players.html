@@ -1,51 +1,48 @@
 {% extends 'base.html' %}
-{% block title %}Find Players{% endblock %}
+{% block title %}Find Squad{% endblock %}
 {% block content %}
 
-<div class="max-w-3xl mx-auto animate-fade-up">
+<div class="animate-fade-up">
     <div class="flex justify-between items-center mb-8">
-        <h1 class="text-4xl font-black">Find <span class="text-[#00FF88]">Players</span></h1>
-        <a href="{% url 'teams:create_post' %}" class="btn-fire text-sm px-5 py-3">+ Create Post</a>
+        <h1 class="text-3xl font-black" style="font-family: 'Orbitron', sans-serif;">FIND <span style="color: #0066FF;">SQUAD</span></h1>
+        <a href="{% url 'teams:create_post' %}" class="btn-chrome text-xs">+ Create Post</a>
     </div>
 
     {% if posts %}
-        <div class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             {% for post in posts %}
-                <div class="energy-card p-6">
-                    <div class="flex items-start justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-[#00FF88] flex items-center justify-center text-black font-bold">
-                                {{ post.player.email|first|upper }}
-                            </div>
-                            <div>
-                                <h3 class="font-bold">{{ post.player.username }}</h3>
-                                <p class="text-xs text-gray-500">{{ post.created_at|timesince }} ago</p>
-                            </div>
+                <div class="khub-card p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-lg bg-[#8B5CF6] flex items-center justify-center text-white font-bold text-sm border-2 border-[#0B1D3A]">
+                            {{ post.player.username|first|upper }}
                         </div>
-                        <span class="badge-fire badge-green text-xs">Open</span>
+                        <div>
+                            <h3 class="font-bold">{{ post.player.username }}</h3>
+                            <p class="text-xs text-[#4A5568]">{{ post.created_at|timesince }} ago</p>
+                        </div>
                     </div>
                     
-                    <div class="mt-4 grid grid-cols-2 gap-2 text-sm">
-                        <p>🎾 {{ post.get_sport_type_display }}</p>
-                        <p>👥 Needs: {{ post.players_needed }}</p>
+                    <div class="space-y-2 mb-4 text-sm">
+                        <p>🎾 <strong>{{ post.get_sport_type_display }}</strong></p>
+                        <p>👥 Needs: <strong>{{ post.players_needed }} player(s)</strong></p>
                         <p>📍 {{ post.city }}</p>
-                        <p>📅 {{ post.date }}{% if post.time %} {{ post.time }}{% endif %}</p>
+                        <p>📅 {{ post.date }}{% if post.time %} at {{ post.time }}{% endif %}</p>
                     </div>
                     
                     {% if post.player != request.user %}
-                        <a href="{% url 'teams:join_post' post.id %}" 
-                           class="btn-fire w-full text-center block mt-4 py-3 text-sm">
-                            JOIN GAME
-                        </a>
+                        <a href="{% url 'teams:join_post' post.id %}" class="btn-chrome w-full text-center block py-3 text-xs">JOIN GAME</a>
+                    {% else %}
+                        <span class="badge-khub badge-chrome text-[10px]">Your Post</span>
                     {% endif %}
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <div class="energy-card p-16 text-center">
+        <div class="khub-card p-16 text-center">
             <span class="text-5xl mb-4 block">🎾</span>
-            <p class="text-xl font-bold">No posts yet</p>
-            <a href="{% url 'teams:create_post' %}" class="btn-fire inline-block mt-4">Create Post</a>
+            <p class="text-xl font-bold" style="font-family: 'Orbitron', sans-serif;">No Posts Yet</p>
+            <p class="text-[#4A5568] mb-4">Be the first!</p>
+            <a href="{% url 'teams:create_post' %}" class="btn-chrome inline-block text-xs">Create Post</a>
         </div>
     {% endif %}
 </div>

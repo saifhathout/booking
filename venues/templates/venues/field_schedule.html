@@ -59,9 +59,9 @@
                         <div class="bg-[#0066FF] text-white border-2 border-[#0B1D3A] rounded-xl px-3 py-2 text-center flex items-center gap-2 shadow-[3px_3px_0px_#0B1D3A]">
                             <span class="text-[11px] font-bold">{{ slot.time }}</span>
                             <a href="{% url 'venues:block_slot' field.id day_data.date.isoformat slot.hour %}" 
-                               class="text-[10px] bg-[#FF2D78] text-white px-2 py-0.5 rounded-lg font-bold border-2 border-[#0B1D3A] shadow-[2px_2px_0px_#0B1D3A] hover:shadow-[3px_3px_0px_#0B1D3A] hover:bg-[#FF4778] transition">
-                                BLOCK
-                            </a>
+   class="text-[10px] bg-[#FF2D78] text-white px-2 py-0.5 rounded-lg font-bold border-2 border-[#0B1D3A] shadow-[2px_2px_0px_#0B1D3A] hover:shadow-[3px_3px_0px_#0B1D3A] hover:bg-[#FF4778] transition">
+    BLOCK
+</a>
                         </div>
                     {% endif %}
                 {% endfor %}

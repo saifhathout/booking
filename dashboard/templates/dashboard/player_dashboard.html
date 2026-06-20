@@ -3,58 +3,138 @@
 {% block content %}
 
 <div class="animate-fade-up">
-    <!-- Header -->
-    <div class="mb-8 text-center">
-        <h1 class="text-4xl font-black" style="font-family: 'Orbitron', sans-serif;">
+    <!-- Hero -->
+    <div class="text-center mb-8">
+        <h1 class="text-5xl font-black" style="font-family: 'Orbitron', sans-serif;">
             K<span style="color: #0066FF;">-HUB</span>
         </h1>
-        <p class="text-sm text-[#4A5568] mt-2">
-            📍 مساكن حمدي القنديل - شبين الكوم
-        </p>
+        <p class="text-sm text-[#4A5568] mt-1">📍 مساكن حمدي القنديل - شبين الكوم</p>
     </div>
 
-    <!-- Quick Search -->
-    <div class="khub-card p-4 mb-8">
-        <form method="GET" action="{% url 'booking:browse' %}" class="flex flex-col md:flex-row gap-3">
-            <input type="date" name="date" class="input-khub flex-1">
-            <button type="submit" class="btn-chrome text-xs px-8 py-3">FIND SLOTS</button>
-        </form>
+    <!-- Tabs -->
+    <div class="flex gap-2 mb-6">
+        <button onclick="showTab('fields')" id="tabFields" 
+                class="btn-chrome text-xs px-6 py-3 flex-1">🏟️ BOOK FIELD</button>
+        <button onclick="showTab('squad')" id="tabSquad" 
+                class="btn-outline text-xs px-6 py-3 flex-1">👥 FIND SQUAD</button>
     </div>
 
-    <!-- 4 Fields -->
-    <p class="text-xs font-bold uppercase tracking-[3px] text-[#4A5568] mb-4" style="font-family: 'Orbitron', sans-serif;">Available Fields</p>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        {% for field in fields %}
-            <a href="{% url 'booking:field_detail' field.id %}" class="khub-card p-6 group hover:border-[#0066FF]">
-                <div class="flex items-center gap-4">
-                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#0066FF] to-[#0044CC] flex items-center justify-center text-3xl border-2 border-[#0B1D3A] shadow-[4px_4px_0px_#0B1D3A] group-hover:shadow-[6px_6px_0px_#0B1D3A] transition">
-                        {% if 'Football' in field.name %}⚽
-                        {% elif 'Padel 1' in field.name %}🎾
-                        {% elif 'Padel 2' in field.name %}🎾
-                        {% elif 'Basketball' in field.name %}🏀
-                        {% else %}🏟️{% endif %}
+    <!-- TAB 1: BOOK FIELD -->
+    <div id="fieldsTab">
+        <div class="khub-card p-4 mb-6">
+            <form method="GET" action="{% url 'booking:browse' %}" class="flex gap-2">
+                <input type="date" name="date" class="input-khub flex-1">
+                <button type="submit" class="btn-chrome text-xs px-4">Search</button>
+            </form>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            {% for field in fields %}
+                <a href="{% url 'booking:field_detail' field.id %}" class="khub-card overflow-hidden group">
+                    <div class="h-36 relative overflow-hidden flex items-center justify-center
+                        {% if 'Football' in field.name %}bg-gradient-to-br from-green-600 to-emerald-800
+                        {% elif 'Padel 1' in field.name %}bg-gradient-to-br from-blue-600 to-indigo-800
+                        {% elif 'Padel 2' in field.name %}bg-gradient-to-br from-orange-500 to-red-600
+                        {% elif 'Padol' in field.name %}bg-gradient-to-br from-amber-500 to-orange-700
+                        {% endif %}">
+                        <span class="text-6xl relative z-10 drop-shadow-lg group-hover:scale-110 transition">
+                            {% if 'Football' in field.name %}⚽
+                            {% elif 'Padel' in field.name %}🎾
+                            {% elif 'Padol' in field.name %}🏀
+                            {% endif %}
+                        </span>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute top-3 right-3 bg-white border-2 border-[#0B1D3A] rounded-lg px-3 py-1 shadow-[2px_2px_0px_#0B1D3A] z-20">
+                            <span class="font-black text-[#0066FF] text-sm" style="font-family: 'Orbitron', sans-serif;">${{ field.price_per_hour }}/hr</span>
+                        </div>
+                        <div class="absolute bottom-3 left-3 z-20">
+                            <h3 class="text-lg font-bold text-white" style="font-family: 'Orbitron', sans-serif;">{{ field.name|upper }}</h3>
+                        </div>
                     </div>
-                    <div>
-                        <h3 class="text-lg font-bold" style="font-family: 'Orbitron', sans-serif;">{{ field.name|upper }}</h3>
-                        <p class="text-sm text-[#4A5568]">{{ field.get_sport_type_display }}</p>
-                        <p class="text-xs text-[#0066FF] font-bold mt-1">EGP {{ field.price_per_hour }}/hr →</p>
-                    </div>
-                </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- TAB 2: FIND SQUAD -->
+    <div id="squadTab" class="hidden">
+        <div class="khub-card p-4 mb-6">
+            <form method="GET" action="{% url 'teams:find_players' %}" class="flex gap-2">
+                <select name="sport_type" class="input-khub flex-1">
+                    <option value="">All Sports</option>
+                    <option value="PADEL">🎾 Padel</option>
+                    <option value="FOOTBALL">⚽ Football</option>
+                    <option value="BASKETBALL">🏀 Basketball</option>
+                </select>
+                <button type="submit" class="btn-chrome text-xs px-4">Search</button>
+            </form>
+        </div>
+
+        <div class="text-center mb-6">
+            <a href="{% url 'teams:create_post' %}" class="btn-outline text-xs px-8 py-3 inline-block">
+                + Create Post
             </a>
-        {% endfor %}
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for post in recent_posts %}
+                <div class="khub-card p-5">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-[#8B5CF6] flex items-center justify-center text-white font-bold border-2 border-[#0B1D3A]">
+                            {{ post.player.username|first|upper }}
+                        </div>
+                        <div>
+                            <h3 class="font-bold">{{ post.player.username }}</h3>
+                            <p class="text-xs text-[#4A5568]">{{ post.created_at|timesince }} ago</p>
+                        </div>
+                    </div>
+                    <p>🎾 <strong>{{ post.get_sport_type_display }}</strong> · 👥 Needs {{ post.players_needed }}</p>
+                    <p class="text-sm text-[#4A5568]">📍 {{ post.city }} · 📅 {{ post.date }}</p>
+                    {% if post.player != request.user %}
+                        <a href="{% url 'teams:join_post' post.id %}" class="btn-chrome w-full text-center block mt-3 py-2 text-xs">JOIN</a>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <div class="col-span-2 khub-card p-10 text-center">
+                    <span class="text-4xl mb-3 block">👥</span>
+                    <p class="text-[#4A5568]">No posts yet. Be the first!</p>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 
-    <!-- Quick Links -->
-    <div class="grid grid-cols-2 gap-4">
-        <a href="{% url 'teams:find_players' %}" class="khub-card p-5 text-center group">
-            <span class="text-2xl block mb-2">👥</span>
-            <h3 class="text-xs font-bold" style="font-family: 'Orbitron', sans-serif;">FIND SQUAD</h3>
-        </a>
-        <a href="{% url 'booking:history' %}" class="khub-card p-5 text-center group">
-            <span class="text-2xl block mb-2">📋</span>
+    <!-- Bottom -->
+    <div class="grid grid-cols-2 gap-4 mt-8">
+        <a href="{% url 'booking:history' %}" class="khub-card p-4 text-center group">
+            <span class="text-2xl block mb-1">📋</span>
             <h3 class="text-xs font-bold" style="font-family: 'Orbitron', sans-serif;">MY BOOKINGS</h3>
+        </a>
+        <a href="{% url 'teams:my_chats' %}" class="khub-card p-4 text-center group">
+            <span class="text-2xl block mb-1">💬</span>
+            <h3 class="text-xs font-bold" style="font-family: 'Orbitron', sans-serif;">CHATS</h3>
         </a>
     </div>
 </div>
+
+<script>
+function showTab(tab) {
+    document.getElementById('fieldsTab').classList.add('hidden');
+    document.getElementById('squadTab').classList.add('hidden');
+    document.getElementById('tabFields').classList.remove('btn-chrome');
+    document.getElementById('tabFields').classList.add('btn-outline');
+    document.getElementById('tabSquad').classList.remove('btn-chrome');
+    document.getElementById('tabSquad').classList.add('btn-outline');
+    
+    if (tab === 'fields') {
+        document.getElementById('fieldsTab').classList.remove('hidden');
+        document.getElementById('tabFields').classList.add('btn-chrome');
+        document.getElementById('tabFields').classList.remove('btn-outline');
+    } else {
+        document.getElementById('squadTab').classList.remove('hidden');
+        document.getElementById('tabSquad').classList.add('btn-chrome');
+        document.getElementById('tabSquad').classList.remove('btn-outline');
+    }
+}
+</script>
 
 {% endblock %}

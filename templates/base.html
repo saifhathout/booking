@@ -31,7 +31,6 @@
             font-weight: 500;
         }
         
-        /* Y2K Grid */
         body::before {
             content: '';
             position: fixed;
@@ -44,7 +43,6 @@
             z-index: 0;
         }
         
-        /* Chrome gradient bar */
         body::after {
             content: '';
             position: fixed;
@@ -65,7 +63,6 @@
         
         main { position: relative; z-index: 1; }
         
-        /* Y2K Card */
         .khub-card {
             background: var(--white);
             border: 2.5px solid var(--border);
@@ -75,32 +72,11 @@
             position: relative;
         }
         
-        .khub-card::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: 18px;
-            background: linear-gradient(135deg, var(--chrome), var(--purple), var(--pink));
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: -1;
-        }
-        
-        .khub-card:hover::before {
-            opacity: 1;
-        }
-        
         .khub-card:hover {
             transform: translate(-3px, -3px);
             box-shadow: 10px 10px 0px var(--border);
         }
         
-        .khub-card:active {
-            transform: translate(0, 0);
-            box-shadow: 3px 3px 0px var(--border);
-        }
-        
-        /* Chrome Button */
         .btn-chrome {
             background: var(--chrome);
             color: white;
@@ -114,35 +90,11 @@
             box-shadow: 5px 5px 0px var(--border);
             transition: all 0.2s ease;
             font-family: 'Orbitron', sans-serif;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn-chrome::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(transparent, rgba(255,255,255,0.2), transparent);
-            transform: rotate(45deg);
-            animation: btnShine 2s infinite;
-        }
-        
-        @keyframes btnShine {
-            0% { transform: translateX(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) rotate(45deg); }
         }
         
         .btn-chrome:hover {
             transform: translate(-2px, -2px);
             box-shadow: 8px 8px 0px var(--border);
-        }
-        
-        .btn-chrome:active {
-            transform: translate(0, 0);
-            box-shadow: 2px 2px 0px var(--border);
         }
         
         .btn-outline {
@@ -160,19 +112,6 @@
             font-family: 'Orbitron', sans-serif;
         }
         
-        .btn-outline:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 8px 8px 0px var(--border);
-        }
-        
-        .btn-pink {
-            background: var(--pink);
-            color: white;
-            border: 2.5px solid var(--border);
-            box-shadow: 5px 5px 0px var(--border);
-        }
-        
-        /* Input */
         .input-khub {
             background: white;
             border: 2.5px solid var(--border);
@@ -193,7 +132,6 @@
             transform: translate(-1px, -1px);
         }
         
-        /* Badge - Y2K */
         .badge-khub {
             padding: 6px 14px;
             border-radius: 8px;
@@ -209,34 +147,6 @@
         .badge-pink { background: var(--pink); color: white; }
         .badge-purple { background: var(--purple); color: white; }
         
-        /* Logo - Y2K Shield */
-        .logo-shield {
-            width: 46px;
-            height: 50px;
-            background: linear-gradient(180deg, var(--chrome) 0%, #0044CC 100%);
-            clip-path: polygon(50% 0%, 100% 22%, 100% 78%, 50% 100%, 0% 78%, 0% 22%);
-            border: 2.5px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 900;
-            font-size: 16px;
-            font-family: 'Orbitron', sans-serif;
-            box-shadow: 4px 4px 0px var(--border);
-            position: relative;
-        }
-        
-        .logo-crown {
-            position: absolute;
-            top: -14px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 18px;
-            filter: drop-shadow(2px 2px 0px var(--border));
-        }
-        
-        /* Typography */
         .page-title {
             font-family: 'Orbitron', sans-serif;
             font-size: 42px;
@@ -247,11 +157,8 @@
             text-shadow: 3px 3px 0px rgba(0,102,255,0.3);
         }
         
-        .page-title span {
-            color: var(--chrome);
-        }
+        .page-title span { color: var(--chrome); }
         
-        /* Navbar */
         nav {
             background: white;
             border-bottom: 2.5px solid var(--border);
@@ -274,8 +181,13 @@
 </head>
 <body>
     {% include 'navbar.html' %}
-    
+    {% include 'mobile_header.html' %}
     <main class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- Logo Centered -->
+        <div class="text-center mb-8">
+            <img src="/static/img/logo.png" alt="K-HUB" class="w-50 h-40 mx-auto  ">
+        </div>
+        
         {% include 'messages.html' %}
         {% block content %}{% endblock %}
     </main>
@@ -283,5 +195,7 @@
     {% if user.is_authenticated %}
         {% include 'mobile_nav.html' %}
     {% endif %}
+        {% include 'mobile_nav.html' %}
+
 </body>
 </html>

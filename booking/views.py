@@ -27,46 +27,24 @@ def browse_fields(request):
     })
 
 
+from .utils import format_time, get_booked_set, display_hour
+
 @player_required
 def field_detail(request, field_id):
     field = get_object_or_404(Field, id=field_id, is_active=True)
     
     today = date.today()
-    tomorrow = today + timedelta(days=1)
     now = datetime.now()
     current_hour = now.hour
     
-    # Get ALL slots
-    all_slots = VenueSlot.objects.filter(
-        field=field,
-        date__gte=today,
-        date__lte=today + timedelta(days=6)
-    )
-    
-    # Create booked set
-    booked_set = set()
-    for slot in all_slots:
-        if not slot.is_available:
-            booked_set.add(f"{slot.date}_{slot.start_time.hour}")
-    
-    def format_time(hour):
-        if hour == 0 or hour == 24:
-            return "12:00 AM"
-        elif hour < 12:
-            return f"{hour}:00 AM"
-        elif hour == 12:
-            return "12:00 PM"
-        else:
-            return f"{hour-12}:00 PM"
+    booked_set = get_booked_set(field, today, today + timedelta(days=6))
     
     all_slots_list = []
     for i in range(7):
         day = today + timedelta(days=i)
         day_slots = []
         
-        start_hour = current_hour + 1 if day == today else 1
-        
-        for hour in range(start_hour, 24):
+        for hour in range(1, 25):  # 1 AM to 12 AM
             is_booked = f"{day}_{hour}" in booked_set
             day_slots.append({
                 'hour': hour,
@@ -76,75 +54,49 @@ def field_detail(request, field_id):
             })
         
         if day_slots:
-            all_slots_list.append({
-                'date': day,
-                'slots': day_slots,
-            })
+            all_slots_list.append({'date': day, 'slots': day_slots})
     
     return render(request, 'booking/field_detail.html', {
         'field': field,
         'all_slots_list': all_slots_list,
         'today': today,
-        'tomorrow': tomorrow,
         'current_hour': current_hour,
     })
-
-
+from .utils import normalize_hour, get_slot_range, format_time
 
 @player_required
 def book_slot(request, slot_id):
     parts = slot_id.split('_')
     field_id = parts[0]
     date_str = parts[1]
-    hour = int(parts[2])
+    display_hour = int(parts[2])
     
     field = get_object_or_404(Field, id=field_id, is_active=True)
-    
-    if hour >= 24:
-        messages.error(request, 'Invalid time slot.')
-        return redirect('booking:field_detail', field_id=field.id)
-    
-    # Check first slot is available
-    first_taken = VenueSlot.objects.filter(
-        field=field, date=date_str,
-        start_time=f"{hour}:00:00", is_available=False
-    ).exists()
-    
-    if first_taken:
-        messages.error(request, '❌ This slot is already booked!')
-        return redirect('booking:field_detail', field_id=field.id)
+    store_hour = normalize_hour(display_hour)
     
     if request.method == 'POST':
         duration = int(request.POST.get('duration', 1))
-        end_hour = hour + duration
+        slot_range = get_slot_range(date_str, display_hour, duration)
         
-        if end_hour > 24:
-            messages.error(request, 'Duration too long.')
-            return redirect('booking:field_detail', field_id=field.id)
-        
-        # Check ALL slots in range are available
-        slots_to_book = []
-        for h in range(hour, end_hour):
-            slot = VenueSlot.objects.filter(
-                field=field, date=date_str,
-                start_time=f"{h}:00:00"
-            ).first()
-            
-            if slot and not slot.is_available:
-                messages.error(request, f'❌ {h}:00 is already booked!')
+        # Check all slots
+        for s in slot_range:
+            taken = VenueSlot.objects.filter(
+                field=field, date=s['date'],
+                start_time=s['start_time'], is_available=False
+            ).exists()
+            if taken:
+                messages.error(request, f'❌ {s["date"]} {format_time(s["hour"])} is already booked!')
                 return redirect('booking:field_detail', field_id=field.id)
-            
-            if not slot:
-                # Create slot if doesn't exist
-                slot = VenueSlot.objects.create(
-                    field=field, date=date_str,
-                    start_time=f"{h}:00:00", end_time=f"{h+1}:00:00",
-                    is_available=True
-                )
-            
+        
+        # Create and book slots
+        slots_to_book = []
+        for s in slot_range:
+            slot, _ = VenueSlot.objects.get_or_create(
+                field=field, date=s['date'], start_time=s['start_time'],
+                defaults={'end_time': s['end_time'], 'is_available': True}
+            )
             slots_to_book.append(slot)
         
-        # BOOK ALL SLOTS - Mark as BOOKED (blue)
         for slot in slots_to_book:
             slot.is_available = False
             slot.slot_type = 'BOOKED'
@@ -152,14 +104,14 @@ def book_slot(request, slot_id):
         
         total = field.price_per_hour * duration
         
-        # One Booking for all slots
-        booking = Booking.objects.create(
-            field=field,
-            player=request.user,
-            slot=slots_to_book[0],  # First slot
-            booking_date=date_str,
-            start_time=f"{hour}:00",
-            end_time=f"{end_hour}:00",
+        first_slot = slot_range[0]
+        last_slot = slot_range[-1]
+        
+        Booking.objects.create(
+            field=field, player=request.user, slot=slots_to_book[0],
+            booking_date=first_slot['date'],
+            start_time=first_slot['start_time'],
+            end_time=last_slot['end_time'],
             status='CONFIRMED'
         )
         
@@ -167,13 +119,8 @@ def book_slot(request, slot_id):
         return redirect('booking:history')
     
     return render(request, 'booking/book_slot.html', {
-        'field': field,
-        'date': date_str,
-        'hour': hour,
-        'price': field.price_per_hour,
+        'field': field, 'date': date_str, 'hour': display_hour, 'price': field.price_per_hour,
     })
-
-
 @player_required
 def booking_history(request):
     today = date.today()
@@ -204,14 +151,37 @@ def booking_history(request):
     })
 
 
+from .utils import normalize_hour, get_slot_range
+
 @player_required
 def cancel_booking(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, player=request.user)
+    if booking.status == 'CANCELLED':
+        messages.warning(request, 'Already cancelled.')
+        return redirect('booking:history')  
+    start_h = booking.start_time.hour
+    end_h = booking.end_time.hour
     
+    if end_h == 0:
+        end_h = 24
+    
+    duration = end_h - start_h if end_h > start_h else 1
+    
+    # Delete the booking first (breaks FK to slot)
     booking.status = 'CANCELLED'
     booking.save()
     
-    booking.slot.delete()
+    # Now safe to delete slots
+    date_str = booking.booking_date.strftime('%Y-%m-%d')
+    store_hour = start_h
     
-    messages.success(request, 'Booking cancelled.')
+    for i in range(duration):
+        h = (store_hour + i) % 24
+        VenueSlot.objects.filter(
+            field=booking.field,
+            date=date_str,
+            start_time=f"{h}:00:00"
+        ).delete()
+    
+    messages.success(request, 'Booking cancelled!')
     return redirect('booking:history')

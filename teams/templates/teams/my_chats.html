@@ -3,34 +3,39 @@
 {% block content %}
 
 <div class="max-w-2xl mx-auto animate-fade-up">
-    <h1 class="text-4xl font-black mb-8">My <span class="text-[#00FF88]">Chats</span></h1>
+    <h1 class="text-3xl font-black mb-8" style="font-family: 'Orbitron', sans-serif;">MY <span style="color: #0066FF;">CHATS</span></h1>
 
     {% if chats %}
         <div class="space-y-3">
             {% for chat in chats %}
-                <a href="{% url 'teams:chat' chat.id %}" class="energy-card p-4 flex items-center gap-4 block">
-                    <div class="w-12 h-12 rounded-full bg-[#00FF88] flex items-center justify-center text-black font-bold text-lg">
+                <a href="{% url 'teams:chat' chat.id %}" class="khub-card p-4 flex items-center gap-4 group">
+                    <div class="w-12 h-12 rounded-lg bg-[#8B5CF6] flex items-center justify-center text-white font-bold text-lg border-2 border-[#0B1D3A]">
                         {% with chat.requests.first as req %}
                             {% if req.player != request.user %}
-                                {{ req.player.email|first|upper }}
+                                {{ req.player.username|first|upper }}
                             {% else %}
-                                {{ chat.player.email|first|upper }}
+                                {{ chat.player.username|first|upper }}
                             {% endif %}
                         {% endwith %}
                     </div>
-                    <div class="flex-1">
-                        <h3 class="font-bold">{{ chat.get_sport_type_display }} · {{ chat.city }}</h3>
-                        <p class="text-sm text-gray-400 truncate">{{ chat.messages.last.message|default:"No messages" }}</p>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="font-bold" style="font-family: 'Orbitron', sans-serif;">
+                            {% with chat.requests.first as req %}
+                                {{ req.player.username }}
+                            {% endwith %}
+                        </h3>
+                        <p class="text-sm text-[#4A5568]">{{ chat.get_sport_type_display }} · {{ chat.city }}</p>
                     </div>
-                    <i class="fas fa-chevron-right text-gray-600"></i>
+                    <i class="fas fa-chevron-right text-[#4A5568] group-hover:translate-x-1 transition"></i>
                 </a>
             {% endfor %}
         </div>
     {% else %}
-        <div class="energy-card p-16 text-center">
+        <div class="khub-card p-16 text-center">
             <span class="text-5xl mb-4 block">💬</span>
-            <p class="text-xl font-bold">No chats yet</p>
-            <a href="{% url 'teams:find_players' %}" class="btn-fire inline-block mt-4">Find Players</a>
+            <p class="text-xl font-bold" style="font-family: 'Orbitron', sans-serif;">No Chats Yet</p>
+            <p class="text-[#4A5568] mb-4">Join a game to start chatting!</p>
+            <a href="{% url 'teams:find_players' %}" class="btn-chrome inline-block text-xs">Find Players</a>
         </div>
     {% endif %}
 </div>

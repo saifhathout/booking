@@ -24,11 +24,14 @@ def player_dashboard(request):
 
 @venue_owner_required
 def owner_dashboard(request):
+    from venues.models import Field, Booking
+    
     fields = Field.objects.filter(venue__owner=request.user)
     bookings = Booking.objects.filter(field__in=fields, status='CONFIRMED')
     
     return render(request, 'dashboard/owner_dashboard.html', {
-        'fields': fields,
+        'all_fields': fields,
+        'total_fields': fields.count(),
         'total_bookings': bookings.count(),
         'total_revenue': sum(b.field.price_per_hour for b in bookings),
     })

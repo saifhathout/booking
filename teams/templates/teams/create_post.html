@@ -3,23 +3,22 @@
 {% block content %}
 
 <div class="max-w-lg mx-auto animate-fade-up">
-    <h1 class="text-3xl font-black mb-8">Create <span class="text-[#00FF88]">Post</span></h1>
+    <h1 class="text-3xl font-black mb-8" style="font-family: 'Orbitron', sans-serif;">CREATE <span style="color: #0066FF;">POST</span></h1>
     
-    <div class="energy-card p-8">
+    <div class="khub-card p-8">
         <form method="POST" class="space-y-4">
             {% csrf_token %}
-            <select name="sport_type" class="input-fire" required>
+            <select name="sport_type" class="input-khub" required>
                 <option value="">Select Sport</option>
                 <option value="PADEL">🎾 Padel</option>
-                <option value="FOOTBALL">⚽ Football</option>
-                <option value="TENNIS">🎾 Tennis</option>
-                <option value="BASKETBALL">🏀 Basketball</option>
+                <option value="FOOTBALL">⚽ Volta</option>
+                <option value="TENNIS">🎾 Padol</option>
             </select>
-            <input type="number" name="players_needed" class="input-fire" placeholder="Players needed" value="1" min="1">
-            <input type="text" name="city" class="input-fire" placeholder="City" required>
-            <input type="date" name="date" class="input-fire" required>
-            <input type="time" name="time" class="input-fire">
-            <button type="submit" class="btn-fire w-full py-4">CREATE POST</button>
+            <input type="number" name="players_needed" class="input-khub" placeholder="Players needed" value="1" min="1">
+            <input type="date" name="date" class="input-khub" required>
+            <input type="time" name="time" class="input-khub">
+            <textarea name="description" class="input-khub" rows="3" placeholder="Message (optional)"></textarea>
+            <button type="submit" class="btn-chrome w-full py-4 text-xs">CREATE POST</button>
         </form>
     </div>
 </div>

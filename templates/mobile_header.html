@@ -1,0 +1,15 @@
+<!-- Mobile Header -->
+<div class="md:hidden bg-white border-b-2 border-[#0B1D3A] px-4 py-3 flex items-center justify-between sticky top-0 z-40">
+    <a href="/" class="flex items-center gap-2">
+        <img src="/static/img/logo.png" alt="K-HUB" class="w-8 h-8 rounded-lg ">
+        <span class="text-lg font-black tracking-tight" style="font-family: 'Orbitron', sans-serif;">K<span style="color: #0066FF;">-HUB</span></span>
+    </a>
+    
+    {% if user.is_authenticated %}
+    <div class="flex items-center gap-2">
+        <a href="{% url 'accounts:logout' %}" class="p-2 text-[#FF2D78] hover:text-[#FF4778]">
+            <i class="fas fa-sign-out-alt text-lg"></i>
+        </a>
+    </div>
+    {% endif %}
+</div>

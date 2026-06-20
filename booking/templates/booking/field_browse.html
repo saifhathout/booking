@@ -1,55 +1,95 @@
 {% extends 'base.html' %}
-{% block title %}Book Field{% endblock %}
+{% block title %}Find Fields{% endblock %}
 {% block content %}
 
 <div class="animate-fade-up">
-    <div class="mb-10">
-        <p class="text-xs font-bold uppercase tracking-[3px] text-[#4A5568] mb-2" style="font-family: 'Orbitron', sans-serif;">Discover</p>
-        <h1 class="page-title">FIND YOUR<br><span>FIELD</span></h1>
-    </div>
-
-    <!-- Filters -->
-    <div class="khub-card p-6 mb-8">
-        <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <select name="sport_type" class="input-khub">
-                <option value="">All Sports</option>
-                <option value="FOOTBALL">⚽ Football</option>
-                <option value="CRICKET">🏏 Cricket</option>
-                <option value="BASKETBALL">🏀 Basketball</option>
-                <option value="TENNIS">🎾 Tennis</option>
-            </select>
-            <input type="text" name="city" placeholder="City" value="{{ city }}" class="input-khub">
-            <input type="date" name="date" value="{{ date }}" class="input-khub">
-            <button type="submit" class="btn-chrome text-xs">Search</button>
-        </form>
+    <div class="mb-8">
+        <p class="text-xs font-bold uppercase tracking-[3px] text-[#4A5568] mb-2" style="font-family: 'Orbitron', sans-serif;">Book now</p>
+        <h1 class="text-4xl font-black" style="font-family: 'Orbitron', sans-serif;">FIND YOUR<br><span style="color: #0066FF;">VIBE</span></h1>
     </div>
 
     <!-- Fields -->
-    {% if fields %}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {% for field in fields %}
-                <div class="khub-card p-6 group">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="w-12 h-12 rounded-xl bg-[#0066FF] flex items-center justify-center text-xl border-2 border-[#0B1D3A] shadow-[3px_3px_0px_#0B1D3A]">
-                            ⚽
-                        </div>
-                        <span class="badge-khub badge-chrome text-[10px]">Active</span>
+    <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+        {% for field in fields %}
+            <a href="{% url 'booking:field_detail' field.id %}" class="khub-card overflow-hidden group">
+                <div class="h-36 relative overflow-hidden">
+                    {% if 'Football' in field.name %}
+                        <img src="/static/img/fields/volta.webp" class="w-full h-full object-cover absolute inset-0">
+                    {% elif 'Padel 1' in field.name or 'Padel 2' in field.name %}
+                        <img src="/static/img/fields/20220522_Campo_padel_MONDO_superficie.jpg" class="w-full h-full object-cover absolute inset-0">
+                    {% elif 'Padol' in field.name or 'Basketball' in field.name %}
+                        <img src="/static/img/fields/panoramic-ملاعب-بادبول.webp" class="w-full h-full object-cover absolute inset-0">
+                    {% else %}
+                        <div class="w-full h-full bg-gradient-to-br from-[#0066FF] to-[#0044CC] flex items-center justify-center text-5xl">🏟️</div>
+                    {% endif %}
+                    <div class="absolute inset-0 bg-black/30"></div>
+                    <div class="absolute top-3 right-3 bg-white border-2 border-[#0B1D3A] rounded-lg px-3 py-1 shadow-[2px_2px_0px_#0B1D3A] z-20">
+                        <span class="font-black text-[#0066FF] text-sm" style="font-family: 'Orbitron', sans-serif;">${{ field.price_per_hour }}/hr</span>
                     </div>
-                    <h3 class="font-bold text-lg mb-1">{{ field.name }}</h3>
+                    <div class="absolute bottom-3 left-3 z-20">
+                        <span class="text-white font-bold text-xs uppercase tracking-[2px] drop-shadow-lg" style="font-family: 'Orbitron', sans-serif;">{{ field.name }}</span>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-bold text-lg">{{ field.name }}</h3>
                     <p class="text-sm text-[#4A5568]">{{ field.venue.name }} · {{ field.venue.city }}</p>
-                    <div class="flex items-center justify-between mt-4 pt-4 border-t-2 border-[#0B1D3A]">
-                        <span class="text-xl font-black text-[#0066FF]" style="font-family: 'Orbitron', sans-serif;">${{ field.price_per_hour }}</span>
-                        <a href="{% url 'booking:field_detail' field.id %}" class="btn-chrome text-[10px] px-4 py-2">View</a>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+
+
+    <!-- Divider -->
+    <div class="text-center my-8">
+        <div class="flex items-center gap-4 mb-4">
+            <div class="flex-1 h-0.5 bg-[#0B1D3A] opacity-20"></div>
+            <span class="text-2xl">⚡</span>
+            <div class="flex-1 h-0.5 bg-[#0B1D3A] opacity-20"></div>
+        </div>
+        <h3 class="text-lg font-black text-[#4A5568]" style="font-family: 'Orbitron', sans-serif;">
+            DON'T HAVE A <span style="color: #0066FF;">TEAM</span>?
+        </h3>
+        <p class="text-sm text-[#4A5568] mt-1">No problem. Find your squad here.</p>
+    </div>
+
+    <!-- BUILD & BATTLE Banner -->
+    <div class="khub-card p-6 mb-4 text-center bg-gradient-to-br from-[#8B5CF6] to-[#0B1D3A] relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute inset-0" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.3) 10px, rgba(255,255,255,0.3) 20px);"></div>
+        </div>
+        <div class="relative z-10">
+            <h2 class="text-2xl font-black text-white" style="font-family: 'Orbitron', sans-serif;">BUILD & <span style="color: #FFB800;">BATTLE</span></h2>
+            <p class="text-white/70 text-xs mt-1 mb-4">Find teammates. Dominate.</p>
+            <a href="{% url 'teams:find_players' %}" class="bg-[#FFB800] text-[#0B1D3A] px-6 py-2 rounded-xl font-bold text-xs border-2 border-[#0B1D3A] shadow-[3px_3px_0px_#0B1D3A] uppercase tracking-wider inline-block" style="font-family: 'Orbitron', sans-serif;">
+                👥 Find Squad →
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Posts -->
+    {% if recent_posts %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
+            {% for post in recent_posts %}
+                <div class="khub-card p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-8 h-8 rounded-lg bg-[#8B5CF6] flex items-center justify-center text-white font-bold text-xs border-2 border-[#0B1D3A]">
+                            {{ post.player.username|first|upper }}
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-sm">{{ post.player.username }}</h3>
+                            <p class="text-[10px] text-[#4A5568]">{{ post.created_at|timesince }} ago</p>
+                        </div>
                     </div>
+                    <p class="text-xs">🎯 {{ post.get_sport_type_display }} · 👥 {{ post.players_needed }} · 📍 {{ post.city }}</p>
+                    {% if post.player != request.user %}
+                        <a href="{% url 'teams:join_post' post.id %}" class="btn-chrome w-full text-center block mt-2 py-1.5 text-[10px]">⚡ JOIN</a>
+                    {% endif %}
                 </div>
             {% endfor %}
         </div>
-    {% else %}
-        <div class="khub-card p-20 text-center">
-            <span class="text-6xl mb-6 block">🔍</span>
-            <h3 class="text-xl font-bold" style="font-family: 'Orbitron', sans-serif;">No Fields Found</h3>
-        </div>
     {% endif %}
+
+    <!-- Bottom Links -->
 </div>
 
 {% endblock %}

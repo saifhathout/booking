@@ -135,24 +135,35 @@ def field_schedule_view(request, field_id):
         status='CONFIRMED'
     ).select_related('player', 'player__player_profile')
     
-    # Build booking map: key -> booking info
+    # Build booking map
     booking_map = {}
     for b in bookings:
-        for h in range(b.start_time.hour, b.end_time.hour):
-            key = f"{b.booking_date}_{h}"
+        start_h = b.start_time.hour
+        end_h = b.end_time.hour if b.end_time.hour > 0 else 24
+        if end_h <= start_h:
+            end_h = start_h + 1
+        
+        for h in range(start_h, end_h):
+            display_h = h % 24
+            key_date = b.booking_date.strftime('%Y-%m-%d')
+            key = f"{key_date}_{display_h}"
             booking_map[key] = {
                 'player_name': b.player.username,
                 'booking_id': b.id,
-                'booking_start': b.start_time.hour,
-                'booking_end': b.end_time.hour,
             }
+            if display_h == 0:
+                booking_map[f"{key_date}_24"] = booking_map[key]
     
     # Build slot type map
     slot_map = {}
     for slot in all_slots:
-        key = f"{slot.date}_{slot.start_time.hour}"
         if not slot.is_available:
+            h = slot.start_time.hour
+            key_date = slot.date.strftime('%Y-%m-%d')
+            key = f"{key_date}_{h}"
             slot_map[key] = slot.slot_type
+            if h == 0:
+                slot_map[f"{key_date}_24"] = slot.slot_type
     
     def format_time(hour):
         if hour == 0 or hour == 24: return "12:00 AM"
@@ -167,18 +178,16 @@ def field_schedule_view(request, field_id):
         prev_booking_id = None
         
         for hour in range(1, 25):
-            key = f"{day}_{hour}"
+            key = f"{day.strftime('%Y-%m-%d')}_{hour}"
             slot_type = slot_map.get(key)
             booking_info = booking_map.get(key)
             
-            # Check if this is continuation of same booking
             is_continuation = False
+            is_start = False
+            
             if booking_info and prev_booking_id == booking_info['booking_id']:
                 is_continuation = True
-            
-            # Check if this is start of a booking
-            is_start = False
-            if booking_info and booking_info['booking_start'] == hour:
+            elif booking_info:
                 is_start = True
             
             prev_booking_id = booking_info['booking_id'] if booking_info else None
@@ -214,16 +223,22 @@ def booking_details(request, booking_id):
 
 
 
-
 @venue_owner_required
 def block_slot(request, field_id, date, hour):
     field = get_object_or_404(Field, id=field_id, venue__owner=request.user)
     
+    if hour < 1 or hour > 24:
+        messages.error(request, 'Invalid hour.')
+        return redirect('venues:field_schedule', field_id=field.id)
+    
+    store_hour = hour % 24
+    end_time = "23:59:00" if store_hour == 23 else f"{store_hour+1}:00:00"
+    
     VenueSlot.objects.create(
         field=field,
         date=date,
-        start_time=f"{hour}:00:00",
-        end_time=f"{hour+1}:00:00",
+        start_time=f"{store_hour}:00:00",
+        end_time=end_time,
         is_available=False,
         slot_type='BLOCKED'
     )
@@ -235,10 +250,12 @@ def block_slot(request, field_id, date, hour):
 def unblock_slot(request, field_id, date, hour):
     field = get_object_or_404(Field, id=field_id, venue__owner=request.user)
     
+    store_hour = hour % 24
+    
     VenueSlot.objects.filter(
         field=field,
         date=date,
-        start_time=f"{hour}:00:00",
+        start_time=f"{store_hour}:00:00",
         is_available=False
     ).delete()
     
