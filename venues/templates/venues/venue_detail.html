@@ -3,58 +3,38 @@
 {% block content %}
 
 <div class="animate-fade-up">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10">
+    <div class="flex justify-between items-center mb-8">
         <div>
-            <p class="text-sm text-gray-500 font-semibold tracking-widest uppercase mb-2">Venue Details</p>
-            <h1 class="text-4xl font-black tracking-tighter">{{ venue.name }}</h1>
-            <p class="text-gray-400 mt-2">
-                <i class="fas fa-map-pin mr-2"></i>{{ venue.address }}, {{ venue.city }}
-                <span class="mx-2">·</span>
-                {{ venue.get_sport_type_display }}
-            </p>
+            <p class="text-xs font-bold uppercase tracking-[3px] text-[#4A5568] mb-2" style="font-family: 'Orbitron', sans-serif;">Venue Details</p>
+            <h1 class="text-2xl font-bold" style="font-family: 'Orbitron', sans-serif;">{{ venue.name }}</h1>
+            <p class="text-sm text-[#4A5568]">{{ venue.address }}, {{ venue.city }} · {{ venue.get_sport_type_display }}</p>
         </div>
-        <a href="{% url 'venues:field_create' venue.id %}" class="btn-fire mt-4 md:mt-0">
-            <i class="fas fa-plus mr-2"></i> ADD FIELD
-        </a>
+        <a href="{% url 'venues:field_create' venue.id %}" class="btn-chrome text-xs">+ Add Field</a>
     </div>
 
     {% if fields %}
-        <div class="energy-card overflow-hidden">
-            <div class="px-6 py-4 border-b border-white/5">
-                <h3 class="font-bold text-lg">FIELDS</h3>
+        <div class="khub-card overflow-hidden">
+            <div class="px-6 py-4 border-b-2 border-[#0B1D3A]">
+                <h3 class="font-bold" style="font-family: 'Orbitron', sans-serif;">FIELDS</h3>
             </div>
-            <div class="divide-y divide-white/5">
-                {% for field in fields %}
-                    <div class="p-4 flex flex-col md:flex-row justify-between items-start md:items-center hover:bg-white/[0.02] transition gap-4">
-                        <div class="flex items-center space-x-4">
-                            <div class="card-icon-energy icon-green w-10 h-10 rounded-xl flex items-center justify-center text-lg">
-                                ⚽
-                            </div>
-                            <div>
-                                <h3 class="font-bold">{{ field.name }}</h3>
-                                <p class="text-sm text-gray-400">{{ field.get_sport_type_display }} · ${{ field.price_per_hour }}/hr</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            {% if field.is_active %}
-                                <span class="badge-fire badge-green text-[10px]">ACTIVE</span>
-                            {% else %}
-                                <span class="badge-fire badge-red text-[10px]">INACTIVE</span>
-                            {% endif %}
-                            <a href="{% url 'venues:field_schedule' field.id %}" class="text-blue-400 hover:bg-blue-400/10 px-4 py-2 rounded-xl text-sm font-bold transition">
-                                  <i class="fas fa-eye mr-1"></i> VIEW SCHEDULE
-                            </a>
+            {% for field in fields %}
+                <div class="p-4 flex justify-between items-center border-b border-[#E5DFD5] hover:bg-[#F5F0E5] transition">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-[#0066FF] flex items-center justify-center text-lg border-2 border-[#0B1D3A] shadow-[2px_2px_0px_#0B1D3A]">⚽</div>
+                        <div>
+                            <h3 class="font-bold">{{ field.name }}</h3>
+                            <p class="text-sm text-[#4A5568]">{{ field.get_sport_type_display }} · ${{ field.price_per_hour }}/hr</p>
                         </div>
                     </div>
-                {% endfor %}
-            </div>
+                    <a href="{% url 'venues:field_schedule' field.id %}" class="btn-outline text-[10px] px-3 py-1">Schedule</a>
+                </div>
+            {% endfor %}
         </div>
     {% else %}
-        <div class="energy-card p-16 text-center">
-            <span class="text-6xl mb-4 block">⚽</span>
-            <h3 class="text-xl font-bold mb-2">NO FIELDS YET</h3>
-            <p class="text-gray-500 mb-6">Add your first field</p>
-            <a href="{% url 'venues:field_create' venue.id %}" class="btn-fire inline-block">ADD FIELD</a>
+        <div class="khub-card p-16 text-center">
+            <span class="text-5xl mb-4 block">⚽</span>
+            <p class="text-[#4A5568]">No fields yet</p>
+            <a href="{% url 'venues:field_create' venue.id %}" class="btn-chrome inline-block mt-4 text-xs">Add Field</a>
         </div>
     {% endif %}
 </div>

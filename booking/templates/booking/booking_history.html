@@ -4,134 +4,95 @@
 
 <div class="animate-fade-up">
     <div class="mb-10">
-        <p class="text-sm text-gray-500 font-semibold tracking-widest uppercase mb-2">Your Matches</p>
-        <h1 class="text-5xl md:text-6xl font-black tracking-tighter">
-            MY<br><span class="text-[#00FF88]">BOOKINGS</span>
-        </h1>
+        <p class="text-xs font-bold uppercase tracking-[3px] text-[#4A5568] mb-2" style="font-family: 'Orbitron', sans-serif;">Your Matches</p>
+        <h1 class="page-title">MY<br><span>BOOKINGS</span></h1>
     </div>
 
-    <!-- Upcoming Bookings -->
+    <!-- Upcoming -->
     <div class="mb-12">
-        <h2 class="text-2xl font-extrabold mb-6 flex items-center">
-            <span class="card-icon-energy icon-green w-10 h-10 rounded-xl flex items-center justify-center mr-3">
-                <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                </svg>
-            </span>
-            UPCOMING
-            <span class="badge-fire badge-green text-xs ml-3">{{ upcoming_bookings|length }}</span>
+        <h2 class="text-xl font-bold mb-6 flex items-center" style="font-family: 'Orbitron', sans-serif;">
+            ⚡ UPCOMING
+            <span class="badge-khub badge-chrome text-[10px] ml-3">{{ upcoming_bookings|length }}</span>
         </h2>
         
         {% if upcoming_bookings %}
-            <div class="space-y-3">
+            <div class="space-y-4">
                 {% for booking in upcoming_bookings %}
-                    <div class="energy-card p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <div class="flex items-center space-x-4">
-                            <div class="card-icon-energy icon-green w-12 h-12 rounded-xl flex items-center justify-center text-xl">
-                                {% if booking.field.sport_type == 'FOOTBALL' %}⚽
-                                {% elif booking.field.sport_type == 'CRICKET' %}🏏
-                                {% elif booking.field.sport_type == 'BASKETBALL' %}🏀
-                                {% elif booking.field.sport_type == 'TENNIS' %}🎾
-                                {% else %}🏟️{% endif %}
-                            </div>
+                    <div class="khub-card p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-[#0066FF] flex items-center justify-center text-xl border-2 border-[#0B1D3A] shadow-[3px_3px_0px_#0B1D3A]">⚽</div>
                             <div>
-                                <h3 class="font-bold text-lg">{{ booking.field.name }}</h3>
-                                <p class="text-sm text-gray-400">{{ booking.field.venue.name }}</p>
-                                <p class="text-xs text-gray-500 mt-1">
-                                    <i class="far fa-calendar mr-1"></i> {{ booking.booking_date|date:"D, M j" }}
-                                    <span class="mx-2">·</span>
-                                    <i class="far fa-clock mr-1"></i> {{ booking.start_time }}
-                                </p>
+                                <h3 class="font-bold">{{ booking.field.name }}</h3>
+                                <p class="text-sm text-[#4A5568]">{{ booking.field.venue.name }}</p>
+                                <p class="text-xs text-[#4A5568] mt-1">{{ booking.booking_date|date:"D, M j" }} · {{ booking.start_time }} - {{ booking.end_time }}</p>
                             </div>
                         </div>
-                        <div class="flex items-center space-x-3">
-                            <span class="text-xl font-black text-[#00FF88]">${{ booking.field.price_per_hour }}</span>
-                            <span class="badge-fire badge-green text-xs">CONFIRMED</span>
-                            <button onclick="document.getElementById('cancelModal{{ booking.id }}').classList.remove('hidden')" 
-                                    class="text-[#FF4757] text-sm font-bold hover:underline">
-                                <i class="fas fa-times mr-1"></i> Cancel
-                            </button>
+                        <div class="flex items-center gap-3">
+                            <span class="font-black text-[#0066FF]" style="font-family: 'Orbitron', sans-serif;">${{ booking.field.price_per_hour }}</span>
+                            <span class="badge-khub badge-chrome text-[10px]">Confirmed</span>
+                            <button onclick="openModal('cancelModal{{ booking.id }}')" class="text-[#FF2D78] text-sm font-bold hover:underline">Cancel</button>
                         </div>
                     </div>
 
                     <!-- Cancel Modal -->
-                    <div id="cancelModal{{ booking.id }}" class="fixed inset-0 z-50 flex items-center justify-center hidden">
-                        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="document.getElementById('cancelModal{{ booking.id }}').classList.add('hidden')"></div>
-                        <div class="relative energy-card p-8 max-w-sm w-full mx-4 text-center">
+                    <div id="cancelModal{{ booking.id }}" class="fixed inset-0 z-50 hidden items-center justify-center" style="display: none;">
+                        <div class="absolute inset-0 bg-black/60" onclick="closeModal('cancelModal{{ booking.id }}')"></div>
+                        <div class="relative bg-white border-[3px] border-[#0B1D3A] rounded-2xl p-8 max-w-sm w-full mx-4 text-center shadow-[8px_8px_0px_#0B1D3A] z-10">
                             <span class="text-5xl mb-4 block">🗑️</span>
-                            <h3 class="text-xl font-bold mb-2">Cancel Booking?</h3>
-                            <p class="text-gray-400 text-sm mb-6">
-                                {{ booking.field.name }}<br>
-                                {{ booking.booking_date|date:"D, M j" }} · {{ booking.start_time }}
-                            </p>
+                            <h3 class="text-xl font-bold mb-2" style="font-family: 'Orbitron', sans-serif;">Cancel Booking?</h3>
+                            <p class="text-sm text-[#4A5568] mb-6">{{ booking.field.name }}<br>{{ booking.booking_date }} · {{ booking.start_time }}</p>
                             <div class="flex gap-3">
-                                <button onclick="document.getElementById('cancelModal{{ booking.id }}').classList.add('hidden')" 
-                                        class="btn-ghost flex-1 py-2 text-sm">
-                                    Keep it
-                                </button>
-                                <a href="{% url 'booking:cancel_booking' booking.id %}" 
-                                   class="bg-[#FF4757] text-white flex-1 py-2 rounded-xl text-sm font-bold text-center">
-                                    Yes, Cancel
-                                </a>
+                                <button onclick="closeModal('cancelModal{{ booking.id }}')" class="btn-outline flex-1 py-2 text-xs">Keep</button>
+                                <a href="{% url 'booking:cancel_booking' booking.id %}" class="btn-pink flex-1 py-2 text-xs text-center">Yes, Cancel</a>
                             </div>
                         </div>
                     </div>
                 {% endfor %}
             </div>
         {% else %}
-            <div class="energy-card p-10 text-center">
-                <span class="text-4xl mb-3 block">📅</span>
-                <p class="text-gray-400">No upcoming bookings</p>
-                <a href="{% url 'booking:browse' %}" class="btn-fire inline-block mt-4 text-sm">BOOK A FIELD</a>
+            <div class="khub-card p-16 text-center">
+                <span class="text-5xl mb-4 block">📅</span>
+                <p class="text-[#4A5568]">No upcoming bookings</p>
+                <a href="{% url 'booking:browse' %}" class="btn-chrome inline-block mt-4 text-xs">Book a Field</a>
             </div>
         {% endif %}
     </div>
 
-    <!-- Past Bookings -->
+    <!-- Past -->
     <div>
-        <h2 class="text-2xl font-extrabold mb-6 flex items-center">
-            <span class="card-icon-energy icon-purple w-10 h-10 rounded-xl flex items-center justify-center mr-3">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-            </span>
-            PAST
-            <span class="badge-fire badge-red text-xs ml-3">{{ past_bookings|length }}</span>
+        <h2 class="text-xl font-bold mb-6 flex items-center" style="font-family: 'Orbitron', sans-serif;">
+            ⏰ PAST
+            <span class="badge-khub badge-purple text-[10px] ml-3">{{ past_bookings|length }}</span>
         </h2>
         
         {% if past_bookings %}
-            <div class="space-y-3 opacity-70">
+            <div class="space-y-4 opacity-60">
                 {% for booking in past_bookings %}
-                    <div class="energy-card p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <div class="flex items-center space-x-4">
-                            <div class="card-icon-energy icon-purple w-12 h-12 rounded-xl flex items-center justify-center text-xl opacity-50">
-                                {% if booking.field.sport_type == 'FOOTBALL' %}⚽
-                                {% elif booking.field.sport_type == 'CRICKET' %}🏏
-                                {% elif booking.field.sport_type == 'BASKETBALL' %}🏀
-                                {% elif booking.field.sport_type == 'TENNIS' %}🎾
-                                {% else %}🏟️{% endif %}
-                            </div>
+                    <div class="khub-card p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-gray-200 flex items-center justify-center text-xl border-2 border-[#0B1D3A]">⚽</div>
                             <div>
-                                <h3 class="font-bold text-lg text-gray-400">{{ booking.field.name }}</h3>
-                                <p class="text-sm text-gray-500">{{ booking.field.venue.name }}</p>
-                                <p class="text-xs text-gray-600 mt-1">
-                                    <i class="far fa-calendar mr-1"></i> {{ booking.booking_date|date:"D, M j" }}
-                                    <span class="mx-2">·</span>
-                                    <i class="far fa-clock mr-1"></i> {{ booking.start_time }}
-                                </p>
+                                <h3 class="font-bold text-[#4A5568]">{{ booking.field.name }}</h3>
+                                <p class="text-sm text-[#4A5568]">{{ booking.field.venue.name }}</p>
+                                <p class="text-xs text-[#4A5568] mt-1">{{ booking.booking_date|date:"D, M j" }} · {{ booking.start_time }} - {{ booking.end_time }}</p>
                             </div>
                         </div>
-                        <span class="badge-fire badge-red text-xs">COMPLETED</span>
+                        <span class="badge-khub badge-purple text-[10px]">Completed</span>
                     </div>
                 {% endfor %}
             </div>
         {% else %}
-            <div class="energy-card p-10 text-center">
-                <span class="text-4xl mb-3 block">📭</span>
-                <p class="text-gray-400">No past bookings</p>
+            <div class="khub-card p-16 text-center">
+                <span class="text-5xl mb-4 block">📭</span>
+                <p class="text-[#4A5568]">No past bookings</p>
             </div>
         {% endif %}
     </div>
 </div>
+
+<script>
+function openModal(id) { document.getElementById(id).style.display = 'flex'; document.getElementById(id).classList.remove('hidden'); }
+function closeModal(id) { document.getElementById(id).style.display = 'none'; document.getElementById(id).classList.add('hidden'); }
+</script>
 
 {% endblock %}

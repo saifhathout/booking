@@ -3,40 +3,30 @@
 {% block content %}
 
 <div class="animate-fade-up">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
+    <div class="flex justify-between items-center mb-8">
         <div>
-            <p class="text-sm text-gray-500 font-semibold tracking-widest uppercase mb-2">Manage</p>
-            <h1 class="text-5xl md:text-6xl font-black tracking-tighter">
-                MY<br><span class="text-[#00FF88]">VENUES</span>
-            </h1>
+            <p class="text-xs font-bold uppercase tracking-[3px] text-[#4A5568] mb-2" style="font-family: 'Orbitron', sans-serif;">Manage</p>
+            <h1 class="text-3xl font-bold" style="font-family: 'Orbitron', sans-serif;">MY <span style="color: #0066FF;">VENUES</span></h1>
         </div>
-        <a href="{% url 'venues:create' %}" class="btn-fire mt-4 md:mt-0">
-            <i class="fas fa-plus mr-2"></i> ADD VENUE
-        </a>
+        <a href="{% url 'venues:create' %}" class="btn-chrome text-xs">+ Add Venue</a>
     </div>
 
     {% if venues %}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for venue in venues %}
-                <div class="energy-card p-6 group">
-                    <div class="card-icon-energy icon-green w-12 h-12 rounded-xl mb-4">
-                        🏟️
-                    </div>
-                    <h3 class="text-xl font-bold mb-2">{{ venue.name }}</h3>
-                    <p class="text-gray-400 text-sm mb-1">{{ venue.city }}</p>
-                    <p class="text-gray-500 text-sm mb-4">{{ venue.get_sport_type_display }}</p>
-                    <a href="{% url 'venues:venue_detail' venue.id %}" class="btn-ghost w-full text-center block text-sm">
-                        MANAGE FIELDS <i class="fas fa-arrow-right ml-2"></i>
-                    </a>
+                <div class="khub-card p-6 group">
+                    <div class="w-12 h-12 rounded-xl bg-[#0066FF] flex items-center justify-center text-xl mb-4 border-2 border-[#0B1D3A] shadow-[3px_3px_0px_#0B1D3A]">🏟️</div>
+                    <h3 class="font-bold text-lg">{{ venue.name }}</h3>
+                    <p class="text-sm text-[#4A5568]">{{ venue.city }} · {{ venue.get_sport_type_display }}</p>
+                    <a href="{% url 'venues:venue_detail' venue.id %}" class="btn-outline w-full text-center block mt-4 text-xs">Manage Fields →</a>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <div class="energy-card p-20 text-center">
-            <span class="text-7xl mb-6 block">🏗️</span>
-            <h3 class="text-3xl font-black mb-3">NO VENUES</h3>
-            <p class="text-gray-500 mb-6">Create your first venue</p>
-            <a href="{% url 'venues:create' %}" class="btn-fire inline-block">GET STARTED</a>
+        <div class="khub-card p-20 text-center">
+            <span class="text-6xl mb-6 block">🏗️</span>
+            <h3 class="text-xl font-bold" style="font-family: 'Orbitron', sans-serif;">No Venues Yet</h3>
+            <a href="{% url 'venues:create' %}" class="btn-chrome inline-block mt-4 text-xs">Get Started</a>
         </div>
     {% endif %}
 </div>

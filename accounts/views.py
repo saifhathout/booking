@@ -118,6 +118,9 @@ def register_venue_owner(request):
             return redirect('dashboard:owner_dashboard')
     
     return render(request, 'accounts/register_venue_owner.html')
+
+
+
 @login_required
 def profile_view(request):
     return render(request, 'accounts/profile.html')

@@ -36,12 +36,14 @@ def field_detail(request, field_id):
     now = datetime.now()
     current_hour = now.hour
     
+    # Get ALL slots
     all_slots = VenueSlot.objects.filter(
         field=field,
         date__gte=today,
         date__lte=today + timedelta(days=6)
     )
     
+    # Create booked set
     booked_set = set()
     for slot in all_slots:
         if not slot.is_available:
@@ -88,6 +90,7 @@ def field_detail(request, field_id):
     })
 
 
+
 @player_required
 def book_slot(request, slot_id):
     parts = slot_id.split('_')
@@ -101,74 +104,73 @@ def book_slot(request, slot_id):
         messages.error(request, 'Invalid time slot.')
         return redirect('booking:field_detail', field_id=field.id)
     
-    slot_taken = VenueSlot.objects.filter(
-        field=field,
-        date=date_str,
-        start_time=f"{hour}:00:00",
-        is_available=False
+    # Check first slot is available
+    first_taken = VenueSlot.objects.filter(
+        field=field, date=date_str,
+        start_time=f"{hour}:00:00", is_available=False
     ).exists()
     
-    if slot_taken:
+    if first_taken:
         messages.error(request, '❌ This slot is already booked!')
         return redirect('booking:field_detail', field_id=field.id)
     
-    player_already_booked = Booking.objects.filter(
-        player=request.user,
-        booking_date=date_str,
-        start_time=f"{hour}:00",
-        status='CONFIRMED'
-    ).exists()
-    
-    if player_already_booked:
-        messages.error(request, '⚠️ You already have a booking at this time!')
-        return redirect('booking:history')
-    
     if request.method == 'POST':
-        end_hour = hour + 1 if hour < 23 else 23
+        duration = int(request.POST.get('duration', 1))
+        end_hour = hour + duration
         
-        slot = VenueSlot.objects.create(
-            field=field,
-            date=date_str,
-            start_time=f"{hour}:00:00",
-            end_time=f"{end_hour}:00:00",
-            is_available=False,
-            slot_type='BOOKED'
-        )
+        if end_hour > 24:
+            messages.error(request, 'Duration too long.')
+            return redirect('booking:field_detail', field_id=field.id)
         
+        # Check ALL slots in range are available
+        slots_to_book = []
+        for h in range(hour, end_hour):
+            slot = VenueSlot.objects.filter(
+                field=field, date=date_str,
+                start_time=f"{h}:00:00"
+            ).first()
+            
+            if slot and not slot.is_available:
+                messages.error(request, f'❌ {h}:00 is already booked!')
+                return redirect('booking:field_detail', field_id=field.id)
+            
+            if not slot:
+                # Create slot if doesn't exist
+                slot = VenueSlot.objects.create(
+                    field=field, date=date_str,
+                    start_time=f"{h}:00:00", end_time=f"{h+1}:00:00",
+                    is_available=True
+                )
+            
+            slots_to_book.append(slot)
+        
+        # BOOK ALL SLOTS - Mark as BOOKED (blue)
+        for slot in slots_to_book:
+            slot.is_available = False
+            slot.slot_type = 'BOOKED'
+            slot.save()
+        
+        total = field.price_per_hour * duration
+        
+        # One Booking for all slots
         booking = Booking.objects.create(
             field=field,
             player=request.user,
-            slot=slot,
+            slot=slots_to_book[0],  # First slot
             booking_date=date_str,
             start_time=f"{hour}:00",
             end_time=f"{end_hour}:00",
             status='CONFIRMED'
         )
         
-        # Send push notifications
-        from notifications.utils import send_push_notification
-        
-        send_push_notification(
-            user=request.user,
-            title='✅ Booking Confirmed!',
-            body=f'{field.name} on {date_str} at {hour}:00',
-            url='/booking/history/'
-        )
-        
-        send_push_notification(
-            user=field.venue.owner,
-            title='🔔 New Booking!',
-            body=f'{request.user.username} booked {field.name}',
-            url='/venues/booking_requests/'
-        )
-        
-        messages.success(request, '⚡ Field booked successfully!')
+        messages.success(request, f'⚡ Booked {duration} hour(s) for ${total}!')
         return redirect('booking:history')
     
     return render(request, 'booking/book_slot.html', {
         'field': field,
         'date': date_str,
         'hour': hour,
+        'price': field.price_per_hour,
     })
 
 

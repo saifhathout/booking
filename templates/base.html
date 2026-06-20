@@ -3,320 +3,279 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GameOn - {% block title %}{% endblock %}</title>
+    <title>K-HUB - {% block title %}{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        * { 
-            font-family: 'Space Grotesk', sans-serif; 
-            -webkit-font-smoothing: antialiased;
+        :root {
+            --chrome: #0066FF;
+            --navy: #0B1D3A;
+            --beige: #F0E8D8;
+            --white: #FFFFFF;
+            --silver: #E0E0E0;
+            --pink: #FF2D78;
+            --purple: #8B5CF6;
+            --border: #0B1D3A;
         }
+        
+        * { font-family: 'Space Grotesk', sans-serif; }
+        
+        h1, h2, h3, .font-display { font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
         
         body {
-            background: #0F0F0F;
-            color: #FFFFFF;
-            overflow-x: hidden;
-            position: relative;
+            background: var(--beige);
+            color: var(--navy);
+            min-height: 100vh;
+            font-weight: 500;
         }
         
-        /* Sports Background Image */
+        /* Y2K Grid */
         body::before {
             content: '';
             position: fixed;
             inset: 0;
-            background-image: url('https://images.unsplash.com/photo-1529900748604-07564a03e7a6?w=1920&q=80');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            opacity: 0.15;
-            filter: brightness(0.7) saturate(1.2);
-            z-index: 0;
+            background-image: 
+                linear-gradient(rgba(11,29,58,0.05) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(11,29,58,0.05) 2px, transparent 2px);
+            background-size: 50px 50px;
             pointer-events: none;
+            z-index: 0;
         }
         
-        /* Gradient overlay */
+        /* Chrome gradient bar */
         body::after {
             content: '';
             position: fixed;
-            inset: 0;
-            background: 
-                radial-gradient(ellipse at top right, rgba(0, 255, 136, 0.06) 0%, transparent 60%),
-                radial-gradient(ellipse at bottom left, rgba(0, 180, 148, 0.06) 0%, transparent 60%);
-            z-index: 0;
-            pointer-events: none;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--chrome), var(--purple), var(--pink), var(--chrome));
+            background-size: 200% 100%;
+            animation: chromeSlide 3s linear infinite;
+            z-index: 100;
         }
         
-        main {
+        @keyframes chromeSlide {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        
+        main { position: relative; z-index: 1; }
+        
+        /* Y2K Card */
+        .khub-card {
+            background: var(--white);
+            border: 2.5px solid var(--border);
+            border-radius: 16px;
+            transition: all 0.25s ease;
+            box-shadow: 6px 6px 0px var(--border);
             position: relative;
-            z-index: 1;
         }
         
-        /* Energy Card */
-        .energy-card {
-            background: rgba(20, 20, 20, 0.85);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 24px;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        
-        .energy-card::before {
+        .khub-card::before {
             content: '';
             position: absolute;
-            inset: 0;
-            border-radius: 24px;
-            background: linear-gradient(135deg, #00FF88, #00D4AA, #00B894, #00FF88);
-            background-size: 400% 400%;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-            z-index: -1;
-            animation: gradientShift 3s ease infinite;
-        }
-        
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-        
-        .energy-card:hover::before {
-            opacity: 0.08;
-        }
-        
-        .energy-card:hover {
-            transform: translateY(-4px) scale(1.01);
-            border-color: rgba(0, 255, 136, 0.2);
-            background: rgba(20, 20, 20, 0.95);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-        
-        /* Card Icon */
-        .card-icon-energy {
-            width: 60px;
-            height: 60px;
+            inset: -2px;
             border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
+            background: linear-gradient(135deg, var(--chrome), var(--purple), var(--pink));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
         }
         
-        .energy-card:hover .card-icon-energy {
-            transform: scale(1.15) rotate(-10deg);
-            animation: bounce 0.6s ease;
+        .khub-card:hover::before {
+            opacity: 1;
         }
         
-        @keyframes bounce {
-            0%, 100% { transform: scale(1.15) rotate(-10deg) translateY(0); }
-            50% { transform: scale(1.15) rotate(-10deg) translateY(-8px); }
+        .khub-card:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 10px 10px 0px var(--border);
         }
         
-        .icon-green { background: linear-gradient(135deg, #00FF88, #00D4AA); color: #000; }
-        .icon-purple { background: linear-gradient(135deg, #A855F7, #7C3AED); color: #FFF; }
-        .icon-orange { background: linear-gradient(135deg, #FF6B35, #F59E0B); color: #000; }
-        .icon-blue { background: linear-gradient(135deg, #00D4FF, #0095FF); color: #000; }
-        .icon-pink { background: linear-gradient(135deg, #FF006E, #FF4D6D); color: #FFF; }
+        .khub-card:active {
+            transform: translate(0, 0);
+            box-shadow: 3px 3px 0px var(--border);
+        }
         
-        /* Buttons */
-        .btn-fire {
-            background: #00FF88;
-            color: #000;
-            padding: 16px 32px;
-            border-radius: 16px;
+        /* Chrome Button */
+        .btn-chrome {
+            background: var(--chrome);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 12px;
             font-weight: 700;
-            font-size: 16px;
-            transition: all 0.3s ease;
+            font-size: 13px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            border: 2.5px solid var(--border);
+            box-shadow: 5px 5px 0px var(--border);
+            transition: all 0.2s ease;
+            font-family: 'Orbitron', sans-serif;
+            position: relative;
+            overflow: hidden;
         }
         
-        .btn-fire:hover {
-            background: #00FF99;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 40px rgba(0, 255, 136, 0.3);
+        .btn-chrome::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(transparent, rgba(255,255,255,0.2), transparent);
+            transform: rotate(45deg);
+            animation: btnShine 2s infinite;
         }
         
-        .btn-ghost {
-            background: transparent;
-            border: 2px solid #2A2A2A;
-            color: #FFF;
-            padding: 16px 32px;
-            border-radius: 16px;
+        @keyframes btnShine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+        
+        .btn-chrome:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0px var(--border);
+        }
+        
+        .btn-chrome:active {
+            transform: translate(0, 0);
+            box-shadow: 2px 2px 0px var(--border);
+        }
+        
+        .btn-outline {
+            background: white;
+            border: 2.5px solid var(--border);
+            color: var(--navy);
+            padding: 14px 28px;
+            border-radius: 12px;
             font-weight: 700;
-            font-size: 16px;
-            transition: all 0.3s ease;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 5px 5px 0px var(--border);
+            transition: all 0.2s ease;
+            font-family: 'Orbitron', sans-serif;
         }
         
-        .btn-ghost:hover {
-            border-color: #00FF88;
-            color: #00FF88;
-            background: rgba(0, 255, 136, 0.05);
+        .btn-outline:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0px var(--border);
+        }
+        
+        .btn-pink {
+            background: var(--pink);
+            color: white;
+            border: 2.5px solid var(--border);
+            box-shadow: 5px 5px 0px var(--border);
         }
         
         /* Input */
-        .input-fire {
-            background: rgba(20, 20, 20, 0.9);
-            border: 2px solid #2A2A2A;
-            border-radius: 14px;
-            padding: 16px 20px;
-            color: #FFF;
+        .input-khub {
+            background: white;
+            border: 2.5px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 18px;
+            color: var(--navy);
             width: 100%;
-            font-size: 16px;
-            font-weight: 500;
-            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 4px 4px 0px var(--border);
+            transition: all 0.2s ease;
         }
         
-        .input-fire:focus {
+        .input-khub:focus {
             outline: none;
-            border-color: #00FF88;
-            box-shadow: 0 0 30px rgba(0, 255, 136, 0.15);
-            background: #1A1A1A;
+            border-color: var(--chrome);
+            box-shadow: 6px 6px 0px var(--chrome);
+            transform: translate(-1px, -1px);
         }
         
-        .input-fire::placeholder { color: #555; }
-        
-        /* Badge */
-        .badge-fire {
-            padding: 8px 16px;
-            border-radius: 100px;
-            font-size: 11px;
-            font-weight: 700;
+        /* Badge - Y2K */
+        .badge-khub {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            border: 2px solid var(--border);
+            font-family: 'Orbitron', sans-serif;
         }
         
-        .badge-green { background: #00FF88; color: #000; }
-        .badge-red { background: #FF4757; color: #FFF; }
-        .badge-gold { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; }
+        .badge-chrome { background: var(--chrome); color: white; }
+        .badge-pink { background: var(--pink); color: white; }
+        .badge-purple { background: var(--purple); color: white; }
+        
+        /* Logo - Y2K Shield */
+        .logo-shield {
+            width: 46px;
+            height: 50px;
+            background: linear-gradient(180deg, var(--chrome) 0%, #0044CC 100%);
+            clip-path: polygon(50% 0%, 100% 22%, 100% 78%, 50% 100%, 0% 78%, 0% 22%);
+            border: 2.5px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 900;
+            font-size: 16px;
+            font-family: 'Orbitron', sans-serif;
+            box-shadow: 4px 4px 0px var(--border);
+            position: relative;
+        }
+        
+        .logo-crown {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 18px;
+            filter: drop-shadow(2px 2px 0px var(--border));
+        }
+        
+        /* Typography */
+        .page-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 42px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--navy);
+            text-shadow: 3px 3px 0px rgba(0,102,255,0.3);
+        }
+        
+        .page-title span {
+            color: var(--chrome);
+        }
         
         /* Navbar */
         nav {
-            background: rgba(10, 10, 10, 0.8) !important;
-            backdrop-filter: blur(20px) !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+            background: white;
+            border-bottom: 2.5px solid var(--border);
         }
         
-        /* Animations */
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
         
-        .animate-fade-up { animation: fadeUp 0.6s ease forwards; }
+        .animate-fade-up { animation: fadeUp 0.4s ease forwards; }
         
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0F0F0F; }
-        ::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #00FF88; }
+        ::selection { background: var(--chrome); color: white; }
         
-        /* Selection */
-        ::selection { background: rgba(0, 255, 136, 0.3); color: #FFF; }
-        
-        /* Particles */
-        .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-        
-        .particle {
-            position: absolute;
-            width: 3px;
-            height: 3px;
-            background: #00FF88;
-            border-radius: 50%;
-            animation: particleFloat 6s ease-in-out infinite;
-            opacity: 0;
-        }
-        
-        @keyframes particleFloat {
-            0% { opacity: 0; transform: translateY(100vh) scale(0); }
-            20% { opacity: 0.6; }
-            80% { opacity: 0.2; }
-            100% { opacity: 0; transform: translateY(-100px) scale(1); }
-        }
-        
-        /* Mobile padding */
-        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--beige); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 0; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--chrome); }
     </style>
 </head>
-{% if user.is_authenticated %}
-<script>
-// VAPID Public Key
-const VAPID_PUBLIC_KEY = '{{ webpush_public_key|default:"" }}';
-
-async function subscribeToPush() {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window) || !VAPID_PUBLIC_KEY) {
-        return;
-    }
-    
-    try {
-        const registration = await navigator.serviceWorker.ready;
-        
-        // Check existing subscription
-        let subscription = await registration.pushManager.getSubscription();
-        
-        if (!subscription) {
-            const convertedKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
-            
-            subscription = await registration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: convertedKey
-            });
-        }
-        
-        // Send to server
-        await fetch('/notifications/subscribe/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: JSON.stringify(subscription)
-        });
-        
-        console.log('✅ Push notifications enabled!');
-    } catch (e) {
-        console.log('Push subscription:', e.message);
-    }
-}
-
-function urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-    for (let i = 0; i < rawData.length; ++i) {
-        outputArray[i] = rawData.charCodeAt(i);
-    }
-    return outputArray;
-}
-
-function getCookie(name) {
-    let value = "; " + document.cookie;
-    let parts = value.split("; " + name + "=");
-    if (parts.length == 2) return parts.pop().split(";").shift();
-}
-
-// Subscribe on page load
-subscribeToPush();
-</script>
-{% endif %}
 <body>
-    <!-- Floating Particles -->
-    <div class="particles">
-        <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
-        <div class="particle" style="left: 25%; animation-delay: 1s;"></div>
-        <div class="particle" style="left: 40%; animation-delay: 2s;"></div>
-        <div class="particle" style="left: 55%; animation-delay: 0.5s;"></div>
-        <div class="particle" style="left: 70%; animation-delay: 1.5s;"></div>
-        <div class="particle" style="left: 85%; animation-delay: 3s;"></div>
-    </div>
-
     {% include 'navbar.html' %}
     
-    <main class="container mx-auto px-4 py-8 max-w-7xl pb-safe">
+    <main class="container mx-auto px-4 py-8 max-w-7xl">
         {% include 'messages.html' %}
         {% block content %}{% endblock %}
     </main>
@@ -324,17 +283,5 @@ subscribeToPush();
     {% if user.is_authenticated %}
         {% include 'mobile_nav.html' %}
     {% endif %}
-
-    <script>
-        document.addEventListener('click', function(event) {
-            const dropdown = document.getElementById('userDropdown');
-            const button = event.target.closest('button');
-            if (!button && dropdown && !dropdown.classList.contains('hidden')) {
-                if (!dropdown.contains(event.target)) {
-                    dropdown.classList.add('hidden');
-                }
-            }
-        });
-    </script>
 </body>
 </html>

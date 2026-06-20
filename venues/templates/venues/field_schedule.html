@@ -1,67 +1,67 @@
 {% extends 'base.html' %}
-{% block title %}{{ field.name }} - Schedule View{% endblock %}
+{% block title %}{{ field.name }} - Schedule{% endblock %}
 {% block content %}
 
 <div class="animate-fade-up">
     <div class="flex justify-between items-center mb-8">
         <div>
-            <p class="text-sm text-gray-500 font-semibold tracking-widest uppercase mb-2">Schedule View</p>
-            <h1 class="text-3xl font-extrabold">{{ field.name }}</h1>
-            <p class="text-gray-400">{{ field.venue.name }} · ${{ field.price_per_hour }}/hr</p>
+            <p class="text-xs font-bold uppercase tracking-[3px] text-[#4A5568] mb-2" style="font-family: 'Orbitron', sans-serif;">Schedule View</p>
+            <h1 class="text-2xl font-bold" style="font-family: 'Orbitron', sans-serif;">{{ field.name }}</h1>
+            <p class="text-sm text-[#4A5568]">{{ field.venue.name }} · ${{ field.price_per_hour }}/hr</p>
         </div>
-        <a href="{% url 'venues:venue_detail' field.venue.id %}" class="text-gray-400 hover:text-white transition">
-            <i class="fas fa-arrow-left mr-2"></i> Back
+        <a href="{% url 'venues:venue_detail' field.venue.id %}" class="text-sm text-[#4A5568] hover:text-[#0B1D3A]">
+            <i class="fas fa-arrow-left mr-2"></i>Back
         </a>
     </div>
 
     <!-- Legend -->
     <div class="flex gap-6 mb-6 text-xs">
-        <span class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-[#00FF88]/30 border border-[#00FF88]"></span> Available</span>
-        <span class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-[#FF4757]/20 border border-[#FF4757]"></span> Blocked</span>
-        <span class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-blue-500/30 border border-blue-500"></span> Booked - Click for details</span>
+        <span class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-[#0066FF] border-2 border-[#0B1D3A]"></span> Available</span>
+        <span class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-[#FF2D78] border-2 border-[#0B1D3A]"></span> Blocked</span>
+        <span class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-[#8B5CF6] border-2 border-[#0B1D3A]"></span> Booked</span>
     </div>
 
     {% for day_data in all_slots_list %}
-        <div class="energy-card mb-4 overflow-hidden">
-            <div class="px-4 py-3 border-b border-white/5">
-                <h3 class="font-bold text-sm">
+        <div class="khub-card mb-4 overflow-hidden">
+            <div class="px-4 py-3 border-b-2 border-[#0B1D3A]">
+                <h3 class="font-bold text-sm" style="font-family: 'Orbitron', sans-serif;">
                     {{ day_data.date|date:"D, M j" }}
-                    {% if day_data.date == today %}<span class="badge-fire badge-green text-[10px] ml-2">TODAY</span>{% endif %}
+                    {% if day_data.date == today %}<span class="badge-khub badge-chrome text-[10px] ml-2">Today</span>{% endif %}
                 </h3>
             </div>
-            <div class="p-3 grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+            <div class="p-4 flex flex-wrap gap-2">
                 {% for slot in day_data.slots %}
-                    {% if slot.slot_type == 'BOOKED' and slot.booking %}
-                        <!-- BOOKED by player - CLICKABLE -->
+                    {% if slot.slot_type == 'BOOKED' and slot.is_start and slot.booking %}
+                        <!-- BOOKED -->
                         <a href="{% url 'venues:booking_details' slot.booking.booking_id %}" 
-                           class="bg-blue-500/10 border border-blue-500/30 rounded-lg p-2 text-center relative group cursor-pointer block hover:bg-blue-500/20 transition">
-                            <span class="text-[11px] font-bold text-blue-400">{{ slot.time }}</span>
-                            <span class="text-[9px] text-blue-400/70 block mt-0.5">Booked</span>
-                            <!-- Tooltip -->
-                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block z-10 pointer-events-none">
-                                <div class="bg-black border border-white/10 rounded-lg px-3 py-2 text-xs whitespace-nowrap shadow-xl">
-                                    <p class="text-white font-bold">{{ slot.booking.player_name }}</p>
-                                    <p class="text-gray-400 text-[10px]">{{ slot.booking.player_email }}</p>
-                                    <p class="text-blue-400 text-[10px] mt-1">Click for details →</p>
-                                </div>
-                            </div>
+                           class="bg-[#8B5CF6] text-white border-2 border-[#0B1D3A] rounded-xl px-4 py-3 text-center hover:bg-[#7C3AED] transition flex flex-col items-center min-w-[80px] shadow-[3px_3px_0px_#0B1D3A] hover:shadow-[5px_5px_0px_#0B1D3A] hover:-translate-x-0.5 hover:-translate-y-0.5 cursor-pointer">
+                            <span class="text-sm font-bold">{{ slot.time }} - {{ slot.booking.booking_end }}:00</span>
+                            <span class="text-[11px] text-white/80 mt-1 font-bold">{{ slot.booking.player_name }}</span>
                         </a>
+                    {% elif slot.slot_type == 'BOOKED' and slot.is_continuation %}
+                        <!-- Hidden - merged into block above -->
                     {% elif slot.slot_type == 'BLOCKED' %}
-                        <!-- BLOCKED by owner -->
-                        <div class="bg-[#FF4757]/5 border border-[#FF4757]/20 rounded-lg p-2 text-center opacity-50">
-                            <span class="text-[11px] font-bold text-[#FF4757] line-through">{{ slot.time }}</span>
-                            <span class="text-[9px] text-gray-600 block mt-0.5">Blocked</span>
+                        <!-- BLOCKED -->
+                        <div class="bg-[#FF2D78]/10 border-2 border-[#FF2D78]/40 rounded-xl px-3 py-2 text-center flex items-center gap-2">
+                            <span class="text-[11px] font-bold text-[#FF2D78] line-through">{{ slot.time }}</span>
+                            <a href="{% url 'venues:unblock_slot' field.id day_data.date.isoformat slot.hour %}" 
+                               class="text-[10px] bg-[#0066FF] text-white px-2 py-0.5 rounded-lg font-bold border-2 border-[#0B1D3A] shadow-[2px_2px_0px_#0B1D3A] hover:shadow-[3px_3px_0px_#0B1D3A] transition">
+                                OPEN
+                            </a>
                         </div>
                     {% elif slot.hour <= current_hour and day_data.date == today %}
                         <!-- PAST -->
-                        <div class="bg-gray-500/5 border border-gray-500/10 rounded-lg p-2 text-center opacity-30">
-                            <span class="text-[11px] text-gray-500">{{ slot.time }}</span>
+                        <div class="bg-gray-100 border-2 border-gray-300 rounded-xl px-4 py-2 text-center opacity-40">
+                            <span class="text-[11px] text-gray-400">{{ slot.time }}</span>
                         </div>
                     {% else %}
                         <!-- AVAILABLE -->
-                        <div class="bg-[#00FF88]/5 border border-[#00FF88]/20 rounded-lg p-2 text-center">
-                            <span class="text-[11px] font-bold text-[#00FF88]">{{ slot.time }}</span>
-                            <span class="text-[9px] text-gray-500 block mt-0.5">Open</span>
+                        <div class="bg-[#0066FF] text-white border-2 border-[#0B1D3A] rounded-xl px-3 py-2 text-center flex items-center gap-2 shadow-[3px_3px_0px_#0B1D3A]">
+                            <span class="text-[11px] font-bold">{{ slot.time }}</span>
+                            <a href="{% url 'venues:block_slot' field.id day_data.date.isoformat slot.hour %}" 
+                               class="text-[10px] bg-[#FF2D78] text-white px-2 py-0.5 rounded-lg font-bold border-2 border-[#0B1D3A] shadow-[2px_2px_0px_#0B1D3A] hover:shadow-[3px_3px_0px_#0B1D3A] hover:bg-[#FF4778] transition">
+                                BLOCK
+                            </a>
                         </div>
                     {% endif %}
                 {% endfor %}

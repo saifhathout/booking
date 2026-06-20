@@ -3,50 +3,29 @@
 {% block content %}
 
 <div class="max-w-2xl mx-auto animate-fade-up">
-    <div class="text-center mb-10">
-        <div class="card-icon-energy icon-green w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <span class="text-4xl">⚽</span>
-        </div>
-        <h1 class="text-4xl font-black tracking-tighter">ADD<br><span class="text-[#00FF88]">FIELD</span></h1>
-        <p class="text-gray-400 mt-2">to {{ venue.name }}</p>
-    </div>
-
-    <div class="energy-card p-8">
+    <h1 class="text-3xl font-bold mb-8" style="font-family: 'Orbitron', sans-serif;">ADD <span style="color: #0066FF;">FIELD</span></h1>
+    <p class="text-sm text-[#4A5568] mb-8">to {{ venue.name }}</p>
+    
+    <div class="khub-card p-8">
         <form method="POST" class="space-y-5">
             {% csrf_token %}
-            
-            <div>
-                <label class="text-sm font-bold text-gray-400 mb-2 block tracking-widest uppercase">Field Name</label>
-                {{ form.name }}
+            <input type="text" name="name" class="input-khub" placeholder="Field Name" required>
+            <select name="sport_type" class="input-khub" required>
+                <option value="">Select Sport</option>
+                <option value="FOOTBALL">⚽ Football</option>
+                <option value="CRICKET">🏏 Cricket</option>
+                <option value="BASKETBALL">🏀 Basketball</option>
+                <option value="TENNIS">🎾 Tennis</option>
+            </select>
+            <textarea name="description" class="input-khub" rows="3" placeholder="Description"></textarea>
+            <input type="number" name="price_per_hour" class="input-khub" placeholder="Price Per Hour ($)" required>
+            <div class="flex items-center gap-2">
+                <input type="checkbox" name="is_active" checked class="w-5 h-5 accent-[#0066FF]">
+                <label class="text-sm">Active</label>
             </div>
-            
-            <div>
-                <label class="text-sm font-bold text-gray-400 mb-2 block tracking-widest uppercase">Sport Type</label>
-                {{ form.sport_type }}
-            </div>
-            
-            <div>
-                <label class="text-sm font-bold text-gray-400 mb-2 block tracking-widest uppercase">Description</label>
-                {{ form.description }}
-            </div>
-            
-            <div>
-                <label class="text-sm font-bold text-gray-400 mb-2 block tracking-widest uppercase">Price Per Hour ($)</label>
-                {{ form.price_per_hour }}
-            </div>
-            
-            <div class="flex items-center gap-3 py-2">
-                {{ form.is_active }}
-                <label class="text-sm font-bold text-gray-300">ACTIVE (available for booking)</label>
-            </div>
-            
-            <div class="flex gap-4 pt-4">
-                <button type="submit" class="btn-fire flex-1 py-4 text-base font-black">
-                    <i class="fas fa-plus mr-2"></i> SAVE FIELD
-                </button>
-                <a href="{% url 'venues:venue_detail' venue.id %}" class="btn-ghost flex-1 py-4 text-base font-black text-center">
-                    CANCEL
-                </a>
+            <div class="flex gap-4">
+                <button type="submit" class="btn-chrome flex-1 py-3 text-xs">Save Field</button>
+                <a href="{% url 'venues:venue_detail' venue.id %}" class="btn-outline flex-1 py-3 text-xs text-center">Cancel</a>
             </div>
         </form>
     </div>

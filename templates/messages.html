@@ -1,15 +1,10 @@
 {% if messages %}
     {% for message in messages %}
-        <div class="mb-4 px-4 py-3 rounded-xl text-sm font-bold 
-            {% if message.tags == 'success' %}
-                bg-[#00FF88]/10 border border-[#00FF88]/30 text-[#00FF88]
-            {% elif message.tags == 'error' %}
-                bg-[#FF4757]/10 border border-[#FF4757]/30 text-[#FF4757]
-            {% elif message.tags == 'warning' %}
-                bg-amber-500/10 border border-amber-500/30 text-amber-400
-            {% else %}
-                bg-white/5 border border-white/10 text-white
-            {% endif %}">
+        <div class="mb-4 px-4 py-3 rounded-xl text-sm font-bold border-2 border-[#0B1D3A] shadow-[3px_3px_0px_#0B1D3A]
+            {% if message.tags == 'success' %}bg-[#0066FF]/10 text-[#0066FF]
+            {% elif message.tags == 'error' %}bg-[#FF2D78]/10 text-[#FF2D78]
+            {% elif message.tags == 'warning' %}bg-[#FFB800]/10 text-[#D49500]
+            {% else %}bg-white text-[#0B1D3A]{% endif %}">
             {{ message }}
         </div>
     {% endfor %}

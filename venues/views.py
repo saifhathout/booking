@@ -127,7 +127,7 @@ def field_schedule_view(request, field_id):
         field=field,
         date__gte=today,
         date__lte=today + timedelta(days=6)
-    )
+    ).order_by('date', 'start_time')
     
     bookings = Booking.objects.filter(
         field=field,
@@ -135,22 +135,24 @@ def field_schedule_view(request, field_id):
         status='CONFIRMED'
     ).select_related('player', 'player__player_profile')
     
+    # Build booking map: key -> booking info
     booking_map = {}
     for b in bookings:
-        hour = b.start_time.hour
-        key = f"{b.booking_date}_{hour}"
-        booking_map[key] = {
-            'player_email': b.player.email,
-            'player_name': b.player.player_profile.full_name if hasattr(b.player, 'player_profile') else b.player.email,
-            'booking_id': b.id,
-        }
+        for h in range(b.start_time.hour, b.end_time.hour):
+            key = f"{b.booking_date}_{h}"
+            booking_map[key] = {
+                'player_name': b.player.username,
+                'booking_id': b.id,
+                'booking_start': b.start_time.hour,
+                'booking_end': b.end_time.hour,
+            }
     
-    slot_type_map = {}
+    # Build slot type map
+    slot_map = {}
     for slot in all_slots:
+        key = f"{slot.date}_{slot.start_time.hour}"
         if not slot.is_available:
-            hour = slot.start_time.hour
-            key = f"{slot.date}_{hour}"
-            slot_type_map[key] = slot.slot_type if slot.slot_type else 'BLOCKED'
+            slot_map[key] = slot.slot_type
     
     def format_time(hour):
         if hour == 0 or hour == 24: return "12:00 AM"
@@ -162,17 +164,32 @@ def field_schedule_view(request, field_id):
     for i in range(7):
         day = today + timedelta(days=i)
         day_slots = []
+        prev_booking_id = None
         
         for hour in range(1, 25):
             key = f"{day}_{hour}"
-            slot_type = slot_type_map.get(key)
+            slot_type = slot_map.get(key)
             booking_info = booking_map.get(key)
+            
+            # Check if this is continuation of same booking
+            is_continuation = False
+            if booking_info and prev_booking_id == booking_info['booking_id']:
+                is_continuation = True
+            
+            # Check if this is start of a booking
+            is_start = False
+            if booking_info and booking_info['booking_start'] == hour:
+                is_start = True
+            
+            prev_booking_id = booking_info['booking_id'] if booking_info else None
             
             day_slots.append({
                 'hour': hour,
                 'time': format_time(hour % 24),
                 'slot_type': slot_type,
                 'booking': booking_info,
+                'is_start': is_start,
+                'is_continuation': is_continuation,
             })
         
         all_slots_list.append({'date': day, 'slots': day_slots})
@@ -183,7 +200,6 @@ def field_schedule_view(request, field_id):
         'today': today,
         'current_hour': current_hour,
     })
-
 @venue_owner_required
 def booking_details(request, booking_id):
     booking = get_object_or_404(
@@ -197,3 +213,34 @@ def booking_details(request, booking_id):
     })
 
 
+
+
+@venue_owner_required
+def block_slot(request, field_id, date, hour):
+    field = get_object_or_404(Field, id=field_id, venue__owner=request.user)
+    
+    VenueSlot.objects.create(
+        field=field,
+        date=date,
+        start_time=f"{hour}:00:00",
+        end_time=f"{hour+1}:00:00",
+        is_available=False,
+        slot_type='BLOCKED'
+    )
+    messages.success(request, f'Blocked {date} at {hour}:00')
+    return redirect('venues:field_schedule', field_id=field.id)
+
+
+@venue_owner_required
+def unblock_slot(request, field_id, date, hour):
+    field = get_object_or_404(Field, id=field_id, venue__owner=request.user)
+    
+    VenueSlot.objects.filter(
+        field=field,
+        date=date,
+        start_time=f"{hour}:00:00",
+        is_available=False
+    ).delete()
+    
+    messages.success(request, f'Opened {date} at {hour}:00')
+    return redirect('venues:field_schedule', field_id=field.id)

@@ -5,13 +5,15 @@ from django.core.validators import MinValueValidator
 
 class Venue(models.Model):
     SPORT_CHOICES = [
-        ('FOOTBALL', 'Football'),
-        ('CRICKET', 'Cricket'),
-        ('BASKETBALL', 'Basketball'),
-        ('TENNIS', 'Tennis'),
-        ('BADMINTON', 'Badminton'),
-        ('VOLLEYBALL', 'Volleyball'),
-    ]
+    ('FOOTBALL', 'Football'),
+    ('CRICKET', 'Cricket'),
+    ('BASKETBALL', 'Basketball'),
+    ('TENNIS', 'Tennis'),
+    ('PADEL', 'Padel'),
+    ('BADMINTON', 'Badminton'),
+    ('VOLLEYBALL', 'Volleyball'),
+    ('MULTI', 'Multi-Sport'),
+]
     
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='venues')
     name = models.CharField(max_length=200)
