@@ -18,14 +18,14 @@ def create_post(request):
             player=request.user,
             sport_type=request.POST.get('sport_type'),
             players_needed=request.POST.get('players_needed', 1),
-            city=request.POST.get('city'),
+            city='Cairo',
             date=request.POST.get('date'),
             time=request.POST.get('time') or None,
+            description=request.POST.get('description', ''),
         )
         messages.success(request, 'Post created!')
         return redirect('teams:find_players')
     return render(request, 'teams/create_post.html')
-
 
 @player_required
 def join_post(request, post_id):
