@@ -18,7 +18,7 @@ def create_post(request):
             player=request.user,
             sport_type=request.POST.get('sport_type'),
             players_needed=request.POST.get('players_needed', 1),
-            city='Cairo',
+            city='shbinelkoom',
             date=request.POST.get('date'),
             time=request.POST.get('time') or None,
             description=request.POST.get('description', ''),
