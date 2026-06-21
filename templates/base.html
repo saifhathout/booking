@@ -179,6 +179,45 @@
         ::-webkit-scrollbar-thumb:hover { background: var(--chrome); }
     </style>
 </head>
+
+{% if user.is_authenticated %}
+<script>
+if ('serviceWorker' in navigator && 'PushManager' in window) {
+    navigator.serviceWorker.register('/static/sw.js').then(function(reg) {
+        reg.pushManager.getSubscription().then(function(sub) {
+            if (!sub) {
+                reg.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array('{{ webpush.VAPID_PUBLIC_KEY|default:"" }}')
+                }).then(function(sub) {
+                    saveSubscription(sub);
+                });
+            } else {
+                saveSubscription(sub);
+            }
+        });
+    });
+}
+
+function saveSubscription(sub) {
+    fetch('/webpush/save_information', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify(sub)
+    });
+}
+
+function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    return new Uint8Array([...rawData].map(char => char.charCodeAt(0)));
+}
+</script>
+{% endif %}
 <body>
     {% include 'navbar.html' %}
     {% include 'mobile_header.html' %}

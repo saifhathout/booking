@@ -5,15 +5,15 @@ from django.core.validators import MinValueValidator
 
 class Venue(models.Model):
     SPORT_CHOICES = [
-    ('FOOTBALL', 'Football'),
-    ('CRICKET', 'Cricket'),
-    ('BASKETBALL', 'Basketball'),
-    ('TENNIS', 'Tennis'),
-    ('PADEL', 'Padel'),
-    ('BADMINTON', 'Badminton'),
-    ('VOLLEYBALL', 'Volleyball'),
-    ('MULTI', 'Multi-Sport'),
-]
+        ('FOOTBALL', 'Football'),
+        ('CRICKET', 'Cricket'),
+        ('BASKETBALL', 'Basketball'),
+        ('TENNIS', 'Tennis'),
+        ('PADEL', 'Padel'),
+        ('BADMINTON', 'Badminton'),
+        ('VOLLEYBALL', 'Volleyball'),
+        ('MULTI', 'Multi-Sport'),
+    ]
     
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='venues')
     name = models.CharField(max_length=200)
@@ -21,7 +21,13 @@ class Venue(models.Model):
     city = models.CharField(max_length=100)
     sport_type = models.CharField(max_length=20, choices=SPORT_CHOICES)
     description = models.TextField(blank=True)
+    logo = models.ImageField(upload_to='venue_logos/', null=True, blank=True)
+    brand_color = models.CharField(max_length=7, default='#0066FF')
+    brand_name = models.CharField(max_length=200, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    def get_brand_name(self):
+        return self.brand_name or self.name
     
     def __str__(self):
         return f"{self.name} - {self.city}"
@@ -34,8 +40,8 @@ class Field(models.Model):
     description = models.TextField(blank=True)
     price_per_hour = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='field_images/', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         indexes = [
@@ -64,7 +70,6 @@ class VenueSlot(models.Model):
     class Meta:
         indexes = [
             models.Index(fields=['field', 'date', 'is_available']),
-            models.Index(fields=['date', 'is_available']),
         ]
         ordering = ['date', 'start_time']
     
@@ -87,6 +92,8 @@ class Booking(models.Model):
     start_time = models.TimeField()
     end_time = models.TimeField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='CONFIRMED')
+    payment_screenshot = models.ImageField(upload_to='payments/', null=True, blank=True)
+    payment_status = models.CharField(max_length=20, default='PENDING')
     notes = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
@@ -94,9 +101,8 @@ class Booking(models.Model):
         indexes = [
             models.Index(fields=['booking_date', 'status']),
             models.Index(fields=['player', '-created_at']),
-            models.Index(fields=['field', 'booking_date']),
         ]
         ordering = ['-created_at']
     
     def __str__(self):
-        return f"{self.player.email} - {self.field.name} - {self.booking_date}"
+        return f"{self.player.username} - {self.field.name} - {self.booking_date}"

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+
+<div class="max-w-2xl mx-auto animate-fade-up">
+    <h1 class="text-3xl font-black mb-8" style="font-family: 'Orbitron', sans-serif;">NOTIFICATIONS</h1>
+
+    {% if notifications %}
+        <div class="space-y-3">
+            {% for n in notifications %}
+                <a href="{% url 'notifications:read' n.id %}" 
+                   class="khub-card p-4 flex items-start gap-4 {% if not n.is_read %}border-l-4 border-[#0066FF]{% endif %}">
+                    <div class="w-10 h-10 rounded-xl bg-[#0066FF]/10 flex items-center justify-center text-lg flex-shrink-0">
+                        {% if 'booking' in n.title|lower or 'booked' in n.title|lower %}📅
+                        {% elif 'cancel' in n.title|lower %}❌
+                        {% else %}🔔{% endif %}
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold {% if not n.is_read %}text-[#0B1D3A]{% else %}text-[#4A5568]{% endif %}">{{ n.title }}</h3>
+                        <p class="text-sm text-[#4A5568] mt-1">{{ n.message }}</p>
+                        <p class="text-xs text-[#94A3B8] mt-2">{{ n.created_at|timesince }} ago</p>
+                    </div>
+                    {% if not n.is_read %}
+                        <span class="w-3 h-3 bg-[#0066FF] rounded-full flex-shrink-0 mt-2"></span>
+                    {% endif %}
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="khub-card p-16 text-center">
+            <span class="text-5xl mb-4 block">🔔</span>
+            <p class="text-xl font-bold">No notifications</p>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

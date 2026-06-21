@@ -29,7 +29,15 @@ INSTALLED_APPS = [
     'teams.apps.TeamsConfig',
     'tournaments.apps.TournamentsConfig',
     'dashboard.apps.DashboardConfig',
+    'webpush'
 ]
+
+
+WEBPUSH_SETTINGS = {
+    "VAPID_PUBLIC_KEY": os.environ.get('VAPID_PUBLIC_KEY', ''),
+    "VAPID_PRIVATE_KEY": os.environ.get('VAPID_PRIVATE_KEY', ''),
+    "VAPID_ADMIN_EMAIL": "mailto:admin@khub.com",
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -55,6 +63,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',
+                'webpush.context_processors.webpush',
             ],
         },
     },
