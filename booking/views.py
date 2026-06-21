@@ -64,6 +64,8 @@ def field_detail(request, field_id):
     })
 from .utils import normalize_hour, get_slot_range, format_time
 
+from django.db import transaction, IntegrityError
+
 @player_required
 def book_slot(request, slot_id):
     parts = slot_id.split('_')
@@ -72,54 +74,76 @@ def book_slot(request, slot_id):
     display_hour = int(parts[2])
     
     field = get_object_or_404(Field, id=field_id, is_active=True)
-    store_hour = normalize_hour(display_hour)
+    store_hour = display_hour % 24
+    
+    if store_hour < 0 or store_hour > 23:
+        messages.error(request, 'Invalid time.')
+        return redirect('booking:field_detail', field_id=field.id)
     
     if request.method == 'POST':
         duration = int(request.POST.get('duration', 1))
-        slot_range = get_slot_range(date_str, display_hour, duration)
-        
-        # Check all slots
-        for s in slot_range:
-            taken = VenueSlot.objects.filter(
-                field=field, date=s['date'],
-                start_time=s['start_time'], is_available=False
-            ).exists()
-            if taken:
-                messages.error(request, f'❌ {s["date"]} {format_time(s["hour"])} is already booked!')
-                return redirect('booking:field_detail', field_id=field.id)
-        
-        # Create and book slots
         slots_to_book = []
-        for s in slot_range:
-            slot, _ = VenueSlot.objects.get_or_create(
-                field=field, date=s['date'], start_time=s['start_time'],
-                defaults={'end_time': s['end_time'], 'is_available': True}
-            )
-            slots_to_book.append(slot)
         
-        for slot in slots_to_book:
-            slot.is_available = False
-            slot.slot_type = 'BOOKED'
-            slot.save()
-        
-        total = field.price_per_hour * duration
-        
-        first_slot = slot_range[0]
-        last_slot = slot_range[-1]
-        
-        Booking.objects.create(
-            field=field, player=request.user, slot=slots_to_book[0],
-            booking_date=first_slot['date'],
-            start_time=first_slot['start_time'],
-            end_time=last_slot['end_time'],
-            status='CONFIRMED'
-        )
-        
-        messages.success(request, f'⚡ Booked {duration} hour(s) for ${total}!')
-        return redirect('booking:history')
+        try:
+            with transaction.atomic():
+                for i in range(duration):
+                    h = (store_hour + i) % 24
+                    next_h = (h + 1) % 24
+                    
+                    st = f"{h}:00:00"
+                    et = f"{next_h}:00:00"
+                    
+                    # Atomic get_or_create - prevents race condition
+                    slot, created = VenueSlot.objects.get_or_create(
+                        field=field,
+                        date=date_str,
+                        start_time=st,
+                        defaults={
+                            'end_time': et,
+                            'is_available': True,
+                            'slot_type': 'BOOKED'
+                        }
+                    )
+                    
+                    if not created:
+                        if not slot.is_available:
+                            messages.error(request, f'❌ {h}:00 was just taken!')
+                            return redirect('booking:field_detail', field_id=field.id)
+                        slot.is_available = False
+                        slot.slot_type = 'BOOKED'
+                        slot.save()
+                    
+                    slots_to_book.append(slot)
+                
+                total = field.price_per_hour * duration
+                
+                Booking.objects.create(
+                    field=field,
+                    player=request.user,
+                    slot=slots_to_book[0],
+                    booking_date=date_str,
+                    start_time=f"{store_hour}:00",
+                    end_time=f"{(store_hour + duration) % 24}:00",
+                    status='CONFIRMED'
+                )
+                
+                # Notifications
+                from notifications.utils import create_notification
+                create_notification(request.user, '✅ Booking Confirmed', f'{field.name} on {date_str}', '/booking/history/')
+                create_notification(field.venue.owner, '🔔 New Booking', f'{request.user.username} booked {field.name}', '/venues/booking_requests/')
+                
+                messages.success(request, f'⚡ Booked {duration} hour(s) for ${total}!')
+                return redirect('booking:history')
+                
+        except IntegrityError:
+            messages.error(request, '❌ Booking failed! Slot already taken.')
+            return redirect('booking:field_detail', field_id=field.id)
     
     return render(request, 'booking/book_slot.html', {
-        'field': field, 'date': date_str, 'hour': display_hour, 'price': field.price_per_hour,
+        'field': field,
+        'date': date_str,
+        'hour': display_hour,
+        'price': field.price_per_hour,
     })
 @player_required
 def booking_history(request):

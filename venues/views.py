@@ -6,6 +6,8 @@ from accounts.decorators import venue_owner_required, player_required
 from .models import Venue, Field, VenueSlot, Booking
 from .forms import VenueForm, FieldForm
 from django.db.models import Sum, Count
+from django.db import transaction, IntegrityError
+
 
 
 # ========== VENUE CRUD ==========
@@ -121,13 +123,30 @@ def field_schedule_view(request, field_id):
 @venue_owner_required
 def block_slot(request, field_id, date, hour):
     field = get_object_or_404(Field, id=field_id, venue__owner=request.user)
-    if hour < 1 or hour > 24: return redirect('venues:field_schedule', field_id=field.id)
     store_hour = hour % 24
+    
     end_time = "23:59:00" if store_hour == 23 else f"{store_hour+1}:00:00"
-    VenueSlot.objects.create(field=field, date=date, start_time=f"{store_hour}:00:00", end_time=end_time, is_available=False, slot_type='BLOCKED')
-    messages.success(request, f'Blocked {date} at {hour}:00')
+    
+    try:
+        with transaction.atomic():
+            slot, created = VenueSlot.objects.get_or_create(
+                field=field, date=date, start_time=f"{store_hour}:00:00",
+                defaults={'end_time': end_time, 'is_available': False, 'slot_type': 'BLOCKED'}
+            )
+            
+            if not created:
+                if not slot.is_available:
+                    messages.warning(request, 'Slot already taken!')
+                    return redirect('venues:field_schedule', field_id=field.id)
+                slot.is_available = False
+                slot.slot_type = 'BLOCKED'
+                slot.save()
+            
+            messages.success(request, f'Blocked!')
+    except IntegrityError:
+        messages.error(request, 'Failed to block!')
+    
     return redirect('venues:field_schedule', field_id=field.id)
-
 
 @venue_owner_required
 def unblock_slot(request, field_id, date, hour):

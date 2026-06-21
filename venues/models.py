@@ -59,6 +59,7 @@ class VenueSlot(models.Model):
         ('BOOKED', 'Booked by Player'),
     ]
     
+    
     field = models.ForeignKey(Field, on_delete=models.CASCADE, related_name='slots')
     date = models.DateField()
     start_time = models.TimeField()
@@ -72,6 +73,8 @@ class VenueSlot(models.Model):
             models.Index(fields=['field', 'date', 'is_available']),
         ]
         ordering = ['date', 'start_time']
+    class Meta:
+        unique_together = ['field', 'date', 'start_time']
     
     def __str__(self):
         return f"{self.field.name} - {self.date} {self.start_time}"
