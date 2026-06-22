@@ -10,13 +10,12 @@
             {% if user.is_authenticated %}
             <div class="flex items-center gap-1">
                 {% if user.is_player %}
-                    <a href="{% url 'booking:browse' %}" class="px-3 py-2 text-xs font-bold text-[#4A5568] hover:text-[#0066FF] uppercase tracking-[1px]" style="font-family: 'Orbitron', sans-serif;">Book</a>
-                    <a href="{% url 'teams:find_players' %}" class="px-3 py-2 text-xs font-bold text-[#4A5568] hover:text-[#0066FF] uppercase tracking-[1px]" style="font-family: 'Orbitron', sans-serif;">Squad</a>
-                    <a href="{% url 'teams:my_chats' %}" class="p-2 text-[#4A5568] hover:text-[#0066FF]"><i class="fas fa-comment-dots"></i></a>
-                {% elif user.is_venue_owner %}
-                    <a href="{% url 'dashboard:owner_dashboard' %}" class="px-3 py-2 text-xs font-bold text-[#4A5568] hover:text-[#0066FF] uppercase tracking-[1px]" style="font-family: 'Orbitron', sans-serif;">Dashboard</a>
-                    <a href="{% url 'venues:booking_requests' %}" class="px-3 py-2 text-xs font-bold text-[#4A5568] hover:text-[#0066FF] uppercase tracking-[1px]" style="font-family: 'Orbitron', sans-serif;">Bookings</a>
-                {% endif %}
+    <a href="{% url 'booking:browse' %}" ...>Book</a>
+    <a href="{% url 'teams:room_list' %}" ...>🎮 Rooms</a>
+{% elif user.is_venue_owner %}
+    <a href="{% url 'dashboard:owner_dashboard' %}" ...>Dashboard</a>
+    <a href="{% url 'venues:booking_requests' %}" ...>Bookings</a>
+{% endif %}
                 
                 <!-- Notification Bell -->
                 <a href="{% url 'notifications:list' %}" class="relative p-2 text-[#4A5568] hover:text-[#0066FF]">

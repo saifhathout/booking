@@ -1,53 +1,55 @@
-<div class="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-[#0B1D3A] z-50">
-    <div class="flex justify-around py-2">
-        {% if user.is_authenticated %}
-            {% if user.is_player %}
-                <a href="{% url 'booking:browse' %}" class="flex flex-col items-center text-[#0066FF] py-1 px-3">
-                    <i class="fas fa-futbol text-xl"></i>
-                    <span class="text-[10px] mt-1 font-bold uppercase tracking-wider" style="font-family: 'Orbitron', sans-serif;">Book</span>
-                </a>
-                <a href="{% url 'teams:find_players' %}" class="flex flex-col items-center text-[#4A5568] hover:text-[#0066FF] py-1 px-3">
-                    <i class="fas fa-users text-xl"></i>
-                    <span class="text-[10px] mt-1 font-bold uppercase tracking-wider" style="font-family: 'Orbitron', sans-serif;">Squad</span>
-                </a>
-                <a href="{% url 'teams:my_chats' %}" class="flex flex-col items-center text-[#4A5568] hover:text-[#0066FF] py-1 px-3">
-                    <i class="fas fa-comment-dots text-xl"></i>
-                    <span class="text-[10px] mt-1 font-bold uppercase tracking-wider" style="font-family: 'Orbitron', sans-serif;">Chats</span>
-                </a>
-                <!-- Notification Bell Mobile -->
-                <a href="{% url 'notifications:list' %}" class="flex flex-col items-center text-[#4A5568] hover:text-[#0066FF] py-1 px-3 relative">
-                    <i class="fas fa-bell text-xl"></i>
-                    <span id="notifBadgeMobile" class="absolute -top-0 right-1 w-4 h-4 bg-[#FF2D78] rounded-full text-[8px] flex items-center justify-center font-bold hidden"></span>
-                    <span class="text-[10px] mt-1 font-bold uppercase tracking-wider" style="font-family: 'Orbitron', sans-serif;">Alerts</span>
-                </a>
-                <a href="{% url 'booking:history' %}" class="flex flex-col items-center text-[#4A5568] hover:text-[#0066FF] py-1 px-3">
-                    <i class="fas fa-clock text-xl"></i>
-                    <span class="text-[10px] mt-1 font-bold uppercase tracking-wider" style="font-family: 'Orbitron', sans-serif;">Bookings</span>
-                </a>
-            {% elif user.is_venue_owner %}
-                <a href="{% url 'dashboard:owner_dashboard' %}" class="flex flex-col items-center text-[#0066FF] py-1 px-3">
-                    <i class="fas fa-home text-xl"></i>
-                    <span class="text-[10px] mt-1 font-bold uppercase tracking-wider" style="font-family: 'Orbitron', sans-serif;">Home</span>
-                </a>
-                <a href="{% url 'venues:booking_requests' %}" class="flex flex-col items-center text-[#4A5568] hover:text-[#0066FF] py-1 px-3">
-                    <i class="fas fa-calendar text-xl"></i>
-                    <span class="text-[10px] mt-1 font-bold uppercase tracking-wider" style="font-family: 'Orbitron', sans-serif;">Bookings</span>
-                </a>
-                <!-- Notification Bell Mobile -->
-                <a href="{% url 'notifications:list' %}" class="flex flex-col items-center text-[#4A5568] hover:text-[#0066FF] py-1 px-3 relative">
-                    <i class="fas fa-bell text-xl"></i>
-                    <span id="notifBadgeMobile" class="absolute -top-0 right-1 w-4 h-4 bg-[#FF2D78] rounded-full text-[8px] flex items-center justify-center font-bold hidden"></span>
-                    <span class="text-[10px] mt-1 font-bold uppercase tracking-wider" style="font-family: 'Orbitron', sans-serif;">Alerts</span>
-                </a>
-                <a href="{% url 'accounts:logout' %}" class="flex flex-col items-center text-[#FF2D78] hover:text-[#FF4778] py-1 px-3">
-                    <i class="fas fa-sign-out-alt text-xl"></i>
-                    <span class="text-[10px] mt-1 font-bold uppercase tracking-wider" style="font-family: 'Orbitron', sans-serif;">Exit</span>
-                </a>
+<!-- Floating Mobile Navigation -->
+<div class="fixed bottom-3 left-3 right-3 z-50">
+    <div class="bg-[#1A1A2E]/90 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl shadow-black/40">
+        <div class="flex justify-around items-center h-16 px-2">
+            {% if user.is_authenticated %}
+                {% if user.is_player %}
+                    <a href="{% url 'booking:browse' %}" class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1">
+                        <i class="fas fa-futbol text-lg {% if '/booking' in request.path %}text-[#4F8CFF]{% else %}text-gray-400{% endif %}"></i>
+                        <span class="text-[9px] font-semibold tracking-wider {% if '/booking' in request.path %}text-[#4F8CFF]{% else %}text-gray-500{% endif %}">Book</span>
+                    </a>
+
+                    <a href="{% url 'teams:room_list' %}" class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1">
+                        <i class="fas fa-users text-lg {% if '/teams' in request.path %}text-[#9B6BFF]{% else %}text-gray-400{% endif %}"></i>
+                        <span class="text-[9px] font-semibold tracking-wider {% if '/teams' in request.path %}text-[#9B6BFF]{% else %}text-gray-500{% endif %}">Room</span>
+                    </a>
+
+                   <a href="{% url 'teams:room_list' %}" class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1">
+                        <i class="fas fa-comment-dots text-lg text-gray-400"></i>
+                        <span class="text-[9px] font-semibold tracking-wider text-gray-500">Chats</span>
+                    </a>
+                    <a href="{% url 'booking:history' %}" class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1">
+                        <i class="fas fa-clock text-lg text-gray-400"></i>
+                        <span class="text-[9px] font-semibold tracking-wider text-gray-500">Bookings</span>
+                    </a>
+
+                {% elif user.is_venue_owner %}
+                    <a href="{% url 'dashboard:owner_dashboard' %}" class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1">
+                        <i class="fas fa-home text-lg text-gray-400"></i>
+                        <span class="text-[9px] font-semibold tracking-wider text-gray-500">Home</span>
+                    </a>
+                    
+                    <a href="{% url 'venues:booking_requests' %}" class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1">
+                        <i class="fas fa-calendar text-lg text-gray-400"></i>
+                        <span class="text-[9px] font-semibold tracking-wider text-gray-500">Bookings</span>
+                    </a>
+                    
+                    <a href="{% url 'venues:field_schedule' 1 %}" class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1">
+                        <i class="fas fa-clock text-lg text-gray-400"></i>
+                        <span class="text-[9px] font-semibold tracking-wider text-gray-500">Schedule</span>
+                    </a>
+                    
+                    <a href="{% url 'accounts:logout' %}" class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1">
+                        <i class="fas fa-sign-out-alt text-lg text-red-400"></i>
+                        <span class="text-[9px] font-semibold tracking-wider text-red-400">Exit</span>
+                    </a>
+                {% endif %}
             {% endif %}
-        {% endif %}
+        </div>
     </div>
 </div>
-<div class="md:hidden h-16"></div>
+
+<div class="h-20"></div>
 
 {% if user.is_authenticated %}
 <script>
@@ -55,10 +57,11 @@ fetch('/notifications/api/count/')
     .then(r => r.json())
     .then(d => {
         if(d.count > 0) {
-            const badge = document.getElementById('notifBadgeMobile');
-            const badge2 = document.getElementById('notifBadge');
-            if(badge) { badge.textContent = d.count; badge.classList.remove('hidden'); }
-            if(badge2) { badge2.textContent = d.count; badge2.classList.remove('hidden'); }
+            const b = document.getElementById('notifBadgeMobile');
+            if(b) { 
+                b.textContent = d.count > 9 ? '9+' : d.count; 
+                b.classList.remove('hidden'); 
+            }
         }
     });
 </script>

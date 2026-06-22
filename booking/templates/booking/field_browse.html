@@ -60,11 +60,13 @@
         <div class="relative z-10">
             <h2 class="text-2xl font-black text-white" style="font-family: 'Orbitron', sans-serif;">BUILD & <span style="color: #FFB800;">BATTLE</span></h2>
             <p class="text-white/70 text-xs mt-1 mb-4">Find teammates. Dominate.</p>
-            <a href="{% url 'teams:find_players' %}" class="bg-[#FFB800] text-[#0B1D3A] px-6 py-2 rounded-xl font-bold text-xs border-2 border-[#0B1D3A] shadow-[3px_3px_0px_#0B1D3A] uppercase tracking-wider inline-block" style="font-family: 'Orbitron', sans-serif;">
+            <a href="{% url 'teams:room_list' %}" class="bg-[#FFB800] text-[#0B1D3A] px-6 py-2 rounded-xl font-bold text-xs border-2 border-[#0B1D3A] shadow-[3px_3px_0px_#0B1D3A] uppercase tracking-wider inline-block" style="font-family: 'Orbitron', sans-serif;">
                 👥 Find Squad →
             </a>
         </div>
     </div>
+
+
 
     <!-- Recent Posts -->
     {% if recent_posts %}

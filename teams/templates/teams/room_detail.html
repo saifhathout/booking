@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}{{ room.title }}{% endblock %}
+{% block content %}
+
+<div class="animate-fade-up">
+    <!-- Back -->
+    <a href="{% url 'teams:room_list' %}" class="text-sm text-[#4A5568] hover:text-[#0B1D3A] mb-4 inline-block">
+        <i class="fas fa-arrow-left mr-2"></i>All Rooms
+    </a>
+    
+    <!-- Room Header -->
+    <div class="khub-card p-6 mb-6">
+        <div class="flex items-start justify-between mb-4">
+            <div>
+                <h1 class="text-2xl font-black" style="font-family: 'Orbitron', sans-serif;">{{ room.title }}</h1>
+                <p class="text-sm text-[#4A5568]">Host: {{ room.host.username }}</p>
+            </div>
+            <span class="badge-khub badge-purple text-[10px]">{{ room.get_sport_type_display }}</span>
+        </div>
+        
+        <!-- Players -->
+        <div class="flex items-center gap-3 bg-[#F5F0E5] rounded-xl p-4 border border-[#E5DFD5]">
+            <span class="text-sm font-bold text-[#4A5568]">Players ({{ room.players_joined }}/{{ room.max_players }}):</span>
+            <div class="flex flex-wrap gap-2">
+                {% for rp in players %}
+                    <div class="flex items-center gap-1.5 bg-white border-2 border-[#0B1D3A] rounded-lg px-3 py-1.5 shadow-[2px_2px_0px_#0B1D3A]">
+                        <div class="w-6 h-6 rounded-md bg-[#8B5CF6] flex items-center justify-center text-white text-[10px] font-bold">
+                            {{ rp.player.username|first|upper }}
+                        </div>
+                        <span class="text-xs font-bold">{{ rp.player.username }}</span>
+                        {% if rp.player == room.host %}
+                            <span class="text-[10px]" style="font-family: 'Orbitron', sans-serif;">👑</span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            
+            {% if not is_in_room and spots_left > 0 %}
+                <a href="{% url 'teams:join_room' room.id %}" class="btn-chrome text-xs px-4 py-2 ml-auto">Join</a>
+            {% endif %}
+            
+            {% if is_in_room and not is_host %}
+                <a href="{% url 'teams:leave_room' room.id %}" class="text-[#FF2D78] text-xs font-bold ml-auto hover:underline">Leave</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Chat -->
+    <div class="khub-card overflow-hidden">
+        <div class="p-4 border-b-2 border-[#0B1D3A]">
+            <h3 class="font-bold" style="font-family: 'Orbitron', sans-serif;">💬 Room Chat</h3>
+        </div>
+        
+        <div class="p-4 h-80 overflow-y-auto space-y-3" id="roomChat">
+            {% for msg in chat_messages %}
+                <div class="flex {% if msg.sender == request.user %}justify-end{% else %}justify-start{% endif %}">
+                    <div class="max-w-[75%] {% if msg.sender == request.user %}bg-[#0066FF] text-white{% else %}bg-[#F5F0E5]{% endif %} rounded-2xl px-4 py-2 border-2 border-[#0B1D3A]">
+                        <p class="text-xs font-bold opacity-70 mb-1">{{ msg.sender.username }}</p>
+                        <p class="text-sm">{{ msg.message }}</p>
+                        <p class="text-[10px] mt-1 opacity-50 {% if msg.sender == request.user %}text-right{% endif %}">{{ msg.created_at|time:"H:i" }}</p>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-center text-[#4A5568] py-20">No messages yet. Say hi! 👋</p>
+            {% endfor %}
+        </div>
+        
+        {% if is_in_room %}
+        <form method="POST" class="p-4 border-t-2 border-[#0B1D3A] flex gap-2">
+            {% csrf_token %}
+            <input type="text" name="message" class="input-khub flex-1" placeholder="Type a message..." autocomplete="off" required>
+            <button type="submit" class="btn-chrome px-6 text-xs">Send</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

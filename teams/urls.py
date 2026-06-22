@@ -4,10 +4,10 @@ from . import views
 app_name = 'teams'
 
 urlpatterns = [
-    path('find/', views.find_players, name='find_players'),
-    path('create/', views.create_post, name='create_post'),
-    path('join/<int:post_id>/', views.join_post, name='join_post'),
-    path('chat/<int:post_id>/', views.chat_view, name='chat'),
-    path('delete-chat/<int:post_id>/', views.delete_chat, name='delete_chat'),
-    path('my-chats/', views.my_chats, name='my_chats'),
+    # Game Rooms
+    path('rooms/', views.room_list, name='room_list'),
+    path('rooms/create/', views.create_room, name='create_room'),
+    path('rooms/<int:room_id>/', views.room_detail, name='room_detail'),
+    path('rooms/<int:room_id>/join/', views.join_room, name='join_room'),
+    path('rooms/<int:room_id>/leave/', views.leave_room, name='leave_room'),
 ]

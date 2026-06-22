@@ -1,38 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0066FF">
+    <meta name="theme-color" content="#F0E8D8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="/static/img/logo.png">
     
     <title>K-HUB - {% block title %}{% endblock %}</title>
     
-<script>
-window.USER_ID = "{% if user.is_authenticated %}{{ user.id }}{% endif %}";
-</script>
-
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-window.OneSignalDeferred = window.OneSignalDeferred || [];
-
-OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-        appId: "97a60b44-0546-45e3-8656-8272fa16d4d6",
-    });
-
-    if (window.USER_ID) {
-        await OneSignal.login(window.USER_ID);
-    }
-});
-</script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Syne:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -43,103 +25,218 @@ OneSignalDeferred.push(async function(OneSignal) {
             --pink: #FF2D78;
             --purple: #8B5CF6;
             --border: #0B1D3A;
+            --gold: #FFB800;
         }
         
-        * { font-family: 'Space Grotesk', sans-serif; }
-        h1, h2, h3, .font-display { font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
+        * { font-family: 'Outfit', sans-serif; }
+        h1, h2, h3 { font-family: 'Syne', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: -1px; }
+        .orbitron { font-family: 'Orbitron', sans-serif; }
         
         body {
             background: var(--beige);
             color: var(--navy);
             min-height: 100vh;
             font-weight: 500;
+            overflow-x: hidden;
         }
         
+        /* Animated Pattern */
         body::before {
             content: '';
             position: fixed;
             inset: 0;
-            background-image: linear-gradient(rgba(11,29,58,0.05) 2px, transparent 2px),
-                            linear-gradient(90deg, rgba(11,29,58,0.05) 2px, transparent 2px);
-            background-size: 50px 50px;
+            background-image: 
+                linear-gradient(rgba(11,29,58,0.06) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(11,29,58,0.06) 2px, transparent 2px);
+            background-size: 60px 60px;
+            animation: gridMove 20s linear infinite;
             pointer-events: none;
             z-index: 0;
         }
         
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(60px, 60px); }
+        }
+        
+        /* Glow Orbs */
+        .glow-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: 0;
+            animation: orbFloat 8s ease-in-out infinite;
+        }
+        .glow-1 { width: 500px; height: 500px; background: var(--chrome); top: -100px; right: -100px; }
+        .glow-2 { width: 400px; height: 400px; background: var(--purple); bottom: -100px; left: -100px; animation-delay: -4s; }
+        .glow-3 { width: 300px; height: 300px; background: var(--pink); top: 50%; left: 50%; animation-delay: -6s; }
+        
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.05); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+        
+        /* Chrome Border */
         body::after {
             content: '';
             position: fixed;
             top: 0; left: 0; right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--chrome), var(--purple), var(--pink), var(--chrome));
-            background-size: 200% 100%;
-            animation: chromeSlide 3s linear infinite;
+            height: 4px;
+            background: linear-gradient(90deg, var(--chrome), var(--purple), var(--pink), var(--gold), var(--chrome));
+            background-size: 300% 100%;
+            animation: chromeSlide 2s linear infinite;
             z-index: 100;
+            box-shadow: 0 0 20px rgba(0,102,255,0.3);
         }
         
         @keyframes chromeSlide {
             0% { background-position: 0% 50%; }
-            100% { background-position: 200% 50%; }
+            100% { background-position: 300% 50%; }
         }
         
         main { position: relative; z-index: 1; padding-bottom: 80px; }
         
+        /* Cards */
         .khub-card {
             background: var(--white);
-            border: 2.5px solid var(--border);
-            border-radius: 16px;
-            transition: all 0.25s ease;
+            border: 3px solid var(--border);
+            border-radius: 18px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 6px 6px 0px var(--border);
+            position: relative;
         }
-        .khub-card:hover { transform: translate(-3px, -3px); box-shadow: 10px 10px 0px var(--border); }
         
+        .khub-card::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 21px;
+            background: linear-gradient(135deg, var(--chrome), var(--purple), var(--pink));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+        
+        .khub-card:hover::before {
+            opacity: 0.4;
+        }
+        
+        .khub-card:hover {
+            transform: translate(-4px, -4px);
+            box-shadow: 10px 10px 0px var(--border);
+            border-color: var(--chrome);
+        }
+        
+        .khub-card:active {
+            transform: translate(0, 0);
+            box-shadow: 3px 3px 0px var(--border);
+        }
+        
+        /* Buttons */
         .btn-chrome {
-            background: var(--chrome); color: white;
-            padding: 14px 28px; border-radius: 12px;
-            font-weight: 700; font-size: 13px;
-            text-transform: uppercase; letter-spacing: 2px;
-            border: 2.5px solid var(--border);
+            background: var(--chrome);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 3px solid var(--border);
             box-shadow: 5px 5px 0px var(--border);
             transition: all 0.2s ease;
-            font-family: 'Orbitron', sans-serif; cursor: pointer;
+            cursor: pointer;
+            font-family: 'Syne', sans-serif;
+            position: relative;
+            overflow: hidden;
         }
-        .btn-chrome:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0px var(--border); }
+        
+        .btn-chrome::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .btn-chrome:hover::after {
+            left: 100%;
+        }
+        
+        .btn-chrome:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 8px 8px 0px var(--border);
+        }
         
         .btn-outline {
-            background: white; color: var(--navy);
-            padding: 14px 28px; border-radius: 12px;
-            font-weight: 700; font-size: 13px;
-            text-transform: uppercase; letter-spacing: 2px;
-            border: 2.5px solid var(--border);
+            background: white;
+            color: var(--navy);
+            padding: 16px 32px;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 3px solid var(--border);
             box-shadow: 5px 5px 0px var(--border);
             transition: all 0.2s ease;
-            font-family: 'Orbitron', sans-serif; cursor: pointer;
+            cursor: pointer;
+            font-family: 'Syne', sans-serif;
         }
-        .btn-outline:hover { border-color: var(--chrome); color: var(--chrome); }
         
+        .btn-outline:hover {
+            border-color: var(--chrome);
+            color: var(--chrome);
+            transform: translate(-3px, -3px);
+            box-shadow: 8px 8px 0px var(--border);
+        }
+        
+        /* Inputs */
         .input-khub {
-            background: white; border: 2.5px solid var(--border);
-            border-radius: 12px; padding: 14px 18px;
-            color: var(--navy); width: 100%;
-            font-size: 16px; font-weight: 600;
+            background: white;
+            border: 3px solid var(--border);
+            border-radius: 14px;
+            padding: 16px 20px;
+            color: var(--navy);
+            width: 100%;
+            font-size: 15px;
+            font-weight: 600;
             box-shadow: 4px 4px 0px var(--border);
             transition: all 0.2s ease;
         }
-        .input-khub:focus { outline: none; border-color: var(--chrome); box-shadow: 6px 6px 0px var(--chrome); }
         
+        .input-khub:focus {
+            outline: none;
+            border-color: var(--chrome);
+            box-shadow: 6px 6px 0px var(--chrome);
+            transform: translate(-1px, -1px);
+        }
+        
+        /* Badges */
         .badge-khub {
-            padding: 6px 14px; border-radius: 8px;
-            font-size: 10px; font-weight: 800;
-            text-transform: uppercase; letter-spacing: 2px;
+            padding: 7px 16px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
             border: 2px solid var(--border);
             font-family: 'Orbitron', sans-serif;
         }
         .badge-chrome { background: var(--chrome); color: white; }
         .badge-pink { background: var(--pink); color: white; }
         .badge-purple { background: var(--purple); color: white; }
+        .badge-gold { background: var(--gold); color: var(--navy); }
         
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fade-up { animation: fadeUp 0.4s ease forwards; }
+        @keyframes fadeUp { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        .animate-fade-up { animation: fadeUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         
         ::selection { background: var(--chrome); color: white; }
         ::-webkit-scrollbar { width: 6px; }
@@ -149,10 +246,14 @@ OneSignalDeferred.push(async function(OneSignal) {
     </style>
 </head>
 <body>
+    <div class="glow-orb glow-1"></div>
+    <div class="glow-orb glow-2"></div>
+    <div class="glow-orb glow-3"></div>
+    
     {% include 'navbar.html' %}
     {% include 'mobile_header.html' %}
     
-    <main class="container mx-auto px-4 py-6 max-w-7xl">
+    <main class="container mx-auto px-4 py-6 max-w-7xl animate-fade-up">
         {% include 'messages.html' %}
         {% block content %}{% endblock %}
     </main>
@@ -166,7 +267,7 @@ OneSignalDeferred.push(async function(OneSignal) {
         .then(d => {
             if(d.count > 0) {
                 const b = document.getElementById('notifBadge');
-                if(b) { b.textContent = d.count; b.classList.remove('hidden'); }
+                if(b) { b.textContent = d.count > 9 ? '9+' : d.count; b.classList.remove('hidden'); }
             }
         });
     </script>
