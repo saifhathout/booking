@@ -64,13 +64,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'sports_booking.wsgi.application'
 
-import dj_database_url
-
 DATABASES = {
-    'default': dj_database_url.config(
-        default='postgresql://...',
-        conn_max_age=600
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 AUTH_USER_MODEL = 'accounts.User'
