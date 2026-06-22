@@ -3,7 +3,7 @@
         <div class="flex items-center justify-between h-16">
             <!-- Logo -->
             <a href="/" class="flex items-center gap-3">
-                <img src="/static/img/logo.png" alt="K-HUB" class="w-11 h-13 rounded-lg ">
+                <img src="/static/img/logo.png" alt="K-HUB" class="w-10 h-10 rounded-lg border-2 border-[#0B1D3A] shadow-[3px_3px_0px_#0B1D3A] object-contain bg-white">
                 <span class="text-xl font-black tracking-tight" style="font-family: 'Orbitron', sans-serif;">K<span style="color: #0066FF;">-HUB</span></span>
             </a>
             
@@ -18,6 +18,13 @@
                     <a href="{% url 'venues:booking_requests' %}" class="px-3 py-2 text-xs font-bold text-[#4A5568] hover:text-[#0066FF] uppercase tracking-[1px]" style="font-family: 'Orbitron', sans-serif;">Bookings</a>
                 {% endif %}
                 
+                <!-- Notification Bell -->
+                <a href="{% url 'notifications:list' %}" class="relative p-2 text-[#4A5568] hover:text-[#0066FF]">
+                    <i class="fas fa-bell text-lg"></i>
+                    <span id="notifBadge" class="absolute -top-1 -right-1 w-5 h-5 bg-[#FF2D78] rounded-full text-[10px] flex items-center justify-center font-bold hidden"></span>
+                </a>
+                
+                <!-- User Menu -->
                 <div class="relative ml-2">
                     <button onclick="document.getElementById('userDropdown').classList.toggle('hidden')" class="flex items-center gap-2 p-2">
                         <div class="w-8 h-8 rounded-lg bg-[#0066FF] flex items-center justify-center text-white font-bold text-xs border-2 border-[#0B1D3A]">{{ user.username|first|upper }}</div>

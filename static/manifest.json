@@ -1,6 +1,6 @@
 {
-  "name": "GameOn - Sports Booking",
-  "short_name": "GameOn",
+ "name": "K-HUB Sports",
+  "short_name": "K-HUB",
   "description": "Book sports fields, find players, and join tournaments",
   "start_url": "/",
   "display": "standalone",
@@ -50,3 +50,4 @@
     }
   ]
 }
+

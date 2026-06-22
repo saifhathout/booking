@@ -29,9 +29,8 @@ INSTALLED_APPS = [
     'teams.apps.TeamsConfig',
     'tournaments.apps.TournamentsConfig',
     'dashboard.apps.DashboardConfig',
-    'webpush'
+    'notifications.apps.NotificationsConfig',  # ← أضف
 ]
-
 
 WEBPUSH_SETTINGS = {
     "VAPID_PUBLIC_KEY": os.environ.get('VAPID_PUBLIC_KEY', ''),

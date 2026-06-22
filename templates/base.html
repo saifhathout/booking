@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>K-HUB - {% block title %}{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -14,14 +14,12 @@
             --navy: #0B1D3A;
             --beige: #F0E8D8;
             --white: #FFFFFF;
-            --silver: #E0E0E0;
             --pink: #FF2D78;
             --purple: #8B5CF6;
             --border: #0B1D3A;
         }
         
         * { font-family: 'Space Grotesk', sans-serif; }
-        
         h1, h2, h3, .font-display { font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
         
         body {
@@ -35,9 +33,8 @@
             content: '';
             position: fixed;
             inset: 0;
-            background-image: 
-                linear-gradient(rgba(11,29,58,0.05) 2px, transparent 2px),
-                linear-gradient(90deg, rgba(11,29,58,0.05) 2px, transparent 2px);
+            background-image: linear-gradient(rgba(11,29,58,0.05) 2px, transparent 2px),
+                            linear-gradient(90deg, rgba(11,29,58,0.05) 2px, transparent 2px);
             background-size: 50px 50px;
             pointer-events: none;
             z-index: 0;
@@ -46,9 +43,7 @@
         body::after {
             content: '';
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
             height: 3px;
             background: linear-gradient(90deg, var(--chrome), var(--purple), var(--pink), var(--chrome));
             background-size: 200% 100%;
@@ -61,7 +56,7 @@
             100% { background-position: 200% 50%; }
         }
         
-        main { position: relative; z-index: 1; }
+        main { position: relative; z-index: 1; padding-bottom: 80px; }
         
         .khub-card {
             background: var(--white);
@@ -69,172 +64,86 @@
             border-radius: 16px;
             transition: all 0.25s ease;
             box-shadow: 6px 6px 0px var(--border);
-            position: relative;
         }
-        
-        .khub-card:hover {
-            transform: translate(-3px, -3px);
-            box-shadow: 10px 10px 0px var(--border);
-        }
+        .khub-card:hover { transform: translate(-3px, -3px); box-shadow: 10px 10px 0px var(--border); }
         
         .btn-chrome {
-            background: var(--chrome);
-            color: white;
-            padding: 14px 28px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            background: var(--chrome); color: white;
+            padding: 14px 28px; border-radius: 12px;
+            font-weight: 700; font-size: 13px;
+            text-transform: uppercase; letter-spacing: 2px;
             border: 2.5px solid var(--border);
             box-shadow: 5px 5px 0px var(--border);
             transition: all 0.2s ease;
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Orbitron', sans-serif; cursor: pointer;
         }
-        
-        .btn-chrome:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 8px 8px 0px var(--border);
-        }
+        .btn-chrome:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0px var(--border); }
         
         .btn-outline {
-            background: white;
+            background: white; color: var(--navy);
+            padding: 14px 28px; border-radius: 12px;
+            font-weight: 700; font-size: 13px;
+            text-transform: uppercase; letter-spacing: 2px;
             border: 2.5px solid var(--border);
-            color: var(--navy);
-            padding: 14px 28px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
             box-shadow: 5px 5px 0px var(--border);
             transition: all 0.2s ease;
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Orbitron', sans-serif; cursor: pointer;
         }
+        .btn-outline:hover { border-color: var(--chrome); color: var(--chrome); }
         
         .input-khub {
-            background: white;
-            border: 2.5px solid var(--border);
-            border-radius: 12px;
-            padding: 14px 18px;
-            color: var(--navy);
-            width: 100%;
-            font-size: 14px;
-            font-weight: 600;
+            background: white; border: 2.5px solid var(--border);
+            border-radius: 12px; padding: 14px 18px;
+            color: var(--navy); width: 100%;
+            font-size: 16px; font-weight: 600;
             box-shadow: 4px 4px 0px var(--border);
             transition: all 0.2s ease;
         }
-        
-        .input-khub:focus {
-            outline: none;
-            border-color: var(--chrome);
-            box-shadow: 6px 6px 0px var(--chrome);
-            transform: translate(-1px, -1px);
-        }
+        .input-khub:focus { outline: none; border-color: var(--chrome); box-shadow: 6px 6px 0px var(--chrome); }
         
         .badge-khub {
-            padding: 6px 14px;
-            border-radius: 8px;
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            padding: 6px 14px; border-radius: 8px;
+            font-size: 10px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 2px;
             border: 2px solid var(--border);
             font-family: 'Orbitron', sans-serif;
         }
-        
         .badge-chrome { background: var(--chrome); color: white; }
         .badge-pink { background: var(--pink); color: white; }
         .badge-purple { background: var(--purple); color: white; }
         
-        .page-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 42px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            color: var(--navy);
-            text-shadow: 3px 3px 0px rgba(0,102,255,0.3);
-        }
-        
-        .page-title span { color: var(--chrome); }
-        
-        nav {
-            background: white;
-            border-bottom: 2.5px solid var(--border);
-        }
-        
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-up { animation: fadeUp 0.4s ease forwards; }
         
         ::selection { background: var(--chrome); color: white; }
-        
-        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--beige); }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 0; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--chrome); }
     </style>
 </head>
-
-{% if user.is_authenticated %}
-<script>
-if ('serviceWorker' in navigator && 'PushManager' in window) {
-    navigator.serviceWorker.register('/static/sw.js').then(function(reg) {
-        reg.pushManager.getSubscription().then(function(sub) {
-            if (!sub) {
-                reg.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: urlBase64ToUint8Array('{{ webpush.VAPID_PUBLIC_KEY|default:"" }}')
-                }).then(function(sub) {
-                    saveSubscription(sub);
-                });
-            } else {
-                saveSubscription(sub);
-            }
-        });
-    });
-}
-
-function saveSubscription(sub) {
-    fetch('/webpush/save_information', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}'
-        },
-        body: JSON.stringify(sub)
-    });
-}
-
-function urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-    const rawData = window.atob(base64);
-    return new Uint8Array([...rawData].map(char => char.charCodeAt(0)));
-}
-</script>
-{% endif %}
 <body>
     {% include 'navbar.html' %}
     {% include 'mobile_header.html' %}
-    <main class="container mx-auto px-4 py-8 max-w-7xl">
-        <!-- Logo Centered -->
-        <div class="text-center mb-8">
-            <img src="/static/img/logo.png" alt="K-HUB" class="w-50 h-40 mx-auto  ">
-        </div>
-        
+    
+    <main class="container mx-auto px-4 py-6 max-w-7xl">
         {% include 'messages.html' %}
         {% block content %}{% endblock %}
     </main>
     
+    {% include 'mobile_nav.html' %}
+    
     {% if user.is_authenticated %}
-        {% include 'mobile_nav.html' %}
+    <script>
+    fetch('/notifications/api/count/')
+        .then(r => r.json())
+        .then(d => {
+            if(d.count > 0) {
+                const b = document.getElementById('notifBadge');
+                if(b) { b.textContent = d.count; b.classList.remove('hidden'); }
+            }
+        });
+    </script>
     {% endif %}
-        {% include 'mobile_nav.html' %}
-
 </body>
 </html>
