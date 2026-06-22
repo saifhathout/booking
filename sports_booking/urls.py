@@ -13,15 +13,14 @@ urlpatterns = [
     path('teams/', include('teams.urls')),
     path('tournaments/', include('tournaments.urls')),
     path('notifications/', include('notifications.urls')),
-    # ✅ Service Worker on root
-    path('sw.js', TemplateView.as_view(
-        template_name='sw.js',
-        content_type='application/javascript'
-    )),
-    path('manifest.json', TemplateView.as_view(
-        template_name='manifest.json',
-        content_type='application/json'
-    )),
+path('OneSignalSDKWorker.js', TemplateView.as_view(
+    template_name='OneSignalSDKWorker.js',
+    content_type='application/javascript'
+)),
+path('OneSignalSDKUpdaterWorker.js', TemplateView.as_view(
+    template_name='OneSignalSDKUpdaterWorker.js',
+    content_type='application/javascript'
+)),
 ]
 
 if settings.DEBUG:

@@ -66,6 +66,10 @@ from .utils import normalize_hour, get_slot_range, format_time
 
 from django.db import transaction, IntegrityError
 
+from django.db import transaction, IntegrityError
+from notifications.utils import create_notification, send_push
+
+
 @player_required
 def book_slot(request, slot_id):
     parts = slot_id.split('_')
@@ -127,10 +131,13 @@ def book_slot(request, slot_id):
                     status='CONFIRMED'
                 )
                 
-                # Notifications
-                from notifications.utils import create_notification
-                create_notification(request.user, '✅ Booking Confirmed', f'{field.name} on {date_str}', '/booking/history/')
-                create_notification(field.venue.owner, '🔔 New Booking', f'{request.user.username} booked {field.name}', '/venues/booking_requests/')
+                # In-app notifications
+                create_notification(request.user, '✅ Booking Confirmed', f'{field.name} on {date_str} at {store_hour}:00', '/booking/history/')
+                create_notification(field.venue.owner, '🔔 New Booking', f'{request.user.username} booked {field.name}', '/venues/bookings/')
+                
+                # Push notifications
+                send_push(request.user.id, '✅ Booking Confirmed!', f'{field.name} on {date_str} at {store_hour}:00', '/booking/history/')
+                send_push(field.venue.owner.id, '🔔 New Booking!', f'{request.user.username} booked {field.name}', '/venues/bookings/')
                 
                 messages.success(request, f'⚡ Booked {duration} hour(s) for ${total}!')
                 return redirect('booking:history')
@@ -209,3 +216,4 @@ def cancel_booking(request, booking_id):
     
     messages.success(request, 'Booking cancelled!')
     return redirect('booking:history')
+

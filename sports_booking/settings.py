@@ -34,8 +34,8 @@ INSTALLED_APPS = [
 ]
 
 WEBPUSH_SETTINGS = {
-    "VAPID_PUBLIC_KEY": os.environ.get('VAPID_PUBLIC_KEY', ''),
-    "VAPID_PRIVATE_KEY": os.environ.get('VAPID_PRIVATE_KEY', ''),
+    "VAPID_PUBLIC_KEY": os.environ.get('VAPID_PUBLIC_KEY', '<cryptography.hazmat.bindings._rust.openssl.ec.ECPublicKey object at 0x000001BA5A9E4210>'),
+    "VAPID_PRIVATE_KEY": os.environ.get('VAPID_PRIVATE_KEY', '<cryptography.hazmat.bindings._rust.openssl.ec.ECPrivateKey object at 0x000001BA5A67A0D0>'),
     "VAPID_ADMIN_EMAIL": "mailto:admin@khub.com",
 }
 
