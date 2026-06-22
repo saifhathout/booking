@@ -32,13 +32,6 @@ INSTALLED_APPS = [
     'webpush',
     'notifications.apps.NotificationsConfig',  # ← أضف
 ]
-
-WEBPUSH_SETTINGS = {
-    "VAPID_PUBLIC_KEY": os.environ.get('VAPID_PUBLIC_KEY', '<cryptography.hazmat.bindings._rust.openssl.ec.ECPublicKey object at 0x000001BA5A9E4210>'),
-    "VAPID_PRIVATE_KEY": os.environ.get('VAPID_PRIVATE_KEY', '<cryptography.hazmat.bindings._rust.openssl.ec.ECPrivateKey object at 0x000001BA5A67A0D0>'),
-    "VAPID_ADMIN_EMAIL": "mailto:admin@khub.com",
-}
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -71,11 +64,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'sports_booking.wsgi.application'
 
+import dj_database_url
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default='postgresql://...',
+        conn_max_age=600
+    )
 }
 
 AUTH_USER_MODEL = 'accounts.User'
