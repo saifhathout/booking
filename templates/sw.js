@@ -18,3 +18,11 @@ self.addEventListener('notificationclick', function(event) {
     event.notification.close();
     event.waitUntil(clients.openWindow(event.notification.data.url || '/'));
 });
+
+self.addEventListener('install', function(event) {
+    self.skipWaiting();
+});
+
+self.addEventListener('activate', function(event) {
+    event.waitUntil(clients.claim());
+});

@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'teams.apps.TeamsConfig',
     'tournaments.apps.TournamentsConfig',
     'dashboard.apps.DashboardConfig',
+    'webpush',
     'notifications.apps.NotificationsConfig',  # ← أضف
 ]
 
@@ -62,6 +63,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'webpush.context_processors.webpush'
         
             ],
         },

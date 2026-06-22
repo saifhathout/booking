@@ -3,6 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0066FF">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/static/img/logo.png">
+    
     <title>K-HUB - {% block title %}{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -133,17 +141,81 @@
     
     {% include 'mobile_nav.html' %}
     
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated and webpush.VAPID_PUBLIC_KEY %}
     <script>
-    fetch('/notifications/api/count/')
-        .then(r => r.json())
-        .then(d => {
-            if(d.count > 0) {
-                const b = document.getElementById('notifBadge');
-                if(b) { b.textContent = d.count; b.classList.remove('hidden'); }
-            }
-        });
+    // Store VAPID key in data attribute
+    document.body.setAttribute('data-vapid-key', '{{ webpush.VAPID_PUBLIC_KEY }}');
+    document.body.setAttribute('data-authenticated', 'true');
     </script>
     {% endif %}
+    
+    <script>
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function urlBase64ToUint8Array(base64String) {
+        var padding = '='.repeat((4 - base64String.length % 4) % 4);
+        var base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+        var rawData = window.atob(base64);
+        var outputArray = new Uint8Array(rawData.length);
+        for (var i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+    }
+
+    // Push Notifications
+    var vapidKey = document.body.getAttribute('data-vapid-key');
+    var isAuth = document.body.getAttribute('data-authenticated');
+    
+    if (vapidKey && isAuth && 'serviceWorker' in navigator && 'PushManager' in window) {
+        navigator.serviceWorker.register('/sw.js').then(function(registration) {
+            console.log('SW registered');
+            registration.pushManager.getSubscription().then(function(subscription) {
+                if (!subscription) {
+                    registration.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array(vapidKey)
+                    }).then(function(sub) {
+                        fetch('/webpush/save_information', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken')
+                            },
+                            body: JSON.stringify(sub)
+                        });
+                    }).catch(function(e) {
+                        console.log('Subscribe error:', e);
+                    });
+                }
+            });
+        });
+    }
+
+    // Notification badge
+    if (isAuth) {
+        fetch('/notifications/api/count/')
+            .then(function(r) { return r.json(); })
+            .then(function(d) {
+                if(d.count > 0) {
+                    var b = document.getElementById('notifBadge');
+                    if(b) { b.textContent = d.count; b.classList.remove('hidden'); }
+                }
+            });
+    }
+    </script>
 </body>
 </html>
