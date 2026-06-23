@@ -2,14 +2,14 @@
 {% block title %}Find Fields{% endblock %}
 {% block content %}
 
-<div class="animate-fade-up">
+<!-- <div class="animate-fade-up">
     <div class="mb-8">
-        <p class="text-xs font-bold uppercase tracking-[3px] text-[#4A5568] mb-2" style="font-family: 'Orbitron', sans-serif;">Book now</p>
         <h1 class="text-4xl font-black" style="font-family: 'Orbitron', sans-serif;">FIND YOUR<br><span style="color: #0066FF;">VIBE</span></h1>
-    </div>
+        <p style="margin-top: 40px;" class="text-xs font-bold uppercase tracking-[3px] text-[#4A5568] mb-2" style="font-family: 'Orbitron', sans-serif;">BOOK NOW </p>
+    </div> -->
 
     <!-- Fields -->
-    <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+    <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-7 mb-6">
         {% for field in fields %}
             <a href="{% url 'booking:field_detail' field.id %}" class="khub-card overflow-hidden group">
                 <div class="h-36 relative overflow-hidden">
@@ -24,7 +24,7 @@
                     {% endif %}
                     <div class="absolute inset-0 bg-black/30"></div>
                     <div class="absolute top-3 right-3 bg-white border-2 border-[#0B1D3A] rounded-lg px-3 py-1 shadow-[2px_2px_0px_#0B1D3A] z-20">
-                        <span class="font-black text-[#0066FF] text-sm" style="font-family: 'Orbitron', sans-serif;">${{ field.price_per_hour }}/hr</span>
+                        <span class="font-black text-[#0066FF] text-sm" style="font-family: 'Orbitron', sans-serif;">EP {{ field.price_per_hour }}/hr</span>
                     </div>
                     <div class="absolute bottom-3 left-3 z-20">
                         <span class="text-white font-bold text-xs uppercase tracking-[2px] drop-shadow-lg" style="font-family: 'Orbitron', sans-serif;">{{ field.name }}</span>
@@ -42,9 +42,8 @@
     <!-- Divider -->
     <div class="text-center my-8">
         <div class="flex items-center gap-4 mb-4">
-            <div class="flex-1 h-0.5 bg-[#0B1D3A] opacity-20"></div>
-            <span class="text-2xl">⚡</span>
-            <div class="flex-1 h-0.5 bg-[#0B1D3A] opacity-20"></div>
+            <!-- <div class="flex-1 h-0.5 bg-[#0B1D3A] opacity-20"></div>
+            <div class="flex-1 h-0.5 bg-[#0B1D3A] opacity-20"></div> -->
         </div>
         <h3 class="text-lg font-black text-[#4A5568]" style="font-family: 'Orbitron', sans-serif;">
             DON'T HAVE A <span style="color: #0066FF;">TEAM</span>?

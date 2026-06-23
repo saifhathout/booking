@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'tournaments.apps.TournamentsConfig',
     'dashboard.apps.DashboardConfig',
     'webpush',
+    'payment',
     'notifications.apps.NotificationsConfig',  # ← أضف
 ]
 MIDDLEWARE = [
@@ -97,3 +98,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880

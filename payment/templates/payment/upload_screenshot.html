@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}رفع إثبات الدفع{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto p-6">
+    <div class="khub-card p-8">
+        <h1 class="text-2xl font-bold text-center mb-6">📸 رفع Screenshot الدفع</h1>
+        
+        <p class="text-center mb-6 text-gray-600">ارفع صورة التحويل من InstaPay</p>
+
+        <form method="POST" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="border-2 border-dashed border-gray-400 rounded-2xl p-10 text-center hover:border-blue-500 transition-colors">
+                <input type="file" 
+                       name="screenshot" 
+                       id="screenshot" 
+                       accept="image/*" 
+                       class="hidden" 
+                       required>
+                <label for="screenshot" class="cursor-pointer block">
+                    <span class="text-6xl mb-4 block">📷</span>
+                    <span class="font-semibold text-blue-600">اضغط هنا لاختيار الصورة</span>
+                    <p class="text-sm text-gray-500 mt-2">JPG or PNG - Max 5MB</p>
+                </label>
+            </div>
+
+            <button type="submit" class="btn-chrome w-full py-4 text-lg font-bold">
+                ↑ رفع الصورة وتحليلها
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

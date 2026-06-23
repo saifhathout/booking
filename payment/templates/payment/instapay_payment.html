@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}الدفع عبر InstaPay{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-6 text-center">💰 الدفع عبر InstaPay</h1>
+    
+    <div class="khub-card p-8">
+        <div class="text-center mb-8">
+            <h2 class="text-2xl font-bold">{{ booking.field.name }}</h2>
+            <p class="text-lg mt-2">{{ booking.booking_date }} • {{ booking.start_time }}</p>
+        </div>
+
+        <div class="bg-[#0A1733] text-white p-6 rounded-2xl mb-8">
+            <p class="text-sm opacity-75">المبلغ المطلوب</p>
+            <p class="text-4xl font-black">{{ amount }} EGP</p>
+        </div>
+
+        <div class="space-y-6">
+            <div>
+                <p class="font-bold mb-2">1. حول المبلغ إلى:</p>
+                <div class="bg-gray-100 p-4 rounded-xl font-mono text-xl">
+                    {{ instapay_number }}
+                </div>
+            </div>
+
+            <div>
+                <p class="font-bold mb-2">2. اكتب في الملاحظة (Note):</p>
+                <div class="bg-yellow-100 border-2 border-yellow-400 p-4 rounded-xl text-2xl font-bold text-center tracking-widest">
+                    {{ note_code }}
+                </div>
+            </div>
+
+            <div class="pt-4">
+                <a href="{% url 'payment:upload_screenshot' payment.id %}" 
+                   class="btn-chrome block text-center py-4 text-lg">
+                    ✅ لقد قمت بالتحويل - رفع Screenshot
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <p class="text-center text-sm text-gray-500 mt-8">
+        الطلب صالح لمدة 30 دقيقة فقط
+    </p>
+</div>
+{% endblock %}

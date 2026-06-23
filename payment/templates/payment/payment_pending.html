@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}جاري مراجعة الدفع{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto p-6">
+    <div class="khub-card p-8 text-center">
+        <div class="text-6xl mb-6">⏳</div>
+        <h1 class="text-2xl font-bold mb-4">جاري مراجعة الدفع</h1>
+        <p class="text-gray-600 mb-6">
+            شكراً لك! تم استلام طلب الدفع الخاص بك.
+            <br>
+            سيتم تأكيد الحجز بعد مراجعة الصورة من قبل الإدارة.
+        </p>
+        <div class="bg-gray-100 p-4 rounded-xl mb-6">
+            <p class="text-sm text-gray-500">رقم الطلب</p>
+            <p class="font-bold text-lg">#{{ payment.id }}</p>
+            <p class="text-sm text-gray-500 mt-2">المبلغ</p>
+            <p class="font-bold text-lg">{{ payment.amount }} EGP</p>
+        </div>
+        <a href="{% url 'booking:history' %}" class="btn-chrome block py-3">
+            📋 عرض حجوزاتي
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,57 +1,170 @@
 {% extends 'base.html' %}
-{% block title %}Book{% endblock %}
+{% block title %}Book {{ field.name }}{% endblock %}
 {% block content %}
 
-<div class="max-w-lg mx-auto animate-fade-up">
-    <div class="khub-card p-8 text-center">
-        <h1 class="text-2xl font-bold mb-2" style="font-family: 'Orbitron', sans-serif;">CONFIRM<br><span style="color: #0066FF;">BOOKING</span></h1>
-        <p class="text-sm text-[#4A5568] mb-8">Choose your duration</p>
-        
-        <div class="space-y-4 mb-8 text-left">
-            <div class="flex justify-between py-3 border-b-2 border-[#0B1D3A]">
-                <span class="text-[#4A5568]">Field</span>
+<div class="animate-fade-up max-w-2xl mx-auto">
+    <div class="khub-card p-6">
+        <h1 class="text-2xl font-bold mb-6" style="font-family: 'Orbitron', sans-serif;">
+            📅 Book {{ field.name }}
+        </h1>
+
+        <!-- تفاصيل الحجز -->
+        <div class="bg-[#F7FAFC] rounded-lg p-4 mb-6 border-2 border-[#0B1D3A]">
+            <div class="flex justify-between py-2 border-b border-[#0B1D3A]/20">
+                <span class="text-[#4A5568] font-semibold">🏟️ Field</span>
                 <span class="font-bold">{{ field.name }}</span>
             </div>
-            <div class="flex justify-between py-3 border-b-2 border-[#0B1D3A]">
-                <span class="text-[#4A5568]">Date</span>
-                <span class="font-extrabold">{{ date }}</span>
+            <div class="flex justify-between py-2 border-b border-[#0B1D3A]/20">
+                <span class="text-[#4A5568] font-semibold">📍 Venue</span>
+                <span class="font-bold">{{ field.venue.name }}</span>
             </div>
-            <div class="flex justify-between py-3 border-b-2 border-[#0B1D3A]">
-                <span class="text-[#4A5568]">Start Time</span>
-                <span class="font-extrabold text-[#0066FF]">{{ hour }}:00</span>
-            </div>
-        </div>
-        
-        <p class="text-sm text-[#4A5568] mb-4">How many hours?</p>
-        
-        <form method="POST" class="space-y-4">
-            {% csrf_token %}
-            <div class="grid grid-cols-3 gap-3 mb-6">
-                <label class="cursor-pointer">
-                    <input type="radio" name="duration" value="1" class="peer hidden" checked>
-                    <div class="peer-checked:bg-[#0066FF] peer-checked:text-white peer-checked:border-[#0066FF] border-2 border-[#0B1D3A] rounded-xl p-4 text-center font-bold transition shadow-[3px_3px_0px_#0B1D3A] peer-checked:shadow-[3px_3px_0px_#0044CC]">
-                        1h<br><span class="text-sm opacity-70">${{ price }}</span>
-                    </div>
-                </label>
-                <label class="cursor-pointer">
-                    <input type="radio" name="duration" value="2" class="peer hidden">
-                    <div class="peer-checked:bg-[#0066FF] peer-checked:text-white peer-checked:border-[#0066FF] border-2 border-[#0B1D3A] rounded-xl p-4 text-center font-bold transition shadow-[3px_3px_0px_#0B1D3A] peer-checked:shadow-[3px_3px_0px_#0044CC]">
-                        2h<br><span class="text-sm opacity-70">${{ price|floatformat:"0" }}{% widthratio price 1 2 as p2 %}{{ p2 }}</span>
-                    </div>
-                </label>
-                <label class="cursor-pointer">
-                    <input type="radio" name="duration" value="3" class="peer hidden">
-                    <div class="peer-checked:bg-[#0066FF] peer-checked:text-white peer-checked:border-[#0066FF] border-2 border-[#0B1D3A] rounded-xl p-4 text-center font-bold transition shadow-[3px_3px_0px_#0B1D3A] peer-checked:shadow-[3px_3px_0px_#0044CC]">
-                        3h<br><span class="text-sm opacity-70">${{ price|floatformat:"0" }}{% widthratio price 1 3 as p3 %}{{ p3 }}</span>
-                    </div>
-                </label>
+            <div class="flex justify-between py-2 border-b border-[#0B1D3A]/20">
+                <span class="text-[#4A5568] font-semibold">📆 Date</span>
+                <span class="font-bold">{{ date }}</span>
             </div>
             
-            <button type="submit" class="btn-chrome w-full py-4 text-sm">⚡ Confirm Booking</button>
-        </form>
-        
-        <a href="{% url 'booking:field_detail' field.id %}" class="text-sm text-[#4A5568] hover:text-[#0B1D3A] mt-4 block">Cancel</a>
+            <!-- ✅ Time Slot مع AM/PM -->
+            <div class="flex justify-between py-2 border-b border-[#0B1D3A]/20">
+                <span class="text-[#4A5568] font-semibold">⏰ Time Slot</span>
+                <span class="font-extrabold text-[#0066FF]" id="time-range">
+                    {{ start_time_display }} - {{ end_time_display }}
+                </span>
+            </div>
+            
+            <div class="flex justify-between py-2">
+                <span class="text-[#4A5568] font-semibold">💰 Total Price</span>
+                <span class="font-extrabold text-[#0066FF]" id="total-price">
+                    ${{ field.price_per_hour|floatformat:"0" }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Duration Buttons -->
+        <div>
+            <label class="block text-sm font-bold mb-3" style="font-family: 'Orbitron', sans-serif;">
+                ⏱️ Select Duration
+            </label>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3" id="duration-buttons">
+                <button type="button" data-duration="1" 
+                        class="duration-btn active-btn font-bold py-3 px-4 rounded-lg border-2 border-[#0B1D3A] shadow-[3px_3px_0px_#0B1D3A] hover:shadow-[2px_2px_0px_#0B1D3A] transition-all">
+                    1h
+                    <span class="block text-[10px] price-text">${{ field.price_per_hour|floatformat:"0" }}</span>
+                </button>
+                <button type="button" data-duration="2" 
+                        class="duration-btn font-bold py-3 px-4 rounded-lg border-2 border-[#0B1D3A] shadow-[3px_3px_0px_#0B1D3A] hover:shadow-[2px_2px_0px_#0B1D3A] transition-all">
+                    2h
+                    <span class="block text-[10px] price-text">${% widthratio field.price_per_hour 1 2 as p2 %}{{ p2|floatformat:"0" }}</span>
+                </button>
+                <button type="button" data-duration="3" 
+                        class="duration-btn font-bold py-3 px-4 rounded-lg border-2 border-[#0B1D3A] shadow-[3px_3px_0px_#0B1D3A] hover:shadow-[2px_2px_0px_#0B1D3A] transition-all">
+                    3h
+                    <span class="block text-[10px] price-text">${% widthratio field.price_per_hour 1 3 as p3 %}{{ p3|floatformat:"0" }}</span>
+                </button>
+            </div>
+            <input type="hidden" name="duration" id="selected-duration" value="1">
+        </div>
+
+        <!-- أزرار Confirm و Cancel -->
+        <div class="flex gap-3 mt-6">
+            <form method="post" id="booking-form" class="flex-1">
+                {% csrf_token %}
+                <button type="submit" 
+                        class="w-full bg-[#0066FF] text-white font-bold py-4 px-6 rounded-lg border-2 border-[#0B1D3A] shadow-[4px_4px_0px_#0B1D3A] hover:shadow-[2px_2px_0px_#0B1D3A] hover:translate-x-0.5 hover:translate-y-0.5 transition-all">
+                    ✅ Confirm Booking
+                </button>
+            </form>
+            
+            <a href="{% url 'booking:field_detail' field.id %}" 
+               class="flex-1 bg-gray-200 text-[#4A5568] font-bold py-4 px-6 rounded-lg border-2 border-[#0B1D3A] shadow-[4px_4px_0px_#0B1D3A] hover:shadow-[2px_2px_0px_#0B1D3A] hover:translate-x-0.5 hover:translate-y-0.5 transition-all text-center">
+                ❌ Cancel
+            </a>
+        </div>
     </div>
 </div>
+
+<!-- ✅ JavaScript محدث مع AM/PM -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('✅ Script started!');
+    
+    const buttons = document.querySelectorAll('.duration-btn');
+    const timeRange = document.getElementById('time-range');
+    const totalPrice = document.getElementById('total-price');
+    const hiddenInput = document.getElementById('selected-duration');
+    
+    // ✅ استخدام start_time_display من Django
+    const startTimeDisplay = "{{ start_time_display }}";
+    const startHour = parseInt("{{ hour }}");
+    
+    // جلب السعر من أول زر
+    const firstPriceSpan = document.querySelector('.duration-btn .price-text');
+    const pricePerHour = parseFloat(firstPriceSpan.textContent.replace('$', ''));
+    
+    console.log('Start Time:', startTimeDisplay);
+    console.log('Start Hour:', startHour);
+    console.log('Price Per Hour:', pricePerHour);
+    
+    // ✅ دالة لتحويل الساعة إلى AM/PM
+    function formatTimeDisplay(hour) {
+        if (hour === 0 || hour === 24) return '12:00 AM';
+        if (hour < 12) return `${hour}:00 AM`;
+        if (hour === 12) return '12:00 PM';
+        return `${hour - 12}:00 PM`;
+    }
+    
+    // دالة لتحديث الأزرار
+    function setActiveButton(activeBtn) {
+        buttons.forEach(btn => {
+            btn.classList.remove('active-btn', 'bg-[#0066FF]', 'text-white');
+            btn.classList.add('bg-white', 'text-[#0066FF]');
+            
+            const priceSpan = btn.querySelector('.price-text');
+            if (priceSpan) {
+                priceSpan.classList.remove('text-white/80');
+                priceSpan.classList.add('text-[#4A5568]');
+            }
+        });
+        
+        activeBtn.classList.remove('bg-white', 'text-[#0066FF]');
+        activeBtn.classList.add('active-btn', 'bg-[#0066FF]', 'text-white');
+        
+        const priceSpan = activeBtn.querySelector('.price-text');
+        if (priceSpan) {
+            priceSpan.classList.remove('text-[#4A5568]');
+            priceSpan.classList.add('text-white/80');
+        }
+    }
+    
+    // ✅ دالة محدثة لتحديث المعلومات مع AM/PM
+    function updateBookingInfo(duration) {
+        const endHour = startHour + duration;
+        const endTimeDisplay = formatTimeDisplay(endHour);
+        
+        timeRange.textContent = `${startTimeDisplay} - ${endTimeDisplay}`;
+        totalPrice.textContent = `$${pricePerHour * duration}`;
+        hiddenInput.value = duration;
+        
+        console.log(`Updated: ${duration}h, ${startTimeDisplay} - ${endTimeDisplay}, $${pricePerHour * duration}`);
+    }
+    
+    // إضافة حدث لكل زر
+    buttons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            console.log('Button clicked! Duration:', this.dataset.duration);
+            
+            const duration = parseInt(this.dataset.duration);
+            setActiveButton(this);
+            updateBookingInfo(duration);
+        });
+    });
+    
+    // تفعيل الزر الأول افتراضياً
+    if (buttons.length > 0) {
+        setActiveButton(buttons[0]);
+    }
+    
+    console.log('✅ Script setup complete!');
+});
+</script>
 
 {% endblock %}

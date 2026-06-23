@@ -22,7 +22,8 @@
                         <i class="fas fa-clock text-lg text-gray-400"></i>
                         <span class="text-[9px] font-semibold tracking-wider text-gray-500">Bookings</span>
                     </a>
-
+<a href="{% url 'accounts:logout' %}" class="flex items-center px-4 py-3 text-[#FF2D78] text-sm font-bold"><i class="fas fa-sign-out-alt mr-2"></i></a>
+                    </div>
                 {% elif user.is_venue_owner %}
                     <a href="{% url 'dashboard:owner_dashboard' %}" class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1">
                         <i class="fas fa-home text-lg text-gray-400"></i>

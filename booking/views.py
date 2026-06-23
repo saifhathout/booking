@@ -1,13 +1,21 @@
+# booking/views.py
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db import transaction, IntegrityError
+from django.db.models import Q
+from datetime import datetime, timedelta, date
+
 from accounts.decorators import player_required
 from venues.models import Field, VenueSlot, Booking
-from datetime import datetime, timedelta, date
+from notifications.utils import create_notification, send_push
+from .utils import format_time, get_booked_set, normalize_hour, get_slot_range
 
 
 @player_required
 def browse_fields(request):
+    """عرض جميع الملاعب مع فلترة"""
     sport_type = request.GET.get('sport_type', '')
     city = request.GET.get('city', '')
     date_val = request.GET.get('date', '')
@@ -27,10 +35,9 @@ def browse_fields(request):
     })
 
 
-from .utils import format_time, get_booked_set, display_hour
-
 @player_required
 def field_detail(request, field_id):
+    """عرض تفاصيل الملعب مع جميع السلوتات"""
     field = get_object_or_404(Field, id=field_id, is_active=True)
     
     today = date.today()
@@ -46,9 +53,20 @@ def field_detail(request, field_id):
         
         for hour in range(1, 25):  # 1 AM to 12 AM
             is_booked = f"{day}_{hour}" in booked_set
+            
+            # حساب end_time (إضافة ساعة واحدة)
+            end_hour = (hour % 24) + 1
+            if end_hour == 24:
+                end_hour = 0
+            
+            # تنسيق الوقت مع AM/PM
+            start_time_str = format_time(hour % 24)
+            end_time_str = format_time(end_hour)
+            
             day_slots.append({
                 'hour': hour,
-                'time': format_time(hour % 24),
+                'time': start_time_str,
+                'end_time': end_time_str,
                 'is_booked': is_booked,
                 'slot_id': f"{field_id}_{day}_{hour}" if not is_booked else None,
             })
@@ -62,20 +80,15 @@ def field_detail(request, field_id):
         'today': today,
         'current_hour': current_hour,
     })
-from .utils import normalize_hour, get_slot_range, format_time
-
-from django.db import transaction, IntegrityError
-
-from django.db import transaction, IntegrityError
-from notifications.utils import create_notification, send_push
 
 
 @player_required
 def book_slot(request, slot_id):
+    """حجز سلوت معين"""
     parts = slot_id.split('_')
     field_id = parts[0]
     date_str = parts[1]
-    display_hour = int(parts[2])
+    display_hour = int(parts[2])  # 1-24
     
     field = get_object_or_404(Field, id=field_id, is_active=True)
     store_hour = display_hour % 24
@@ -83,6 +96,11 @@ def book_slot(request, slot_id):
     if store_hour < 0 or store_hour > 23:
         messages.error(request, 'Invalid time.')
         return redirect('booking:field_detail', field_id=field.id)
+    
+    # تحويل الوقت إلى AM/PM للعرض
+    start_time_display = format_time(store_hour)
+    end_hour = (store_hour + 1) % 24
+    end_time_display = format_time(end_hour)
     
     if request.method == 'POST':
         duration = int(request.POST.get('duration', 1))
@@ -97,7 +115,6 @@ def book_slot(request, slot_id):
                     st = f"{h}:00:00"
                     et = f"{next_h}:00:00"
                     
-                    # Atomic get_or_create - prevents race condition
                     slot, created = VenueSlot.objects.get_or_create(
                         field=field,
                         date=date_str,
@@ -121,45 +138,50 @@ def book_slot(request, slot_id):
                 
                 total = field.price_per_hour * duration
                 
-                Booking.objects.create(
+                # إنشاء الحجز بحالة PENDING
+                booking = Booking.objects.create(
                     field=field,
                     player=request.user,
                     slot=slots_to_book[0],
                     booking_date=date_str,
                     start_time=f"{store_hour}:00",
                     end_time=f"{(store_hour + duration) % 24}:00",
-                    status='CONFIRMED'
+                    status='PENDING'
                 )
                 
-                # In-app notifications
-                create_notification(request.user, '✅ Booking Confirmed', f'{field.name} on {date_str} at {store_hour}:00', '/booking/history/')
-                create_notification(field.venue.owner, '🔔 New Booking', f'{request.user.username} booked {field.name}', '/venues/bookings/')
+                messages.info(request, '✅ تم حجز الملعب، الآن قم بالدفع للتأكيد')
                 
-                # Push notifications
-                send_push(request.user.id, '✅ Booking Confirmed!', f'{field.name} on {date_str} at {store_hour}:00', '/booking/history/')
-                send_push(field.venue.owner.id, '🔔 New Booking!', f'{request.user.username} booked {field.name}', '/venues/bookings/')
-                
-                messages.success(request, f'⚡ Booked {duration} hour(s) for ${total}!')
-                return redirect('booking:history')
+                # التوجيه إلى صفحة الدفع
+                return redirect('payment:initiate_instapay', booking_id=booking.id)
                 
         except IntegrityError:
             messages.error(request, '❌ Booking failed! Slot already taken.')
             return redirect('booking:field_detail', field_id=field.id)
     
+    # GET request
     return render(request, 'booking/book_slot.html', {
         'field': field,
         'date': date_str,
         'hour': display_hour,
+        'start_time_display': start_time_display,
+        'end_time_display': end_time_display,
         'price': field.price_per_hour,
     })
+
+
 @player_required
 def booking_history(request):
+    """عرض تاريخ الحجوزات للمستخدم"""
     today = date.today()
     now = datetime.now().time()
     
     all_bookings = Booking.objects.select_related(
         'field', 'field__venue', 'player'
-    ).filter(player=request.user).exclude(status='CANCELLED').order_by('booking_date', 'start_time')
+    ).filter(
+        player=request.user
+    ).exclude(
+        status='CANCELLED'
+    ).order_by('booking_date', 'start_time')
     
     upcoming_bookings = []
     past_bookings = []
@@ -182,14 +204,15 @@ def booking_history(request):
     })
 
 
-from .utils import normalize_hour, get_slot_range
-
 @player_required
 def cancel_booking(request, booking_id):
+    """إلغاء حجز معين"""
     booking = get_object_or_404(Booking, id=booking_id, player=request.user)
+    
     if booking.status == 'CANCELLED':
         messages.warning(request, 'Already cancelled.')
-        return redirect('booking:history')  
+        return redirect('booking:history')
+    
     start_h = booking.start_time.hour
     end_h = booking.end_time.hour
     
@@ -198,11 +221,11 @@ def cancel_booking(request, booking_id):
     
     duration = end_h - start_h if end_h > start_h else 1
     
-    # Delete the booking first (breaks FK to slot)
+    # إلغاء الحجز
     booking.status = 'CANCELLED'
     booking.save()
     
-    # Now safe to delete slots
+    # حذف السلوتات
     date_str = booking.booking_date.strftime('%Y-%m-%d')
     store_hour = start_h
     
@@ -214,6 +237,25 @@ def cancel_booking(request, booking_id):
             start_time=f"{h}:00:00"
         ).delete()
     
-    messages.success(request, 'Booking cancelled!')
+    messages.success(request, '✅ Booking cancelled successfully!')
     return redirect('booking:history')
 
+
+@player_required
+def booking_detail(request, booking_id):
+    """عرض تفاصيل حجز معين"""
+    booking = get_object_or_404(
+        Booking, 
+        id=booking_id, 
+        player=request.user
+    )
+    
+    # تنسيق الوقت مع AM/PM
+    start_time_display = format_time(booking.start_time.hour)
+    end_time_display = format_time(booking.end_time.hour)
+    
+    return render(request, 'booking/booking_detail.html', {
+        'booking': booking,
+        'start_time_display': start_time_display,
+        'end_time_display': end_time_display,
+    })

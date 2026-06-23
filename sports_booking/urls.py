@@ -13,6 +13,7 @@ urlpatterns = [
     path('teams/', include('teams.urls')),
     path('tournaments/', include('tournaments.urls')),
     path('notifications/', include('notifications.urls')),
+    path('payment/', include('payment.urls')),
 path('OneSignalSDKWorker.js', TemplateView.as_view(
     template_name='OneSignalSDKWorker.js',
     content_type='application/javascript'
