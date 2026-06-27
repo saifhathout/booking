@@ -22,7 +22,6 @@ def create_room(request):
             max_players=request.POST.get('max_players', 4),
             date=request.POST.get('date'),
             time=request.POST.get('time') or None,
-            city=request.POST.get('city', 'Cairo'),
         )
         RoomPlayer.objects.create(room=room, player=request.user, status='JOINED')
         messages.success(request, 'Room created!')
@@ -93,4 +92,28 @@ def leave_room(request, room_id):
     room.save()
     
     messages.success(request, 'Left room.')
+    return redirect('teams:room_list')
+
+
+# teams/views.py
+
+@player_required
+def kick_player(request, room_id, player_id):
+    room = get_object_or_404(GameRoom, id=room_id, host=request.user)
+    room_player = get_object_or_404(RoomPlayer, room=room, player_id=player_id)
+    
+    if room_player.player == room.host:
+        messages.error(request, "Can't kick the host!")
+        return redirect('teams:room_detail', room_id=room.id)
+    
+    room_player.delete()
+    messages.success(request, f"✅ {room_player.player.username} has been kicked!")
+    return redirect('teams:room_detail', room_id=room.id)
+
+
+@player_required
+def cancel_room(request, room_id):
+    room = get_object_or_404(GameRoom, id=room_id, host=request.user)
+    room.delete()
+    messages.success(request, "✅ Room cancelled!")
     return redirect('teams:room_list')

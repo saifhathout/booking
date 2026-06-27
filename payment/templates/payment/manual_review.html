@@ -1,0 +1,71 @@
+<!-- payment/templates/payment/manual_review.html -->
+
+{% extends 'base.html' %}
+{% block title %}مراجعة يدوية{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto p-6">
+    <div class="khub-card p-8">
+        <h1 class="text-2xl font-bold text-center mb-6">🔄 مراجعة يدوية للدفع</h1>
+        
+        <div class="bg-gray-50 rounded-xl p-6 mb-6">
+            <div class="flex justify-between py-2 border-b">
+                <span class="text-gray-600">رقم الدفع</span>
+                <span class="font-bold">#{{ payment.id }}</span>
+            </div>
+            <div class="flex justify-between py-2 border-b">
+                <span class="text-gray-600">الملعب</span>
+                <span class="font-bold">{{ booking.field.name }}</span>
+            </div>
+            <div class="flex justify-between py-2 border-b">
+                <span class="text-gray-600">المبلغ</span>
+                <span class="font-bold">{{ payment.amount }} EGP</span>
+            </div>
+            <div class="flex justify-between py-2 border-b">
+                <span class="text-gray-600">نسبة الثقة</span>
+                <span class="font-bold">{{ payment.confidence_score|floatformat:0 }}%</span>
+            </div>
+            <div class="flex justify-between py-2">
+                <span class="text-gray-600">الحالة الحالية</span>
+                <span class="font-bold text-yellow-600">{{ payment.get_status_display }}</span>
+            </div>
+        </div>
+        
+        {% if payment.screenshot %}
+        <div class="mb-6">
+            <p class="font-bold mb-2">📸 صورة التحويل:</p>
+            <img src="{{ payment.screenshot.url }}" alt="Screenshot" class="w-full rounded-xl border-2 border-gray-200">
+        </div>
+        {% endif %}
+        
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            
+            <div>
+                <label class="block text-sm font-bold mb-2">📝 ملاحظات</label>
+                <textarea name="notes" rows="3" class="w-full px-4 py-3 border-2 border-[#0B1D3A] rounded-lg focus:outline-none focus:border-[#0066FF]">{{ payment.notes }}</textarea>
+            </div>
+            
+            <div class="flex gap-3 pt-4">
+                <button type="submit" name="action" value="approve" class="flex-1 bg-green-500 text-white font-bold py-3 px-6 rounded-lg border-2 border-[#0B1D3A] shadow-[4px_4px_0px_#0B1D3A] hover:shadow-[2px_2px_0px_#0B1D3A] transition-all">
+                    ✅ قبول الدفع
+                </button>
+                <button type="submit" name="action" value="reject" class="flex-1 bg-red-500 text-white font-bold py-3 px-6 rounded-lg border-2 border-[#0B1D3A] shadow-[4px_4px_0px_#0B1D3A] hover:shadow-[2px_2px_0px_#0B1D3A] transition-all">
+                    ❌ رفض الدفع
+                </button>
+            </div>
+            <div class="text-center">
+                <button type="submit" name="action" value="pending" class="w-full bg-gray-500 text-white font-bold py-3 px-6 rounded-lg border-2 border-[#0B1D3A] shadow-[4px_4px_0px_#0B1D3A] hover:shadow-[2px_2px_0px_#0B1D3A] transition-all">
+                    ⏳ إرجاع للتعليق
+                </button>
+            </div>
+        </form>
+        
+        <div class="mt-6 text-center">
+            <a href="{% url 'booking:history' %}" class="text-sm text-[#4A5568] hover:text-[#0066FF]">
+                ← العودة للحجوزات
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

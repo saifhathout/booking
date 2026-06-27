@@ -1,98 +1,168 @@
 {% extends 'base.html' %}
-{% block title %}My Bookings{% endblock %}
-{% block content %}
+{% load static %}
 
-<div class="animate-fade-up">
-    <div class="mb-10">
-        <p class="text-xs font-bold uppercase tracking-[3px] text-[#4A5568] mb-2" style="font-family: 'Orbitron', sans-serif;">Your Matches</p>
-        <h1 class="page-title">MY<br><span>BOOKINGS</span></h1>
+{% block title %}My Bookings{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto animate-fade-up">
+
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-10">
+        <div>
+            <p class="uppercase tracking-[4px] text-sm text-gray-500 mb-2">Your Schedule</p>
+            <h1 class="text-5xl font-black text-[#1A2A4A]">
+                MY <span class="text-[#12E6FF]">BOOKINGS</span>
+            </h1>
+        </div>
+        <a href="{% url 'booking:browse' %}" class="mt-5 md:mt-0 bg-[#1A2A4A] hover:bg-[#24395E] text-white px-6 py-3 rounded-2xl font-semibold transition">
+            + Book New Field
+        </a>
     </div>
 
     <!-- Upcoming -->
     <div class="mb-12">
-        <h2 class="text-xl font-bold mb-6 flex items-center" style="font-family: 'Orbitron', sans-serif;">
-            ⚡ UPCOMING
-            <span class="badge-khub badge-chrome text-[10px] ml-3">{{ upcoming_bookings|length }}</span>
-        </h2>
-        
+        <div class="flex items-center gap-3 mb-6">
+            <h2 class="text-2xl font-bold text-[#1A2A4A]">Upcoming</h2>
+            <span class="bg-[#12E6FF]/20 text-[#1A2A4A] rounded-full px-3 py-1 text-sm">{{ upcoming_bookings|length }}</span>
+        </div>
+
         {% if upcoming_bookings %}
-            <div class="space-y-4">
+            <div class="space-y-5">
                 {% for booking in upcoming_bookings %}
-                    <div class="khub-card p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-xl bg-[#0066FF] flex items-center justify-center text-xl border-2 border-[#0B1D3A] shadow-[3px_3px_0px_#0B1D3A]">⚽</div>
-                            <div>
-                                <h3 class="font-bold">{{ booking.field.name }}</h3>
-                                <p class="text-sm text-[#4A5568]">{{ booking.field.venue.name }}</p>
-                                <p class="text-xs text-[#4A5568] mt-1">{{ booking.booking_date|date:"D, M j" }} · {{ booking.start_time }} - {{ booking.end_time }}</p>
+                    <div class="rounded-3xl bg-white/60 backdrop-blur-xl border border-white/40 shadow-xl p-6">
+                        <div class="flex flex-col lg:flex-row lg:justify-between gap-6">
+                            <!-- Left -->
+                            <div class="flex gap-5">
+                                <div class="w-16 h-16 rounded-2xl bg-[#1A2A4A] text-white flex items-center justify-center text-3xl">
+                                    {% if booking.field.sport_type == 'FOOTBALL' %}⚽
+                                    {% elif booking.field.sport_type == 'PADEL' %}🎾
+                                    {% elif booking.field.sport_type == 'TENNIS' %}🎾
+                                    {% elif booking.field.sport_type == 'BASKETBALL' %}🏀
+                                    {% else %}🏟️{% endif %}
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-[#1A2A4A]">{{ booking.field.name }}</h3>
+                                    <p class="text-gray-500">{{ booking.field.venue.name }}</p>
+                                    <div class="mt-3 space-y-1 text-gray-600 text-sm">
+                                        <p>📅 {{ booking.booking_date|date:"D, M j" }}</p>
+                                        <p>⏰ {{ booking.start_time|time:"g:i A" }} - {{ booking.end_time|time:"g:i A" }}</p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <span class="font-black text-[#0066FF]" style="font-family: 'Orbitron', sans-serif;">${{ booking.field.price_per_hour }}</span>
-                            <span class="badge-khub badge-chrome text-[10px]">Confirmed</span>
-                            <button onclick="openModal('cancelModal{{ booking.id }}')" class="text-[#FF2D78] text-sm font-bold hover:underline">Cancel</button>
+
+                            <!-- Right -->
+                            <div class="flex flex-col items-start lg:items-end justify-between">
+                                <div class="flex flex-wrap items-center gap-3">
+                                    <h3 class="text-3xl font-black text-[#1A2A4A]">${{ booking.field.price_per_hour }}</h3>
+                                    
+                                    {% if booking.status == "PENDING" %}
+                                        <span class="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full text-sm font-semibold">⏳ Pending</span>
+                                    {% elif booking.status == "CONFIRMED" %}
+                                        <span class="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-semibold">✅ Confirmed</span>
+                                    {% else %}
+                                        <span class="bg-red-100 text-red-600 px-4 py-2 rounded-full text-sm font-semibold">❌ Cancelled</span>
+                                    {% endif %}
+                                </div>
+
+                                {% if booking.status == "PENDING" or booking.status == "CONFIRMED" %}
+                                    <button onclick="openModal('cancelModal{{ booking.id }}')" class="mt-3 text-red-500 hover:text-red-700 font-semibold text-sm border border-red-200 hover:border-red-400 px-4 py-2 rounded-full transition">
+                                        Cancel Booking
+                                    </button>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
 
                     <!-- Cancel Modal -->
-                    <div id="cancelModal{{ booking.id }}" class="fixed inset-0 z-50 hidden items-center justify-center" style="display: none;">
-                        <div class="absolute inset-0 bg-black/60" onclick="closeModal('cancelModal{{ booking.id }}')"></div>
-                        <div class="relative bg-white border-[3px] border-[#0B1D3A] rounded-2xl p-8 max-w-sm w-full mx-4 text-center shadow-[8px_8px_0px_#0B1D3A] z-10">
-                            <span class="text-5xl mb-4 block">🗑️</span>
-                            <h3 class="text-xl font-bold mb-2" style="font-family: 'Orbitron', sans-serif;">Cancel Booking?</h3>
-                            <p class="text-sm text-[#4A5568] mb-6">{{ booking.field.name }}<br>{{ booking.booking_date }} · {{ booking.start_time }}</p>
-                            <div class="flex gap-3">
-                                <button onclick="closeModal('cancelModal{{ booking.id }}')" class="btn-outline flex-1 py-2 text-xs">Keep</button>
-                                <a href="{% url 'booking:cancel_booking' booking.id %}" class="btn-pink flex-1 py-2 text-xs text-center">Yes, Cancel</a>
+                    <div id="cancelModal{{ booking.id }}" class="fixed inset-0 hidden items-center justify-center z-50">
+                        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeModal('cancelModal{{ booking.id }}')"></div>
+                        <div class="relative w-full max-w-md mx-4 rounded-3xl bg-white shadow-2xl p-8">
+                            <div class="text-center">
+                                <div class="w-20 h-20 mx-auto rounded-full bg-red-100 flex items-center justify-center text-4xl mb-5">⚠️</div>
+                                <h2 class="text-2xl font-bold text-[#1A2A4A]">Cancel Booking?</h2>
+                                <p class="text-gray-500 mt-3">{{ booking.field.name }}</p>
+                                <p class="text-gray-500">{{ booking.booking_date|date:"D, M j" }}</p>
+                                <div class="flex gap-3 mt-8">
+                                    <button onclick="closeModal('cancelModal{{ booking.id }}')" class="flex-1 border border-gray-300 rounded-2xl py-3 hover:bg-gray-100">
+                                        Keep
+                                    </button>
+                                    <a href="{% url 'booking:cancel_booking' booking.id %}" class="flex-1 bg-red-500 hover:bg-red-600 text-white rounded-2xl py-3 text-center">
+                                        Cancel
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 {% endfor %}
             </div>
         {% else %}
-            <div class="khub-card p-16 text-center">
-                <span class="text-5xl mb-4 block">📅</span>
-                <p class="text-[#4A5568]">No upcoming bookings</p>
-                <a href="{% url 'booking:browse' %}" class="btn-chrome inline-block mt-4 text-xs">Book a Field</a>
+            <div class="rounded-3xl bg-white/60 backdrop-blur-xl border border-white/40 shadow-xl p-20 text-center">
+                <div class="text-6xl mb-5">📅</div>
+                <h2 class="text-2xl font-bold text-[#1A2A4A]">No Upcoming Bookings</h2>
+                <p class="text-gray-500 mt-3">Reserve your next match.</p>
+                <a href="{% url 'booking:browse' %}" class="inline-block mt-6 bg-[#1A2A4A] text-white px-8 py-3 rounded-2xl hover:bg-[#24395E] transition">
+                    Book a Field
+                </a>
             </div>
         {% endif %}
     </div>
 
-    <!-- Past -->
+    <!-- Past Bookings -->
     <div>
-        <h2 class="text-xl font-bold mb-6 flex items-center" style="font-family: 'Orbitron', sans-serif;">
-            ⏰ PAST
-            <span class="badge-khub badge-purple text-[10px] ml-3">{{ past_bookings|length }}</span>
-        </h2>
-        
+        <div class="flex items-center gap-3 mb-6">
+            <h2 class="text-2xl font-bold text-[#1A2A4A]">Past Matches</h2>
+            <span class="bg-[#1A2A4A]/10 text-[#1A2A4A] rounded-full px-3 py-1 text-sm">{{ past_bookings|length }}</span>
+        </div>
+
         {% if past_bookings %}
-            <div class="space-y-4 opacity-60">
+            <div class="space-y-5">
                 {% for booking in past_bookings %}
-                    <div class="khub-card p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-xl bg-gray-200 flex items-center justify-center text-xl border-2 border-[#0B1D3A]">⚽</div>
-                            <div>
-                                <h3 class="font-bold text-[#4A5568]">{{ booking.field.name }}</h3>
-                                <p class="text-sm text-[#4A5568]">{{ booking.field.venue.name }}</p>
-                                <p class="text-xs text-[#4A5568] mt-1">{{ booking.booking_date|date:"D, M j" }} · {{ booking.start_time }} - {{ booking.end_time }}</p>
+                    <div class="rounded-3xl bg-white/40 backdrop-blur-lg border border-white/30 shadow-lg opacity-80 p-6">
+                        <div class="flex flex-col lg:flex-row lg:justify-between gap-6">
+                            <div class="flex gap-5">
+                                <div class="w-16 h-16 rounded-2xl bg-gray-300 flex items-center justify-center text-3xl">
+                                    {% if booking.field.sport_type == 'FOOTBALL' %}⚽
+                                    {% elif booking.field.sport_type == 'PADEL' %}🎾
+                                    {% elif booking.field.sport_type == 'TENNIS' %}🎾
+                                    {% elif booking.field.sport_type == 'BASKETBALL' %}🏀
+                                    {% else %}🏟️{% endif %}
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-[#1A2A4A]">{{ booking.field.name }}</h3>
+                                    <p class="text-gray-500">{{ booking.field.venue.name }}</p>
+                                    <div class="mt-3 space-y-1 text-gray-600 text-sm">
+                                        <p>📅 {{ booking.booking_date|date:"D, M j" }}</p>
+                                        <p>⏰ {{ booking.start_time|time:"g:i A" }} - {{ booking.end_time|time:"g:i A" }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col items-start lg:items-end justify-between">
+                                <h3 class="text-2xl font-black text-gray-500">${{ booking.field.price_per_hour }}</h3>
+                                <span class="bg-gray-200 text-gray-600 rounded-full px-4 py-2 text-sm font-semibold">✓ Completed</span>
                             </div>
                         </div>
-                        <span class="badge-khub badge-purple text-[10px]">Completed</span>
                     </div>
                 {% endfor %}
             </div>
         {% else %}
-            <div class="khub-card p-16 text-center">
-                <span class="text-5xl mb-4 block">📭</span>
-                <p class="text-[#4A5568]">No past bookings</p>
+            <div class="rounded-3xl bg-white/60 backdrop-blur-xl border border-white/40 shadow-xl p-20 text-center">
+                <div class="text-6xl mb-5">🏆</div>
+                <h2 class="text-2xl font-bold text-[#1A2A4A]">No Match History</h2>
+                <p class="text-gray-500 mt-3">Your completed matches will appear here.</p>
             </div>
         {% endif %}
     </div>
 </div>
 
 <script>
-function openModal(id) { document.getElementById(id).style.display = 'flex'; document.getElementById(id).classList.remove('hidden'); }
-function closeModal(id) { document.getElementById(id).style.display = 'none'; document.getElementById(id).classList.add('hidden'); }
+function openModal(id) { 
+    document.getElementById(id).style.display = 'flex'; 
+    document.getElementById(id).classList.remove('hidden'); 
+}
+function closeModal(id) { 
+    document.getElementById(id).style.display = 'none'; 
+    document.getElementById(id).classList.add('hidden'); 
+}
 </script>
 
 {% endblock %}

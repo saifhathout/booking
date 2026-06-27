@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+        'channels',  # ✅ أضف هذا
     'crispy_forms',
     'crispy_bootstrap5',
     'accounts.apps.AccountsConfig',
@@ -33,6 +34,10 @@ INSTALLED_APPS = [
     'payment',
     'notifications.apps.NotificationsConfig',  # ← أضف
 ]
+
+ASGI_APPLICATION = 'sports_booking.asgi.application'
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -57,6 +62,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'notifications.context_processors.unread_count',  # ✅ أضف هذا
+
         
             ],
         },
@@ -101,3 +108,13 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880
+
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}

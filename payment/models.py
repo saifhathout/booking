@@ -2,7 +2,7 @@
 
 from django.db import models
 from django.conf import settings
-from venues.models import Booking  # ✅ Booking موجود في venues
+from venues.models import Booking
 
 
 class InstaPayPayment(models.Model):

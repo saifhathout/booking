@@ -166,7 +166,111 @@ def booking_requests(request):
     return render(request, 'venues/booking_requests.html', {'bookings': bookings})
 
 
+# venues/views.py (أضف هذه الدالة في نهاية الملف)
+
+from django.contrib.auth.decorators import login_required
+from django.db.models import Sum, Count
+from payment.models import InstaPayPayment
+from notifications.models import Notification
+
+
+# venues/views.py
+
+@login_required
+def owner_dashboard(request):
+    """لوحة تحكم المالك - تعرض الإحصائيات والإشعارات وطلبات المراجعة"""
+    
+    # ✅ 1. الإحصائيات
+    venues = Venue.objects.filter(owner=request.user)
+    total_fields = Field.objects.filter(venue__in=venues).count()
+    total_bookings = Booking.objects.filter(field__venue__in=venues).count()
+    total_revenue = Booking.objects.filter(
+        field__venue__in=venues, 
+        status='CONFIRMED'
+    ).aggregate(total=Sum('field__price_per_hour'))['total'] or 0
+    
+    # ✅ 2. جميع الملاعب للمالك
+    all_fields = Field.objects.filter(venue__in=venues, is_active=True)
+    
+    # ✅ 3. الإشعارات غير المقروءة
+    from notifications.models import Notification
+    notifications = Notification.objects.filter(
+        user=request.user,
+        is_read=False
+    ).order_by('-created_at')[:20]
+    
+    # ✅ 4. طلبات الدفع في انتظار المراجعة
+    from payment.models import InstaPayPayment
+    pending_reviews = InstaPayPayment.objects.filter(
+        status='manual_review',
+        booking__field__venue__in=venues
+    ).select_related('booking', 'booking__field', 'booking__player').order_by('-created_at')
+    
+    context = {
+        'total_fields': total_fields,
+        'total_bookings': total_bookings,
+        'total_revenue': total_revenue,
+        'all_fields': all_fields,
+        'notifications': notifications,
+        'pending_reviews': pending_reviews,
+        'unread_count': notifications.count(),
+    }
+    
+    # ✅ استخدم الـ template بتاع dashboard (موجود)
+    return render(request, 'dashboard/owner_dashboard.html', context)
+
+from payment.models import InstaPayPayment
+
+
 @venue_owner_required
 def booking_details(request, booking_id):
-    booking = get_object_or_404(Booking.objects.select_related('field', 'player'), id=booking_id, field__venue__owner=request.user)
-    return render(request, 'venues/booking_details.html', {'booking': booking})
+    booking = get_object_or_404(
+        Booking.objects.select_related('field', 'player', 'field__venue'),
+        id=booking_id,
+        field__venue__owner=request.user
+    )
+    
+    # ✅ جلب صورة الدفع
+    try:
+        payment = InstaPayPayment.objects.get(booking=booking)
+    except InstaPayPayment.DoesNotExist:
+        payment = None
+    
+    return render(request, 'venues/booking_details.html', {
+        'booking': booking,
+        'payment': payment,
+    })
+
+
+
+
+
+
+    # venues/views.py
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from accounts.decorators import venue_owner_required
+from .models import Venue, Field
+from .forms import FieldForm
+
+
+@venue_owner_required
+def field_edit(request, field_id):
+    """تعديل بيانات الملعب (سعر، صورة، اسم، تفاصيل)"""
+    field = get_object_or_404(Field, id=field_id, venue__owner=request.user)
+    
+    if request.method == 'POST':
+        form = FieldForm(request.POST, request.FILES, instance=field)
+        if form.is_valid():
+            form.save()
+            messages.success(request, '✅ تم تحديث بيانات الملعب بنجاح!')
+            return redirect('venues:field_schedule', field_id=field.id)
+    else:
+        form = FieldForm(instance=field)
+    
+    return render(request, 'venues/field_edit.html', {
+        'form': form,
+        'field': field,
+    })

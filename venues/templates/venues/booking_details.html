@@ -1,10 +1,12 @@
+<!-- venues/templates/venues/booking_details.html -->
+
 {% extends 'base.html' %}
-{% block title %}Booking Details{% endblock %}
+{% block title %}تفاصيل الحجز{% endblock %}
 {% block content %}
 
-<div class="max-w-2xl mx-auto animate-fade-up">
+<div class="max-w-3xl mx-auto animate-fade-up">
     <a href="{% url 'venues:field_schedule' booking.field.id %}" class="text-sm text-[#4A5568] hover:text-[#0B1D3A] mb-6 inline-block">
-        <i class="fas fa-arrow-left mr-2"></i>Back to Schedule
+        <i class="fas fa-arrow-left mr-2"></i>رجوع إلى الجدول
     </a>
 
     <div class="khub-card p-8">
@@ -17,12 +19,12 @@
                 {% else %}🏟️{% endif %}
             </div>
             <span class="badge-khub badge-chrome text-[10px]">{{ booking.status }}</span>
-            <h1 class="text-2xl font-bold mt-2" style="font-family: 'Orbitron', sans-serif;">Booking Details</h1>
+            <h1 class="text-2xl font-bold mt-2" style="font-family: 'Orbitron', sans-serif;">تفاصيل الحجز</h1>
         </div>
 
         <div class="space-y-4 mb-8">
             <div class="bg-[#F5F0E5] rounded-xl p-4 border-2 border-[#0B1D3A]">
-                <p class="text-xs text-[#4A5568] uppercase tracking-[2px] font-bold mb-3">Player</p>
+                <p class="text-xs text-[#4A5568] uppercase tracking-[2px] font-bold mb-3">اللاعب</p>
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-lg bg-[#8B5CF6] flex items-center justify-center text-white font-bold text-sm border-2 border-[#0B1D3A]">
                         {{ booking.player.username|first|upper }}
@@ -36,23 +38,51 @@
 
             <div class="grid grid-cols-2 gap-4">
                 <div class="bg-[#F5F0E5] rounded-xl p-4 border-2 border-[#0B1D3A]">
-                    <p class="text-xs text-[#4A5568] uppercase tracking-[2px] font-bold mb-2">Date</p>
+                    <p class="text-xs text-[#4A5568] uppercase tracking-[2px] font-bold mb-2">التاريخ</p>
                     <p class="font-bold">{{ booking.booking_date|date:"l, F j, Y" }}</p>
                 </div>
                 <div class="bg-[#F5F0E5] rounded-xl p-4 border-2 border-[#0B1D3A]">
-                    <p class="text-xs text-[#4A5568] uppercase tracking-[2px] font-bold mb-2">Time</p>
-                    <p class="font-bold">{{ booking.start_time }} - {{ booking.end_time }}</p>
+                    <p class="text-xs text-[#4A5568] uppercase tracking-[2px] font-bold mb-2">الوقت</p>
+                    <p class="font-bold">{{ booking.start_time|time:"g:i A" }} - {{ booking.end_time|time:"g:i A" }}</p>
                 </div>
             </div>
 
             <div class="bg-[#0066FF]/10 rounded-xl p-4 text-center border-2 border-[#0066FF]/30">
-                <p class="text-xs text-[#4A5568] uppercase tracking-[2px] font-bold mb-2">Total Paid</p>
+                <p class="text-xs text-[#4A5568] uppercase tracking-[2px] font-bold mb-2">المبلغ الإجمالي</p>
                 <p class="text-3xl font-black text-[#0066FF]" style="font-family: 'Orbitron', sans-serif;">${{ booking.field.price_per_hour }}</p>
             </div>
+
+            <!-- صورة الدفع -->
+            {% if payment and payment.screenshot %}
+            <div class="bg-gray-100 rounded-xl p-4 border-2 border-[#0B1D3A]">
+                <p class="text-xs text-[#4A5568] uppercase tracking-[2px] font-bold mb-3">📸 صورة الدفع</p>
+                <img src="{{ payment.screenshot.url }}" alt="Screenshot" class="w-full rounded-lg border-2 border-gray-300">
+            </div>
+            {% endif %}
         </div>
 
-        <button onclick="window.print()" class="btn-outline w-full py-3 text-xs">
-            <i class="fas fa-print mr-2"></i>Print
+        <!-- أزرار القبول والرفض -->
+        {% if payment and payment.status == 'manual_review' %}
+        <div class="flex gap-3 mt-4">
+            <form method="POST" action="{% url 'payment:verify_payment' payment.id %}" class="flex-1">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="approve">
+                <button type="submit" class="w-full bg-green-500 text-white font-bold py-3 px-4 rounded-lg border-2 border-[#0B1D3A] shadow-[4px_4px_0px_#0B1D3A] hover:shadow-[2px_2px_0px_#0B1D3A] transition">
+                    ✅ قبول الدفع
+                </button>
+            </form>
+            <form method="POST" action="{% url 'payment:verify_payment' payment.id %}" class="flex-1">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="reject">
+                <button type="submit" class="w-full bg-red-500 text-white font-bold py-3 px-4 rounded-lg border-2 border-[#0B1D3A] shadow-[4px_4px_0px_#0B1D3A] hover:shadow-[2px_2px_0px_#0B1D3A] transition">
+                    ❌ رفض الدفع
+                </button>
+            </form>
+        </div>
+        {% endif %}
+
+        <button onclick="window.print()" class="btn-outline w-full py-3 text-xs mt-4">
+            <i class="fas fa-print mr-2"></i>طباعة
         </button>
     </div>
 </div>

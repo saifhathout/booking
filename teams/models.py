@@ -15,7 +15,6 @@ class GameRoom(models.Model):
     max_players = models.IntegerField(default=4)
     date = models.DateField()
     time = models.TimeField(null=True, blank=True)
-    city = models.CharField(max_length=100, default='Cairo')
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     

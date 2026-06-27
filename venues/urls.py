@@ -13,4 +13,9 @@ urlpatterns = [
     path('field/<int:field_id>/unblock/<str:date>/<int:hour>/', views.unblock_slot, name='unblock_slot'),
     path('bookings/', views.booking_requests, name='booking_requests'),
     path('booking/<int:booking_id>/details/', views.booking_details, name='booking_details'),
+    path('dashboard/', views.owner_dashboard, name='owner_dashboard'),  # ✅ لوحة تحكم المالك
+    path('booking/<int:booking_id>/details/', views.booking_details, name='booking_details'),
+          path('field/<int:field_id>/edit/', views.field_edit, name='field_edit'),  # ✅ أضف هذا
+  # ✅ تفاصيل الحجز للمالك
 ]
+    

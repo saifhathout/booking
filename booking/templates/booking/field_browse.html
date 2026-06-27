@@ -1,96 +1,172 @@
 {% extends 'base.html' %}
-{% block title %}Find Fields{% endblock %}
+{% load static %}
+
+{% block title %}K-HUB - Find Your Field{% endblock %}
+
 {% block content %}
 
-<!-- <div class="animate-fade-up">
-    <div class="mb-8">
-        <h1 class="text-4xl font-black" style="font-family: 'Orbitron', sans-serif;">FIND YOUR<br><span style="color: #0066FF;">VIBE</span></h1>
-        <p style="margin-top: 40px;" class="text-xs font-bold uppercase tracking-[3px] text-[#4A5568] mb-2" style="font-family: 'Orbitron', sans-serif;">BOOK NOW </p>
-    </div> -->
+<div class="animate-fade-up max-w-6xl mx-auto px-4">
 
-    <!-- Fields -->
-    <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-7 mb-6">
-        {% for field in fields %}
-            <a href="{% url 'booking:field_detail' field.id %}" class="khub-card overflow-hidden group">
-                <div class="h-36 relative overflow-hidden">
-                    {% if 'Football' in field.name %}
-                        <img src="/static/img/fields/volta.webp" class="w-full h-full object-cover absolute inset-0">
-                    {% elif 'Padel 1' in field.name or 'Padel 2' in field.name %}
-                        <img src="/static/img/fields/20220522_Campo_padel_MONDO_superficie.jpg" class="w-full h-full object-cover absolute inset-0">
-                    {% elif 'Padol' in field.name or 'Basketball' in field.name %}
-                        <img src="/static/img/fields/panoramic-ملاعب-بادبول.webp" class="w-full h-full object-cover absolute inset-0">
+    <!-- ✅ 1. Hero Section - مع Stats -->
+    <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-8 mb-8 relative overflow-hidden">
+        <!-- Subtle Background Pattern -->
+        <div class="absolute inset-0 opacity-5">
+            <div class="absolute inset-0" style="background-image: repeating-linear-gradient(45deg, #1A2A4A 0px, #1A2A4A 2px, transparent 2px, transparent 10px);"></div>
+        </div>
+        
+        <div class="relative z-10">
+            <p class="text-xs font-bold tracking-[3px] text-[#12E6FF] uppercase">
+                BOOK NOW
+            </p>
+            <h1 class="text-4xl font-black tracking-wide text-[#1A2A4A]">
+                FIND YOUR
+                <span class="text-[#12E6FF]">FIELD</span>
+            </h1>
+            <p class="text-gray-500 mt-2">
+                Book your favorite field in seconds.
+            </p>
+            
+            <!-- Stats -->
+            <div class="flex gap-6 mt-6">
+                <div>
+                    <p class="text-2xl font-black text-[#1A2A4A]">{{ total_fields|default:"4" }}</p>
+                    <p class="text-xs text-gray-500">Fields</p>
+                </div>
+                <div>
+                    <p class="text-2xl font-black text-[#1A2A4A]">{{ total_bookings|default:"12" }}</p>
+                    <p class="text-xs text-gray-500">Bookings</p>
+                </div>
+                <div>
+                    <p class="text-2xl font-black text-[#12E6FF]">{{ total_players|default:"28" }}</p>
+                    <p class="text-xs text-gray-500">Players</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ 2. Fields Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-2 gap-6 mb-12">
+        {% for field in fields|slice:":4" %}
+            <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl overflow-hidden hover:-translate-y-1 hover:shadow-2xl transition">
+                <!-- Image -->
+                <div class="h-56 relative overflow-hidden bg-[#1A2A4A]/10">
+                    {% if field.image %}
+                        <img src="{{ field.image.url }}" alt="{{ field.name }}" class="w-full h-full object-cover">
+                    {% elif field.sport_type == 'FOOTBALL' %}
+                        <img src="/static/img/fields/volta.webp" alt="Football" class="w-full h-full object-cover">
+                    {% elif field.sport_type == 'PADEL' %}
+                        <img src="/static/img/fields/20220522_Campo_padel_MONDO_superficie.jpg" alt="Padel" class="w-full h-full object-cover">
+                    {% elif field.sport_type == 'BASKETBALL' %}
+                        <img src="/static/img/fields/panoramic-ملاعب-بادبول.webp" alt="Basketball" class="w-full h-full object-cover">
                     {% else %}
-                        <div class="w-full h-full bg-gradient-to-br from-[#0066FF] to-[#0044CC] flex items-center justify-center text-5xl">🏟️</div>
+                        <div class="w-full h-full bg-gradient-to-br from-[#1A2A4A] to-[#24395E] flex items-center justify-center text-6xl">
+                            {% if field.sport_type == 'FOOTBALL' %}⚽
+                            {% elif field.sport_type == 'PADEL' %}🎾
+                            {% elif field.sport_type == 'BASKETBALL' %}🏀
+                            {% else %}🏟️{% endif %}
+                        </div>
                     {% endif %}
-                    <div class="absolute inset-0 bg-black/30"></div>
-                    <div class="absolute top-3 right-3 bg-white border-2 border-[#0B1D3A] rounded-lg px-3 py-1 shadow-[2px_2px_0px_#0B1D3A] z-20">
-                        <span class="font-black text-[#0066FF] text-sm" style="font-family: 'Orbitron', sans-serif;">EP {{ field.price_per_hour }}/hr</span>
+                    
+                    <!-- Overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+                    
+                    <!-- ✅ 3. Price Badge - Darker -->
+                    <div class="absolute top-4 right-4 bg-[#1A2A4A]/80 backdrop-blur text-white px-3 py-1 rounded-full text-xs font-semibold border border-white/20">
+                        EGP {{ field.price_per_hour }}/hr
                     </div>
-                    <div class="absolute bottom-3 left-3 z-20">
-                        <span class="text-white font-bold text-xs uppercase tracking-[2px] drop-shadow-lg" style="font-family: 'Orbitron', sans-serif;">{{ field.name }}</span>
+                    
+                    <!-- Sport Icon -->
+                    <div class="absolute top-4 left-4 w-10 h-10 rounded-xl bg-white/90 backdrop-blur border border-white/40 flex items-center justify-center text-xl shadow-lg">
+                        {% if field.sport_type == 'FOOTBALL' %}⚽
+                        {% elif field.sport_type == 'PADEL' %}🎾
+                        {% elif field.sport_type == 'BASKETBALL' %}🏀
+                        {% else %}🏟️{% endif %}
+                    </div>
+                    
+                    <!-- Field Name -->
+                    <div class="absolute bottom-4 left-4 z-10">
+                        <h3 class="text-xl font-bold text-white drop-shadow-lg">
+                            {{ field.name }}
+                        </h3>
+                        <p class="text-white/70 text-xs drop-shadow-lg">
+                            {{ field.venue.name }}
+                        </p>
                     </div>
                 </div>
-                <div class="p-4">
-                    <h3 class="font-bold text-lg">{{ field.name }}</h3>
-                    <p class="text-sm text-[#4A5568]">{{ field.venue.name }} · {{ field.venue.city }}</p>
+                
+                <!-- Book Now -->
+                <div class="p-5">
+                    <a href="{% url 'booking:field_detail' field.id %}" 
+                       class="block text-center bg-[#1A2A4A] hover:bg-[#24395E] text-white rounded-2xl py-3 font-semibold transition">
+                        BOOK NOW →
+                    </a>
                 </div>
-            </a>
+            </div>
+        {% empty %}
+            <!-- ✅ 6. Empty State for Fields -->
+            <div class="col-span-2 rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-12 text-center">
+                <div class="text-5xl mb-4">🏟️</div>
+                <h3 class="text-xl font-bold text-[#1A2A4A]">No Fields Available</h3>
+                <p class="text-gray-500 mt-2">Check back later for new fields.</p>
+            </div>
         {% endfor %}
     </div>
 
+    <!-- ✅ 4. NO TEAM - Glassmorphism -->
+    <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-12 text-center mb-8">
+        <h2 class="text-4xl font-black text-[#1A2A4A]">
+            NO
+            <span class="text-[#12E6FF]">TEAM?</span>
+        </h2>
+        <p class="text-gray-500 mt-3">
+            No problem. Find your squad here.
+        </p>
 
-    <!-- Divider -->
-    <div class="text-center my-8">
-        <div class="flex items-center gap-4 mb-4">
-            <!-- <div class="flex-1 h-0.5 bg-[#0B1D3A] opacity-20"></div>
-            <div class="flex-1 h-0.5 bg-[#0B1D3A] opacity-20"></div> -->
-        </div>
-        <h3 class="text-lg font-black text-[#4A5568]" style="font-family: 'Orbitron', sans-serif;">
-            DON'T HAVE A <span style="color: #0066FF;">TEAM</span>?
-        </h3>
-        <p class="text-sm text-[#4A5568] mt-1">No problem. Find your squad here.</p>
     </div>
 
-    <!-- BUILD & BATTLE Banner -->
-    <div class="khub-card p-6 mb-4 text-center bg-gradient-to-br from-[#8B5CF6] to-[#0B1D3A] relative overflow-hidden">
-        <div class="absolute inset-0 opacity-10">
-            <div class="absolute inset-0" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.3) 10px, rgba(255,255,255,0.3) 20px);"></div>
-        </div>
-        <div class="relative z-10">
-            <h2 class="text-2xl font-black text-white" style="font-family: 'Orbitron', sans-serif;">BUILD & <span style="color: #FFB800;">BATTLE</span></h2>
-            <p class="text-white/70 text-xs mt-1 mb-4">Find teammates. Dominate.</p>
-            <a href="{% url 'teams:room_list' %}" class="bg-[#FFB800] text-[#0B1D3A] px-6 py-2 rounded-xl font-bold text-xs border-2 border-[#0B1D3A] shadow-[3px_3px_0px_#0B1D3A] uppercase tracking-wider inline-block" style="font-family: 'Orbitron', sans-serif;">
-                👥 Find Squad →
-            </a>
-        </div>
-    </div>
-
-
-
-    <!-- Recent Posts -->
+    <!-- ✅ 5. Recent Posts - Equal Cards -->
     {% if recent_posts %}
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
-            {% for post in recent_posts %}
-                <div class="khub-card p-4">
-                    <div class="flex items-center gap-2 mb-2">
-                        <div class="w-8 h-8 rounded-lg bg-[#8B5CF6] flex items-center justify-center text-white font-bold text-xs border-2 border-[#0B1D3A]">
-                            {{ post.player.username|first|upper }}
+        <div class="mb-12">
+            <h2 class="text-2xl font-bold text-[#1A2A4A] mb-5">📢 Recent Posts</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {% for post in recent_posts|slice:":2" %}
+                    <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-6 hover:-translate-y-1 hover:shadow-2xl transition">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#1A2A4A] to-[#4e69ba] text-white font-bold flex items-center justify-center">
+                                {{ post.player.username|first|upper }}
+                            </div>
+                            <div>
+                                <p class="font-bold text-[#1A2A4A]">{{ post.player.username }}</p>
+                                <p class="text-xs text-gray-500">{{ post.created_at|timesince }} ago</p>
+                            </div>
                         </div>
-                        <div>
-                            <h3 class="font-bold text-sm">{{ post.player.username }}</h3>
-                            <p class="text-[10px] text-[#4A5568]">{{ post.created_at|timesince }} ago</p>
+                        <p class="text-sm text-gray-600">{{ post.message|truncatechars:60 }}</p>
+                        <div class="flex items-center gap-2 mt-3">
+                            <span class="text-xs bg-gray-100 px-3 py-1 rounded-full">{{ post.get_sport_type_display }}</span>
+                            <span class="text-xs bg-gray-100 px-3 py-1 rounded-full">👥 {{ post.players_needed }}</span>
                         </div>
+                        <a href="{% url 'teams:join_post' post.id %}" 
+                           class="block text-center bg-[#1A2A4A] hover:bg-[#24395E] text-white rounded-2xl py-3 font-semibold transition mt-4">
+                            JOIN ROOM →
+                        </a>
                     </div>
-                    <p class="text-xs">🎯 {{ post.get_sport_type_display }} · 👥 {{ post.players_needed }} · 📍 {{ post.city }}</p>
-                    {% if post.player != request.user %}
-                        <a href="{% url 'teams:join_post' post.id %}" class="btn-chrome w-full text-center block mt-2 py-1.5 text-[10px]">⚡ JOIN</a>
-                    {% endif %}
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
     {% endif %}
 
-    <!-- Bottom Links -->
+    <!-- ✅ 4. BUILD & BATTLE - Moved to Bottom -->
+    <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-10 text-center">
+        <h2 class="text-4xl font-black text-[#1A2A4A]">
+            BUILD &
+            <span class="text-[#12E6FF]">BATTLE</span>
+        </h2>
+        <p class="text-gray-500 mt-3">Find teammates and dominate.</p>
+        <a href="{% url 'teams:room_list' %}" class="inline-block bg-[#1A2A4A] hover:bg-[#24395E] text-white rounded-2xl px-8 py-3 font-semibold transition mt-5">
+            Find Squad →
+        </a>
+    </div>
+
 </div>
 
 {% endblock %}

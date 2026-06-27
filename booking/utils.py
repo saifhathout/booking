@@ -32,9 +32,13 @@ def get_slot_range(start_hour, duration):
 
 # booking/utils.py
 
+# booking/utils.py
+
+# booking/utils.py
+
 def get_booked_set(field, start_date, end_date):
     """الحصول على مجموعة الحجوزات المحجوزة"""
-    from venues.models import VenueSlot  # ✅ استيراد من venues
+    from venues.models import VenueSlot
     
     booked_slots = VenueSlot.objects.filter(
         field=field,
@@ -44,7 +48,10 @@ def get_booked_set(field, start_date, end_date):
     
     booked_set = set()
     for slot in booked_slots:
-        hour = int(slot.start_time.strftime('%H'))
+        # ✅ تحويل 0 إلى 24 عشان يتطابق مع system
+        hour = slot.start_time.hour
+        if hour == 0:
+            hour = 24
         booked_set.add(f"{slot.date}_{hour}")
     
     return booked_set

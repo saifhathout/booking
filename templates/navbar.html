@@ -1,53 +1,118 @@
+<!-- navbar.html - Full Navbar -->
+
+{% load static %}
 <nav class="hidden md:block bg-white border-b-2 border-[#0B1D3A] sticky top-0 z-50">
     <div class="container mx-auto px-4 max-w-7xl">
         <div class="flex items-center justify-between h-16">
             <!-- Logo -->
             <a href="/" class="flex items-center gap-3">
-                <img src="/static/img/logo.png" alt="K-HUB" class="w-10 h-10 rounded-lg border-2 border-[#0B1D3A] shadow-[3px_3px_0px_#0B1D3A] object-contain bg-white">
-                <span class="text-xl font-black tracking-tight" style="font-family: 'Orbitron', sans-serif;">K<span style="color: #0066FF;">-HUB</span></span>
+                <img src="{% static 'img/logo.png' %}" alt="K-HUB" class="w-10 h-10 rounded-lg border-2 border-[#0B1D3A] shadow-[3px_3px_0px_#0B1D3A] object-contain bg-white">
+                <span class="text-xl font-black tracking-tight" style="font-family: 'Orbitron', sans-serif;">
+                    K<span style="color: #0066FF;">-HUB</span>
+                </span>
             </a>
             
             {% if user.is_authenticated %}
             <div class="flex items-center gap-1">
+                <!-- Navigation Links -->
                 {% if user.is_player %}
-    <a href="{% url 'booking:browse' %}" ...>Book</a>
-    <a href="{% url 'teams:room_list' %}" ...>🎮 Rooms</a>
-{% elif user.is_venue_owner %}
-    <a href="{% url 'dashboard:owner_dashboard' %}" ...>Dashboard</a>
-    <a href="{% url 'venues:booking_requests' %}" ...>Bookings</a>
-{% endif %}
+                    <a href="{% url 'booking:browse_fields' %}" class="px-4 py-2 text-sm font-bold text-[#4A5568] hover:text-[#0066FF] hover:bg-[#F5F0E5] rounded-lg transition">
+                        🏟️ Book
+                    </a>
+                    <a href="{% url 'teams:room_list' %}" class="px-4 py-2 text-sm font-bold text-[#4A5568] hover:text-[#0066FF] hover:bg-[#F5F0E5] rounded-lg transition">
+                        🎮 Rooms
+                    </a>
+                    <a href="{% url 'booking:history' %}" class="px-4 py-2 text-sm font-bold text-[#4A5568] hover:text-[#0066FF] hover:bg-[#F5F0E5] rounded-lg transition">
+                        📋 My Bookings
+                    </a>
+                {% elif user.is_venue_owner %}
+                    <a href="{% url 'venues:list' %}" class="px-4 py-2 text-sm font-bold text-[#4A5568] hover:text-[#0066FF] hover:bg-[#F5F0E5] rounded-lg transition">
+                        🏟️ My Venues
+                    </a>
+                    <a href="{% url 'venues:owner_dashboard' %}" class="px-4 py-2 text-sm font-bold text-[#4A5568] hover:text-[#0066FF] hover:bg-[#F5F0E5] rounded-lg transition">
+                        📊 Dashboard
+                    </a>
+                    <a href="{% url 'venues:booking_requests' %}" class="px-4 py-2 text-sm font-bold text-[#4A5568] hover:text-[#0066FF] hover:bg-[#F5F0E5] rounded-lg transition">
+                        📋 Bookings
+                    </a>
+                {% endif %}
                 
                 <!-- Notification Bell -->
-                <a href="{% url 'notifications:list' %}" class="relative p-2 text-[#4A5568] hover:text-[#0066FF]">
+                <a href="{% url 'notifications:list' %}" class="relative p-2 text-[#4A5568] hover:text-[#0066FF] transition">
                     <i class="fas fa-bell text-lg"></i>
-                    <span id="notifBadge" class="absolute -top-1 -right-1 w-5 h-5 bg-[#FF2D78] rounded-full text-[10px] flex items-center justify-center font-bold hidden"></span>
+                    <span id="notifBadge" class="absolute -top-1 -right-1 w-5 h-5 bg-[#FF2D78] rounded-full text-[10px] flex items-center justify-center font-bold text-white hidden">
+                        0
+                    </span>
                 </a>
                 
                 <!-- User Menu -->
                 <div class="relative ml-2">
-                    <button onclick="document.getElementById('userDropdown').classList.toggle('hidden')" class="flex items-center gap-2 p-2">
-                        <div class="w-8 h-8 rounded-lg bg-[#0066FF] flex items-center justify-center text-white font-bold text-xs border-2 border-[#0B1D3A]">{{ user.username|first|upper }}</div>
+                    <button onclick="document.getElementById('userDropdown').classList.toggle('hidden')" class="flex items-center gap-2 p-2 hover:bg-[#F5F0E5] rounded-lg transition">
+                        <div class="w-8 h-8 rounded-lg bg-[#0066FF] flex items-center justify-center text-white font-bold text-xs border-2 border-[#0B1D3A] shadow-[2px_2px_0px_#0B1D3A]">
+                            {{ user.username|first|upper }}
+                        </div>
+                        <i class="fas fa-chevron-down text-xs text-[#4A5568]"></i>
                     </button>
                     <div id="userDropdown" class="absolute right-0 mt-2 w-48 bg-white border-2 border-[#0B1D3A] rounded-xl shadow-[4px_4px_0px_#0B1D3A] hidden z-50">
-                        <div class="p-3 border-b border-[#0B1D3A]">
+                        <div class="p-3 border-b-2 border-[#0B1D3A] bg-[#F5F0E5] rounded-t-xl">
                             <p class="text-sm font-bold">{{ user.username }}</p>
+                            <p class="text-xs text-[#4A5568]">{{ user.email }}</p>
                         </div>
-                        <a href="{% url 'accounts:logout' %}" class="flex items-center px-4 py-3 text-[#FF2D78] text-sm font-bold"><i class="fas fa-sign-out-alt mr-2"></i>Sign Out</a>
+                        <a href="{% url 'accounts:profile' %}" class="flex items-center px-4 py-3 text-sm text-[#4A5568] hover:bg-[#F5F0E5] transition">
+                            <i class="fas fa-user mr-2"></i>Profile
+                        </a>
+                        <a href="{% url 'accounts:logout' %}" class="flex items-center px-4 py-3 text-sm text-[#FF2D78] font-bold hover:bg-[#F5F0E5] transition border-t-2 border-[#0B1D3A]">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Sign Out
+                        </a>
                     </div>
                 </div>
             </div>
-            {% else %}
-            <a href="{% url 'accounts:login' %}" class="btn-chrome text-xs">Sign In</a>
-            {% endif %}
+{% else %}
+<div class="flex items-center gap-3">
+    <a href="{% url 'accounts:login' %}" class="btn-outline text-xs py-2 px-4">Sign In</a>
+    <!-- ✅ غير من 'register' إلى 'signup' -->
+    <a href="{% url 'accounts:register_player' %}" class="btn-chrome text-xs py-2 px-4">Get Started</a>
+</div>
+{% endif %}
         </div>
     </div>
 </nav>
 
+<!-- JavaScript -->
 <script>
-document.addEventListener('click', function(e) {
-    const d = document.getElementById('userDropdown');
-    if (!e.target.closest('button') && d && !d.classList.contains('hidden')) {
-        if (!d.contains(e.target)) d.classList.add('hidden');
+    // User Dropdown
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('userDropdown');
+        if (!e.target.closest('button') && dropdown && !dropdown.classList.contains('hidden')) {
+            if (!dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        }
+    });
+
+    // Notification Badge
+    function updateNotificationCount() {
+        fetch('{% url "notifications:count" %}')
+            .then(response => response.json())
+            .then(data => {
+                const badge = document.getElementById('notifBadge');
+                if (badge) {
+                    if (data.count > 0) {
+                        badge.textContent = data.count;
+                        badge.classList.remove('hidden');
+                        badge.classList.add('flex');
+                    } else {
+                        badge.classList.add('hidden');
+                        badge.classList.remove('flex');
+                    }
+                }
+            })
+            .catch(error => console.error('Error fetching notifications:', error));
     }
-});
+
+    // تحديث عند تحميل الصفحة
+    document.addEventListener('DOMContentLoaded', updateNotificationCount);
+
+    // تحديث كل 30 ثانية
+    setInterval(updateNotificationCount, 30000);
 </script>

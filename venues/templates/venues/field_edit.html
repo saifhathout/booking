@@ -1,0 +1,86 @@
+<!-- venues/templates/venues/field_edit.html -->
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}تعديل الملعب{% endblock %}
+
+{% block content %}
+
+<div class="max-w-2xl mx-auto animate-fade-up">
+    <div class="mb-6">
+        <a href="{% url 'venues:field_schedule' field.id %}" class="text-sm text-[#4A5568] hover:text-[#0066FF]">
+            <i class="fas fa-arrow-left mr-2"></i>رجوع إلى الجدول
+        </a>
+    </div>
+
+    <div class="khub-card p-8">
+        <h1 class="text-2xl font-bold mb-6" style="font-family: 'Orbitron', sans-serif;">
+            ✏️ تعديل <span style="color: #0066FF;">{{ field.name }}</span>
+        </h1>
+
+        <form method="POST" enctype="multipart/form-data" class="space-y-5">
+            {% csrf_token %}
+            
+            <!-- اسم الملعب -->
+            <div>
+                <label class="block text-sm font-bold mb-2">اسم الملعب</label>
+                <input type="text" name="name" value="{{ field.name }}" class="input-khub w-full" required>
+            </div>
+
+            <!-- نوع الرياضة -->
+            <div>
+                <label class="block text-sm font-bold mb-2">نوع الرياضة</label>
+                <select name="sport_type" class="input-khub w-full">
+                    <option value="FOOTBALL" {% if field.sport_type == 'FOOTBALL' %}selected{% endif %}>⚽ Football</option>
+                    <option value="CRICKET" {% if field.sport_type == 'CRICKET' %}selected{% endif %}>🏏 Cricket</option>
+                    <option value="BASKETBALL" {% if field.sport_type == 'BASKETBALL' %}selected{% endif %}>🏀 Basketball</option>
+                    <option value="TENNIS" {% if field.sport_type == 'TENNIS' %}selected{% endif %}>🎾 Tennis</option>
+                    <option value="PADEL" {% if field.sport_type == 'PADEL' %}selected{% endif %}>🎾 Padel</option>
+                </select>
+            </div>
+
+            <!-- الوصف -->
+            <div>
+                <label class="block text-sm font-bold mb-2">الوصف</label>
+                <textarea name="description" rows="3" class="input-khub w-full">{{ field.description }}</textarea>
+            </div>
+
+            <!-- السعر -->
+            <div>
+                <label class="block text-sm font-bold mb-2">السعر لكل ساعة ($)</label>
+                <input type="number" name="price_per_hour" step="0.01" value="{{ field.price_per_hour }}" class="input-khub w-full" required>
+            </div>
+
+            <!-- الصورة -->
+            <div>
+                <label class="block text-sm font-bold mb-2">صورة الملعب</label>
+                {% if field.image %}
+                    <div class="mb-3">
+                        <img src="{{ field.image.url }}" alt="{{ field.name }}" class="w-48 h-32 object-cover rounded-lg border-2 border-[#0B1D3A]">
+                        <p class="text-xs text-gray-500 mt-1">الصورة الحالية</p>
+                    </div>
+                {% endif %}
+                <input type="file" name="image" accept="image/*" class="input-khub w-full">
+            </div>
+
+            <!-- الحالة -->
+            <div class="flex items-center gap-3">
+                <input type="checkbox" name="is_active" {% if field.is_active %}checked{% endif %} class="w-5 h-5 accent-[#0066FF]">
+                <label class="text-sm font-bold">🟢 الملعب نشط (ظاهر للمستخدمين)</label>
+            </div>
+
+            <!-- الأزرار -->
+            <div class="flex gap-4 pt-4">
+                <button type="submit" class="btn-chrome flex-1 py-3 text-xs">
+                    💾 حفظ التغييرات
+                </button>
+                <a href="{% url 'venues:field_schedule' field.id %}" class="btn-outline flex-1 py-3 text-xs text-center">
+                    ❌ إلغاء
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

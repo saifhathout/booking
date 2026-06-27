@@ -1,47 +1,105 @@
 {% extends 'base.html' %}
-{% block title %}الدفع عبر InstaPay{% endblock %}
+{% load static %}
+
+{% block title %}InstaPay Payment{% endblock %}
 
 {% block content %}
-<div class="max-w-lg mx-auto p-6">
-    <h1 class="text-3xl font-bold mb-6 text-center">💰 الدفع عبر InstaPay</h1>
-    
-    <div class="khub-card p-8">
+
+<div class="min-h-screen bg-gradient-to-b from-[#F8F8F8] to-[#ECECEC] py-8 px-4">
+
+    <div class="max-w-md mx-auto animate-fade-up">
+
+        <!-- ✅ 1. Hero -->
         <div class="text-center mb-8">
-            <h2 class="text-2xl font-bold">{{ booking.field.name }}</h2>
-            <p class="text-lg mt-2">{{ booking.booking_date }} • {{ booking.start_time }}</p>
+            <div class="w-20 h-20 mx-auto rounded-3xl bg-[#1A2A4A] flex items-center justify-center text-4xl text-white shadow-lg">
+                💳
+            </div>
+            <h1 class="text-3xl font-bold mt-4 text-[#1A2A4A]">InstaPay Payment</h1>
+            <p class="text-gray-500 mt-2">Complete your booking in less than a minute.</p>
         </div>
 
-        <div class="bg-[#0A1733] text-white p-6 rounded-2xl mb-8">
-            <p class="text-sm opacity-75">المبلغ المطلوب</p>
-            <p class="text-4xl font-black">{{ amount }} EGP</p>
-        </div>
-
-        <div class="space-y-6">
-            <div>
-                <p class="font-bold mb-2">1. حول المبلغ إلى:</p>
-                <div class="bg-gray-100 p-4 rounded-xl font-mono text-xl">
-                    {{ instapay_number }}
+        <!-- ✅ 2. Booking Summary Card -->
+        <div class="rounded-3xl bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl p-6 mb-6 hover:scale-[1.02] transition duration-300">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-[#1A2A4A] text-white flex items-center justify-center text-2xl">
+                    {% if booking.field.sport_type == 'FOOTBALL' %}⚽
+                    {% elif booking.field.sport_type == 'PADEL' %}🎾
+                    {% else %}🏟️{% endif %}
+                </div>
+                <div>
+                    <h3 class="font-bold text-[#1A2A4A] text-lg">{{ booking.field.name }}</h3>
+                    <div class="text-sm text-gray-500 space-y-0.5">
+                        <p>📅 {{ booking.booking_date|date:"D, M j, Y" }}</p>
+                        <p>⏰ {{ booking.start_time|time:"g:i A" }} — {{ booking.end_time|time:"g:i A" }}</p>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div>
-                <p class="font-bold mb-2">2. اكتب في الملاحظة (Note):</p>
-                <div class="bg-yellow-100 border-2 border-yellow-400 p-4 rounded-xl text-2xl font-bold text-center tracking-widest">
-                    {{ note_code }}
-                </div>
-            </div>
+        <!-- ✅ 3. Amount Card -->
+        <div class="rounded-3xl bg-[#1A2A4A] p-8 text-center text-white shadow-xl mb-6 hover:scale-[1.02] transition duration-300">
+            <p class="text-sm uppercase tracking-widest text-white/70">Total Amount</p>
+            <p class="text-5xl font-black mt-3">{{ amount|floatformat:"0" }}</p>
+            <p class="text-lg mt-1 text-white/80">EGP</p>
+        </div>
 
-            <div class="pt-4">
-                <a href="{% url 'payment:upload_screenshot' payment.id %}" 
-                   class="btn-chrome block text-center py-4 text-lg">
-                    ✅ لقد قمت بالتحويل - رفع Screenshot
-                </a>
+        <!-- ✅ 4. InstaPay Number with Copy -->
+        <div class="rounded-3xl bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl p-6 mb-6 hover:scale-[1.02] transition duration-300">
+            <p class="text-sm font-semibold text-gray-500 mb-3">📱 InstaPay Number</p>
+            <div class="rounded-2xl border border-gray-200 bg-gray-50 p-4 flex justify-between items-center">
+                <span class="font-mono text-xl font-bold text-[#1A2A4A]">{{ instapay_number }}</span>
+                <button onclick="copyNumber()" class="bg-[#1A2A4A] text-white px-4 py-2 rounded-xl font-semibold text-sm hover:bg-[#24395E] transition">
+                    📋 Copy
+                </button>
             </div>
         </div>
+
+        <!-- ✅ 5. Steps Timeline -->
+        <div class="rounded-3xl bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl p-6 mb-6 hover:scale-[1.02] transition duration-300">
+            <p class="text-sm font-semibold text-gray-500 mb-4">📋 How to Pay</p>
+            <div class="space-y-3">
+                <div class="flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-full bg-[#1A2A4A] text-white flex items-center justify-center text-sm font-bold">1</span>
+                    <span class="text-[#1A2A4A] font-medium">Open InstaPay App</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-full bg-[#1A2A4A] text-white flex items-center justify-center text-sm font-bold">2</span>
+                    <span class="text-[#1A2A4A] font-medium">Send <strong>{{ amount|floatformat:"0" }} EGP</strong> to the number above</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-full bg-[#1A2A4A] text-white flex items-center justify-center text-sm font-bold">3</span>
+                    <span class="text-[#1A2A4A] font-medium">Upload the screenshot below</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✅ 6. Upload Button -->
+        <a href="{% url 'payment:upload_screenshot' payment.id %}" 
+           class="block w-full bg-[#1A2A4A] hover:bg-[#24395E] text-white font-bold py-5 px-6 rounded-2xl text-center text-lg shadow-xl transition duration-300 hover:scale-[1.02] mb-6">
+            ⬆ Upload Payment Screenshot
+        </a>
+
+        <!-- ✅ 7. Expiry Alert -->
+        <div class="rounded-3xl bg-yellow-50 border border-yellow-300 shadow-lg p-5 flex items-center gap-4">
+            <span class="text-2xl">⏳</span>
+            <div>
+                <p class="font-semibold text-yellow-800">Reservation expires in <span class="font-black">30 minutes</span></p>
+                <p class="text-sm text-yellow-600">Please complete payment before expiry.</p>
+            </div>
+        </div>
+
     </div>
-
-    <p class="text-center text-sm text-gray-500 mt-8">
-        الطلب صالح لمدة 30 دقيقة فقط
-    </p>
 </div>
+
+<script>
+    function copyNumber() {
+        const number = "{{ instapay_number }}";
+        navigator.clipboard.writeText(number).then(() => {
+            alert('📋 Number copied: ' + number);
+        }).catch(() => {
+            alert('❌ Failed to copy. Please copy manually.');
+        });
+    }
+</script>
+
 {% endblock %}

@@ -1,3 +1,5 @@
+<!-- payment/templates/payment/payment_pending.html -->
+
 {% extends 'base.html' %}
 {% block title %}جاري مراجعة الدفع{% endblock %}
 
@@ -16,10 +18,24 @@
             <p class="font-bold text-lg">#{{ payment.id }}</p>
             <p class="text-sm text-gray-500 mt-2">المبلغ</p>
             <p class="font-bold text-lg">{{ payment.amount }} EGP</p>
+            <p class="text-sm text-gray-500 mt-2">الحالة</p>
+            <p class="font-bold text-lg text-yellow-600">{{ payment.get_status_display }}</p>
         </div>
-        <a href="{% url 'booking:history' %}" class="btn-chrome block py-3">
-            📋 عرض حجوزاتي
-        </a>
+        
+        {% if time_remaining %}
+        <p class="text-sm text-gray-500 mb-6">
+            ⏱️ الوقت المتبقي للتأكيد: {{ time_remaining }} دقيقة
+        </p>
+        {% endif %}
+        
+        <div class="flex gap-3">
+            <a href="{% url 'booking:history' %}" class="flex-1 bg-[#0066FF] text-white font-bold py-3 px-6 rounded-lg border-2 border-[#0B1D3A] shadow-[4px_4px_0px_#0B1D3A] hover:shadow-[2px_2px_0px_#0B1D3A] transition-all">
+                📋 عرض حجوزاتي
+            </a>
+            <a href="{% url 'payment:manual_review' payment.id %}" class="flex-1 bg-yellow-500 text-white font-bold py-3 px-6 rounded-lg border-2 border-[#0B1D3A] shadow-[4px_4px_0px_#0B1D3A] hover:shadow-[2px_2px_0px_#0B1D3A] transition-all">
+                🔄 مراجعة يدوية
+            </a>
+        </div>
     </div>
 </div>
 {% endblock %}

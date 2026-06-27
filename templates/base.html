@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
@@ -8,30 +9,31 @@
     <meta name="theme-color" content="#F0E8D8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="/static/img/logo.png">
-    
+    <link rel="apple-touch-icon" href="{% static 'img/logo.png' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
     <title>K-HUB - {% block title %}{% endblock %}</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Syne:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --chrome: #0066FF;
-            --navy: #0B1D3A;
-            /* --beige: #F0E8D8; */
-            --beige: #dfdcb2d3;
-            --white: #FFFFFF;
-            --pink: #FF2D78;
+            --chrome: #C9A227;        /* ✅ ذهبي */
+            --navy: #1A2A4A;           /* ✅ أزرق غامق */
+            --beige: #F0E8D8;          /* ✅ بيج فاتح */
+            --white: #F0E8D8;          /* ✅ بيج فاتح */
+            --pink: #C9A227;           /* ✅ ذهبي */
             --purple: #8B5CF6;
-            --border: #0B1D3A;
-            --gold: #FFB800;
+            --border: #1A2A4A;         /* ✅ أزرق غامق */
+            --gold: #C9A227;           /* ✅ ذهبي */
+            --text-light: #F0E8D8;     /* ✅ بيج فاتح */
+            --text-dark: #1A2A4A;      /* ✅ أزرق غامق */
         }
         
-        * { font-family: 'Outfit', sans-serif; }
-        h1, h2, h3 { font-family: 'Syne', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: -1px; }
-        .orbitron { font-family: 'Orbitron', sans-serif; }
+        * { font-family: 'Cinzel', sans-serif; }
+        h1, h2, h3 { font-family: 'Cinzel', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: -1px; }
+        .orbitron { font-family: 'Cinzel', sans-serif; }
         
         body {
             background: var(--beige);
@@ -47,8 +49,8 @@
             position: fixed;
             inset: 0;
             background-image: 
-                linear-gradient(rgba(11,29,58,0.06) 2px, transparent 2px),
-                linear-gradient(90deg, rgba(11,29,58,0.06) 2px, transparent 2px);
+                linear-gradient(rgba(26,42,74,0.06) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(26,42,74,0.06) 2px, transparent 2px);
             background-size: 60px 60px;
             animation: gridMove 20s linear infinite;
             pointer-events: none;
@@ -65,7 +67,7 @@
             position: fixed;
             border-radius: 50%;
             filter: blur(100px);
-            opacity: 0.1;
+            opacity: 0.08;
             pointer-events: none;
             z-index: 0;
             animation: orbFloat 8s ease-in-out infinite;
@@ -80,7 +82,7 @@
             66% { transform: translate(-20px, 20px) scale(0.95); }
         }
         
-        Chrome Border
+        /* Chrome Border */
         body::after {
             content: '';
             position: fixed;
@@ -90,7 +92,7 @@
             background-size: 300% 100%;
             animation: chromeSlide 2s linear infinite;
             z-index: 100;
-            box-shadow: 0 0 20px rgba(0,102,255,0.3);
+            box-shadow: 0 0 20px rgba(201,162,39,0.3);
         }
         
         @keyframes chromeSlide {
@@ -100,55 +102,49 @@
         
         main { position: relative; z-index: 1; padding-bottom: 80px; }
         
-        /* Cards */
+        /* ✅ CARDS - Navy Blue */
         .khub-card {
-            background: var(--white);
-            border: 3px solid var(--border);
+            background: #d2caba;
+            color: #304a80;
+            border: 1px solid rgba(146, 97, 0, 0.1);
             border-radius: 18px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 6px 6px 0px var(--border);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.15);
             position: relative;
+            overflow: hidden;
         }
         
         .khub-card::before {
             content: '';
             position: absolute;
-            inset: -3px;
-            border-radius: 21px;
-            background: linear-gradient(135deg, var(--chrome), var(--purple), var(--pink));
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: -1;
-        }
-        
-        .khub-card:hover::before {
-            opacity: 0.4;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+            pointer-events: none;
+            border-radius: 18px 18px 0 0;
         }
         
         .khub-card:hover {
-            transform: translate(-4px, -4px);
-            box-shadow: 10px 10px 0px var(--border);
+            transform: translateY(-4px);
             border-color: var(--chrome);
+            box-shadow: 0 12px 40px rgba(201,162,39,0.15);
         }
         
-        .khub-card:active {
-            transform: translate(0, 0);
-            box-shadow: 3px 3px 0px var(--border);
-        }
-        
-        /* Buttons */
+        /* ✅ BUTTONS - Gold */
         .btn-chrome {
-            background: var(--chrome);
-            color: white;
+            background: linear-gradient(135deg, #C9A227, #A8881E);
+            color: #1A2A4A;
             padding: 16px 32px;
             border-radius: 14px;
             font-weight: 800;
             font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            border: 3px solid var(--border);
-            box-shadow: 5px 5px 0px var(--border);
-            transition: all 0.2s ease;
+            border: none;
+            box-shadow: 0 4px 16px rgba(201,162,39,0.3);
+            transition: all 0.3s ease;
             cursor: pointer;
             font-family: 'Syne', sans-serif;
             position: relative;
@@ -160,7 +156,7 @@
             position: absolute;
             top: 0; left: -100%;
             width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
             transition: left 0.5s ease;
         }
         
@@ -169,22 +165,21 @@
         }
         
         .btn-chrome:hover {
-            transform: translate(-3px, -3px);
-            box-shadow: 8px 8px 0px var(--border);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(201,162,39,0.4);
         }
         
         .btn-outline {
-            background: white;
-            color: var(--navy);
+            background: transparent;
+            color: #F0E8D8;
             padding: 16px 32px;
             border-radius: 14px;
             font-weight: 800;
             font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            border: 3px solid var(--border);
-            box-shadow: 5px 5px 0px var(--border);
-            transition: all 0.2s ease;
+            border: 1px solid rgba(240,232,216,0.2);
+            transition: all 0.3s ease;
             cursor: pointer;
             font-family: 'Syne', sans-serif;
         }
@@ -192,29 +187,32 @@
         .btn-outline:hover {
             border-color: var(--chrome);
             color: var(--chrome);
-            transform: translate(-3px, -3px);
-            box-shadow: 8px 8px 0px var(--border);
+            background: rgba(201,162,39,0.05);
+            transform: translateY(-2px);
         }
         
         /* Inputs */
         .input-khub {
-            background: white;
-            border: 3px solid var(--border);
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(240,232,216,0.1);
             border-radius: 14px;
             padding: 16px 20px;
-            color: var(--navy);
+            color: #F0E8D8;
             width: 100%;
             font-size: 15px;
             font-weight: 600;
-            box-shadow: 4px 4px 0px var(--border);
             transition: all 0.2s ease;
         }
         
         .input-khub:focus {
             outline: none;
             border-color: var(--chrome);
-            box-shadow: 6px 6px 0px var(--chrome);
-            transform: translate(-1px, -1px);
+            box-shadow: 0 0 20px rgba(201,162,39,0.08);
+            background: rgba(255,255,255,0.08);
+        }
+        
+        .input-khub::placeholder {
+            color: rgba(240,232,216,0.3);
         }
         
         /* Badges */
@@ -225,13 +223,42 @@
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            border: 2px solid var(--border);
+            border: 1px solid rgba(240,232,216,0.1);
             font-family: 'Orbitron', sans-serif;
         }
-        .badge-chrome { background: var(--chrome); color: white; }
-        .badge-pink { background: var(--pink); color: white; }
-        .badge-purple { background: var(--purple); color: white; }
-        .badge-gold { background: var(--gold); color: var(--navy); }
+        .badge-chrome { background: rgba(201,162,39,0.15); color: #C9A227; border-color: rgba(201,162,39,0.2); }
+        .badge-pink { background: rgba(201,162,39,0.15); color: #C9A227; border-color: rgba(201,162,39,0.2); }
+        .badge-purple { background: rgba(139,92,246,0.15); color: #8B5CF6; border-color: rgba(139,92,246,0.2); }
+        .badge-gold { background: rgba(201,162,39,0.15); color: #C9A227; border-color: rgba(201,162,39,0.2); }
+        
+        /* Badge Price */
+        .badge-price {
+            background: rgba(201,162,39,0.12);
+            color: #C9A227;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 700;
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        /* Field Icons */
+        .field-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            border: 2px solid rgba(240,232,216,0.15);
+            flex-shrink: 0;
+        }
+        
+        .field-icon.football { background: rgba(201,162,39,0.15); color: #C9A227; }
+        .field-icon.padel { background: rgba(139,92,246,0.15); color: #8B5CF6; }
+        .field-icon.basketball { background: rgba(255,107,53,0.15); color: #FF6B35; }
+        .field-icon.tennis { background: rgba(16,185,129,0.15); color: #10B981; }
         
         @keyframes fadeUp { 
             from { opacity: 0; transform: translateY(10px); } 
@@ -239,31 +266,31 @@
         }
         .animate-fade-up { animation: fadeUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         
-        ::selection { background: var(--chrome); color: white; }
+        ::selection { background: var(--chrome); color: #1A2A4A; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--beige); }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--navy); border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--chrome); }
     </style>
 </head>
 <body>
-
+    <!-- ✅ استخدم static هنا -->    
     <div class="glow-orb glow-1"></div>
     <div class="glow-orb glow-2"></div>
     <div class="glow-orb glow-3"></div>
     {% include 'navbar.html' %}
     {% include 'mobile_header.html' %}
     
-    <main class="container mx-auto px-4 py-6 max-w-7xl animate-fade-up">
-<!-- <img
-  src="/static/img/logo.png"
-  alt="K-HUB"
-style="margin-bottom:35px;"
-  class="mx-auto w-28 h-28 rounded-lg"
-/> -->
+    <main class="container mx-auto px-4 py-6 max-w-7xl  animate-fade-up">
         {% include 'messages.html' %}
+  <div class="flex justify-center items-center py-4 ">
+        <img src="{% static 'img/logo.png' %}" 
+             alt="K-HUB" 
+             class="w-32 h-32 rounded-xl border-2 border-white/10 object-cover ">
+    </div>
         {% block content %}{% endblock %}
     </main>
+    
     
     {% include 'mobile_nav.html' %}
     

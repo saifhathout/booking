@@ -1,169 +1,191 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block title %}Book {{ field.name }}{% endblock %}
+
 {% block content %}
 
-<div class="animate-fade-up max-w-2xl mx-auto">
-    <div class="khub-card p-6">
-        <h1 class="text-2xl font-bold mb-6" style="font-family: 'Orbitron', sans-serif;">
-            📅 Book {{ field.name }}
-        </h1>
+<div class="animate-fade-up max-w-2xl mx-auto px-4 py-6">
 
-        <!-- تفاصيل الحجز -->
-        <div class="bg-[#F7FAFC] rounded-lg p-4 mb-6 border-2 border-[#0B1D3A]">
-            <div class="flex justify-between py-2 border-b border-[#0B1D3A]/20">
-                <span class="text-[#4A5568] font-semibold">🏟️ Field</span>
-                <span class="font-bold">{{ field.name }}</span>
+    <!-- ✅ Back Button -->
+    <a href="{% url 'booking:field_detail' field.id %}" class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#1A2A4A] transition mb-6">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Back
+    </a>
+
+    <!-- ✅ Hero Card -->
+    <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-6 mb-6">
+        <div class="flex items-center gap-4">
+            <div class="w-14 h-14 rounded-2xl bg-[#1A2A4A] text-white flex items-center justify-center text-2xl">
+                {% if field.sport_type == 'FOOTBALL' %}⚽
+                {% elif field.sport_type == 'PADEL' %}🎾
+                {% elif field.sport_type == 'BASKETBALL' %}🏀
+                {% else %}🏟️{% endif %}
             </div>
-            <div class="flex justify-between py-2 border-b border-[#0B1D3A]/20">
-                <span class="text-[#4A5568] font-semibold">📍 Venue</span>
-                <span class="font-bold">{{ field.venue.name }}</span>
-            </div>
-            <div class="flex justify-between py-2 border-b border-[#0B1D3A]/20">
-                <span class="text-[#4A5568] font-semibold">📆 Date</span>
-                <span class="font-bold">{{ date }}</span>
-            </div>
-            
-            <!-- ✅ Time Slot مع AM/PM -->
-            <div class="flex justify-between py-2 border-b border-[#0B1D3A]/20">
-                <span class="text-[#4A5568] font-semibold">⏰ Time Slot</span>
-                <span class="font-extrabold text-[#0066FF]" id="time-range">
-                    {{ start_time_display }} - {{ end_time_display }}
-                </span>
-            </div>
-            
-            <div class="flex justify-between py-2">
-                <span class="text-[#4A5568] font-semibold">💰 Total Price</span>
-                <span class="font-extrabold text-[#0066FF]" id="total-price">
-                    ${{ field.price_per_hour|floatformat:"0" }}
-                </span>
+            <div>
+                <h1 class="text-xl font-bold text-[#1A2A4A]">{{ field.name }}</h1>
+                <p class="text-sm text-gray-500">{{ field.venue.name }}</p>
+                <div class="flex items-center gap-3 mt-1">
+                    <span class="text-xs bg-[#1A2A4A]/80 text-white px-2 py-0.5 rounded-full">EGP {{ price }}/hr</span>
+                    <span class="text-xs text-gray-400">{{ date }}</span>
+                </div>
             </div>
         </div>
+    </div>
 
-        <!-- Duration Buttons -->
-        <div>
-            <label class="block text-sm font-bold mb-3" style="font-family: 'Orbitron', sans-serif;">
-                ⏱️ Select Duration
-            </label>
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-3" id="duration-buttons">
-                <button type="button" data-duration="1" 
-                        class="duration-btn active-btn font-bold py-3 px-4 rounded-lg border-2 border-[#0B1D3A] shadow-[3px_3px_0px_#0B1D3A] hover:shadow-[2px_2px_0px_#0B1D3A] transition-all">
-                    1h
-                    <span class="block text-[10px] price-text">${{ field.price_per_hour|floatformat:"0" }}</span>
-                </button>
-                <button type="button" data-duration="2" 
-                        class="duration-btn font-bold py-3 px-4 rounded-lg border-2 border-[#0B1D3A] shadow-[3px_3px_0px_#0B1D3A] hover:shadow-[2px_2px_0px_#0B1D3A] transition-all">
-                    2h
-                    <span class="block text-[10px] price-text">${% widthratio field.price_per_hour 1 2 as p2 %}{{ p2|floatformat:"0" }}</span>
-                </button>
-                <button type="button" data-duration="3" 
-                        class="duration-btn font-bold py-3 px-4 rounded-lg border-2 border-[#0B1D3A] shadow-[3px_3px_0px_#0B1D3A] hover:shadow-[2px_2px_0px_#0B1D3A] transition-all">
-                    3h
-                    <span class="block text-[10px] price-text">${% widthratio field.price_per_hour 1 3 as p3 %}{{ p3|floatformat:"0" }}</span>
-                </button>
-            </div>
-            <input type="hidden" name="duration" id="selected-duration" value="1">
+    <!-- ✅ Summary Cards - Better Info -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <div class="rounded-2xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-md p-3 text-center">
+            <p class="text-[10px] text-gray-400 uppercase tracking-wide">Start</p>
+            <p class="text-sm font-bold text-[#1A2A4A]" id="start-display">{{ start_time_display }}</p>
         </div>
+        <div class="rounded-2xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-md p-3 text-center">
+            <p class="text-[10px] text-gray-400 uppercase tracking-wide">End</p>
+            <p class="text-sm font-bold text-[#1A2A4A]" id="end-display">{{ end_time_display }}</p>
+        </div>
+        <div class="rounded-2xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-md p-3 text-center">
+            <p class="text-[10px] text-gray-400 uppercase tracking-wide">Duration</p>
+            <p class="text-sm font-bold text-[#1A2A4A]" id="duration-display">1 hr</p>
+        </div>
+        <div class="rounded-2xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-md p-3 text-center">
+            <p class="text-[10px] text-gray-400 uppercase tracking-wide">Day</p>
+            <p class="text-sm font-bold text-[#1A2A4A]">{{ date|date:"D" }}</p>
+        </div>
+    </div>
 
-        <!-- أزرار Confirm و Cancel -->
-        <div class="flex gap-3 mt-6">
-            <form method="post" id="booking-form" class="flex-1">
-                {% csrf_token %}
+    <!-- ✅ Booking Form -->
+    <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-6">
+
+        <form method="post" id="booking-form">
+            {% csrf_token %}
+
+            <!-- ✅ Time & Duration - Combined Card -->
+            <div class="bg-[#1A2A4A]/5 rounded-2xl p-5 mb-6">
+                <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider text-center">Select Duration</p>
+                
+                <!-- Time Range Display -->
+                <div class="text-center py-3">
+                    <span class="text-2xl font-black text-[#1A2A4A]" id="time-range">
+                        {{ start_time_display }} — {{ end_time_display }}
+                    </span>
+                </div>
+
+                <!-- Duration Pills -->
+                <div class="flex gap-3" id="duration-buttons">
+                    <button type="button" data-duration="1" 
+                            class="duration-btn flex-1 py-3 px-2 rounded-full bg-[#1A2A4A] text-white font-bold transition-all duration-300 hover:scale-105 shadow-lg text-sm">
+                        1H
+                    </button>
+                    <button type="button" data-duration="2" 
+                            class="duration-btn flex-1 py-3 px-2 rounded-full bg-gray-200 text-gray-600 font-bold transition-all duration-300 hover:scale-105 text-sm">
+                        2H
+                    </button>
+                    <button type="button" data-duration="3" 
+                            class="duration-btn flex-1 py-3 px-2 rounded-full bg-gray-200 text-gray-600 font-bold transition-all duration-300 hover:scale-105 text-sm">
+                        3H
+                    </button>
+                    <button type="button" data-duration="4" 
+                            class="duration-btn flex-1 py-3 px-2 rounded-full bg-gray-200 text-gray-600 font-bold transition-all duration-300 hover:scale-105 text-sm">
+                        4H
+                    </button>
+                </div>
+                <input type="hidden" name="duration" id="selected-duration" value="1">
+            </div>
+
+            <!-- ✅ Total Price Card -->
+            <div class="rounded-2xl bg-[#1A2A4A] p-6 text-center mb-6 transition-all duration-300" id="total-card">
+                <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Total Price</p>
+                <p class="text-4xl font-black text-white mt-1 transition-all duration-300" id="total-price">
+                    EGP {{ price|floatformat:"0" }}
+                </p>
+            </div>
+
+            <!-- ✅ Buttons -->
+            <div class="flex items-center gap-4">
+                <!-- ✅ Confirm Button - Prominent -->
                 <button type="submit" 
-                        class="w-full bg-[#0066FF] text-white font-bold py-4 px-6 rounded-lg border-2 border-[#0B1D3A] shadow-[4px_4px_0px_#0B1D3A] hover:shadow-[2px_2px_0px_#0B1D3A] hover:translate-x-0.5 hover:translate-y-0.5 transition-all">
-                    ✅ Confirm Booking
+                        class="flex-1 bg-[#12E6FF] hover:bg-[#0fd0e8] text-[#1A2A4A] font-bold py-4 px-6 rounded-2xl transition duration-300 shadow-lg shadow-[#12E6FF]/20 hover:shadow-[#12E6FF]/40 text-lg">
+                    Confirm Booking →
                 </button>
-            </form>
-            
-            <a href="{% url 'booking:field_detail' field.id %}" 
-               class="flex-1 bg-gray-200 text-[#4A5568] font-bold py-4 px-6 rounded-lg border-2 border-[#0B1D3A] shadow-[4px_4px_0px_#0B1D3A] hover:shadow-[2px_2px_0px_#0B1D3A] hover:translate-x-0.5 hover:translate-y-0.5 transition-all text-center">
-                ❌ Cancel
-            </a>
-        </div>
+                
+                <!-- ✅ Cancel Button - Smaller -->
+                <a href="{% url 'booking:field_detail' field.id %}" 
+                   class="text-sm text-gray-400 hover:text-gray-600 transition font-medium px-3 py-2">
+                    Cancel
+                </a>
+            </div>
+        </form>
     </div>
 </div>
 
-<!-- ✅ JavaScript محدث مع AM/PM -->
+<!-- ✅ JavaScript with Animation -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('✅ Script started!');
-    
     const buttons = document.querySelectorAll('.duration-btn');
+    const hiddenInput = document.getElementById('selected-duration');
     const timeRange = document.getElementById('time-range');
     const totalPrice = document.getElementById('total-price');
-    const hiddenInput = document.getElementById('selected-duration');
+    const startDisplay = document.getElementById('start-display');
+    const endDisplay = document.getElementById('end-display');
+    const durationDisplay = document.getElementById('duration-display');
+    const totalCard = document.getElementById('total-card');
     
-    // ✅ استخدام start_time_display من Django
-    const startTimeDisplay = "{{ start_time_display }}";
-    const startHour = parseInt("{{ hour }}");
-    
-    // جلب السعر من أول زر
-    const firstPriceSpan = document.querySelector('.duration-btn .price-text');
-    const pricePerHour = parseFloat(firstPriceSpan.textContent.replace('$', ''));
-    
-    console.log('Start Time:', startTimeDisplay);
-    console.log('Start Hour:', startHour);
-    console.log('Price Per Hour:', pricePerHour);
-    
-    // ✅ دالة لتحويل الساعة إلى AM/PM
+    const startHour = {{ hour }};
+    const startTime = "{{ start_time_display }}";
+    const pricePerHour = {{ price }};
+
     function formatTimeDisplay(hour) {
-        if (hour === 0 || hour === 24) return '12:00 AM';
-        if (hour < 12) return `${hour}:00 AM`;
-        if (hour === 12) return '12:00 PM';
-        return `${hour - 12}:00 PM`;
+        if (hour === 24 || hour === 0) return "12:00 AM";
+        if (hour === 12) return "12:00 PM";
+        if (hour < 12) return hour + ":00 AM";
+        return (hour - 12) + ":00 PM";
     }
-    
-    // دالة لتحديث الأزرار
-    function setActiveButton(activeBtn) {
-        buttons.forEach(btn => {
-            btn.classList.remove('active-btn', 'bg-[#0066FF]', 'text-white');
-            btn.classList.add('bg-white', 'text-[#0066FF]');
-            
-            const priceSpan = btn.querySelector('.price-text');
-            if (priceSpan) {
-                priceSpan.classList.remove('text-white/80');
-                priceSpan.classList.add('text-[#4A5568]');
-            }
-        });
-        
-        activeBtn.classList.remove('bg-white', 'text-[#0066FF]');
-        activeBtn.classList.add('active-btn', 'bg-[#0066FF]', 'text-white');
-        
-        const priceSpan = activeBtn.querySelector('.price-text');
-        if (priceSpan) {
-            priceSpan.classList.remove('text-[#4A5568]');
-            priceSpan.classList.add('text-white/80');
-        }
-    }
-    
-    // ✅ دالة محدثة لتحديث المعلومات مع AM/PM
+
     function updateBookingInfo(duration) {
-        const endHour = startHour + duration;
-        const endTimeDisplay = formatTimeDisplay(endHour);
-        
-        timeRange.textContent = `${startTimeDisplay} - ${endTimeDisplay}`;
-        totalPrice.textContent = `$${pricePerHour * duration}`;
         hiddenInput.value = duration;
+        durationDisplay.textContent = duration + ' hr' + (duration > 1 ? 's' : '');
         
-        console.log(`Updated: ${duration}h, ${startTimeDisplay} - ${endTimeDisplay}, $${pricePerHour * duration}`);
+        let endHour = startHour + duration;
+        if (endHour >= 24) endHour = endHour - 24;
+        if (endHour === 0) endHour = 24;
+        const endTime = formatTimeDisplay(endHour);
+        
+        // ✅ Time Range
+        timeRange.textContent = startTime + ' — ' + endTime;
+        startDisplay.textContent = startTime;
+        endDisplay.textContent = endTime;
+        
+        // ✅ Total Price with Fade
+        const total = pricePerHour * duration;
+        totalCard.classList.add('opacity-50');
+        setTimeout(() => {
+            totalPrice.textContent = "EGP " + total;
+            totalCard.classList.remove('opacity-50');
+        }, 150);
     }
-    
-    // إضافة حدث لكل زر
+
     buttons.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            console.log('Button clicked! Duration:', this.dataset.duration);
+        btn.addEventListener('click', function() {
+            buttons.forEach(b => {
+                b.classList.remove('bg-[#1A2A4A]', 'text-white', 'shadow-lg');
+                b.classList.add('bg-gray-200', 'text-gray-600');
+            });
+            
+            this.classList.remove('bg-gray-200', 'text-gray-600');
+            this.classList.add('bg-[#1A2A4A]', 'text-white', 'shadow-lg');
             
             const duration = parseInt(this.dataset.duration);
-            setActiveButton(this);
             updateBookingInfo(duration);
         });
     });
-    
-    // تفعيل الزر الأول افتراضياً
+
+    // Set default
     if (buttons.length > 0) {
-        setActiveButton(buttons[0]);
+        buttons[0].classList.remove('bg-gray-200', 'text-gray-600');
+        buttons[0].classList.add('bg-[#1A2A4A]', 'text-white', 'shadow-lg');
     }
-    
-    console.log('✅ Script setup complete!');
 });
 </script>
 

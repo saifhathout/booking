@@ -9,5 +9,7 @@ urlpatterns = [
     path('book/<str:slot_id>/', views.book_slot, name='book_slot'),
     path('history/', views.booking_history, name='history'),
     path('cancel/<int:booking_id>/', views.cancel_booking, name='cancel_booking'),
+        path('browse/', views.browse_fields, name='browse_fields'),  # ✅ أضف هذا للتوافق
+
     
 ]

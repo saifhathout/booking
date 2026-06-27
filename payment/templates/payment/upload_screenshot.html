@@ -1,34 +1,148 @@
 {% extends 'base.html' %}
-{% block title %}رفع إثبات الدفع{% endblock %}
+{% load static %}
+
+{% block title %}Upload Payment Proof{% endblock %}
 
 {% block content %}
-<div class="max-w-lg mx-auto p-6">
-    <div class="khub-card p-8">
-        <h1 class="text-2xl font-bold text-center mb-6">📸 رفع Screenshot الدفع</h1>
-        
-        <p class="text-center mb-6 text-gray-600">ارفع صورة التحويل من InstaPay</p>
 
-        <form method="POST" enctype="multipart/form-data" class="space-y-6">
-            {% csrf_token %}
-            
-            <div class="border-2 border-dashed border-gray-400 rounded-2xl p-10 text-center hover:border-blue-500 transition-colors">
-                <input type="file" 
-                       name="screenshot" 
-                       id="screenshot" 
-                       accept="image/*" 
-                       class="hidden" 
-                       required>
-                <label for="screenshot" class="cursor-pointer block">
-                    <span class="text-6xl mb-4 block">📷</span>
-                    <span class="font-semibold text-blue-600">اضغط هنا لاختيار الصورة</span>
-                    <p class="text-sm text-gray-500 mt-2">JPG or PNG - Max 5MB</p>
-                </label>
+<div class="min-h-screen bg-gradient-to-b from-white to-[#F5F7FA] py-8 px-4">
+
+    <div class="max-w-2xl mx-auto animate-fade-up">
+
+        <!-- ✅ 1. Hero -->
+        <div class="text-center mb-8">
+            <div class="w-20 h-20 mx-auto rounded-3xl bg-[#1A2A4A] flex items-center justify-center text-4xl text-white shadow-lg">
+                📸
             </div>
+            <h1 class="text-3xl font-bold mt-4 text-[#1A2A4A]">Upload Payment Proof</h1>
+            <p class="text-gray-500 mt-2">Upload your InstaPay payment screenshot.</p>
+        </div>
 
-            <button type="submit" class="btn-chrome w-full py-4 text-lg font-bold">
-                ↑ رفع الصورة وتحليلها
-            </button>
-        </form>
+        <!-- ✅ 2. Upload Area -->
+        <div class="rounded-3xl bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl p-8 mb-6 hover:shadow-2xl transition duration-300">
+
+            <form method="POST" enctype="multipart/form-data" id="upload-form">
+                {% csrf_token %}
+
+                <!-- ✅ 2. Upload Area with Drag & Drop -->
+                <div id="drop-area" 
+                     class="rounded-3xl border-2 border-dashed border-[#1A2A4A]/20 bg-[#F8F9FC] p-12 hover:border-[#1A2A4A] hover:bg-[#EEF3FF] transition duration-300 cursor-pointer text-center">
+
+                    <input type="file" 
+                           name="screenshot" 
+                           id="screenshot" 
+                           accept="image/*" 
+                           class="hidden" 
+                           required>
+
+                    <label for="screenshot" class="cursor-pointer block">
+                        <div class="text-6xl mb-4 text-[#1A2A4A]">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <p class="font-semibold text-[#1A2A4A] text-lg">Drag & Drop</p>
+                        <p class="text-gray-400">or</p>
+                        <p class="text-[#1A2A4A] font-semibold underline">Choose Image</p>
+                        <p class="text-sm text-gray-400 mt-2">JPG, PNG, JPEG — Max 10MB</p>
+                    </label>
+
+                    <!-- ✅ 3. Image Preview -->
+                    <img id="preview" class="hidden rounded-2xl mt-6 w-full max-h-80 object-cover shadow-lg">
+
+                    <!-- ✅ 4. File Name -->
+                    <p id="filename" class="text-center text-sm text-gray-500 mt-4"></p>
+                </div>
+
+                <!-- ✅ 6. Instructions Card -->
+                <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 mt-6">
+                    <h3 class="font-bold text-[#1A2A4A] mb-2">📋 Requirements</h3>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li>✅ Amount must be visible</li>
+                        <li>✅ InstaPay number visible</li>
+                        <li>✅ Status shows "Successful"</li>
+                    </ul>
+                </div>
+
+                <!-- ✅ 5. Upload Button -->
+                <button type="submit" 
+                        id="upload-btn"
+                        class="w-full bg-[#1A2A4A] hover:bg-[#24395E] text-white font-bold py-5 px-6 rounded-2xl text-lg shadow-xl transition duration-300 hover:scale-[1.02] mt-6">
+                    ⬆ Upload Screenshot
+                </button>
+
+                <a href="{% url 'booking:history' %}" 
+                   class="block text-center text-gray-500 hover:text-[#1A2A4A] mt-4 text-sm transition">
+                    ← Back to Bookings
+                </a>
+            </form>
+
+        </div>
+
+        <!-- ⏳ Expiry -->
+        <div class="rounded-3xl bg-yellow-50 border border-yellow-300 shadow-lg p-5 flex items-center gap-4">
+            <span class="text-2xl">⏳</span>
+            <div>
+                <p class="font-semibold text-yellow-800">Payment expires in <span class="font-black">30 minutes</span></p>
+                <p class="text-sm text-yellow-600">Please complete your payment before expiry.</p>
+            </div>
+        </div>
+
     </div>
 </div>
+
+<script>
+    // ✅ 3 & 4. Preview & Filename
+    const input = document.getElementById('screenshot');
+    const preview = document.getElementById('preview');
+    const filename = document.getElementById('filename');
+    const uploadBtn = document.getElementById('upload-btn');
+
+    input.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+            preview.classList.remove('hidden');
+            filename.textContent = '📎 ' + file.name + ' (' + (file.size / 1024 / 1024).toFixed(2) + ' MB)';
+            
+            // ✅ Auto-submit after selection (optional)
+            // document.getElementById('upload-form').submit();
+        }
+    });
+
+    // ✅ 8. Loading
+    document.getElementById('upload-form').addEventListener('submit', function(e) {
+        if (input.files.length === 0) {
+            e.preventDefault();
+            alert('❌ Please select an image first.');
+            return;
+        }
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '⏳ Uploading...';
+        uploadBtn.classList.add('opacity-70');
+    });
+
+    // ✅ 10. Drag & Drop
+    const dropArea = document.getElementById('drop-area');
+
+    dropArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('border-[#1A2A4A]', 'bg-[#EEF3FF]');
+    });
+
+    dropArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        this.classList.remove('border-[#1A2A4A]', 'bg-[#EEF3FF]');
+    });
+
+    dropArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('border-[#1A2A4A]', 'bg-[#EEF3FF]');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            input.files = files;
+            input.dispatchEvent(new Event('change'));
+        }
+    });
+</script>
+
 {% endblock %}
