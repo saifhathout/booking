@@ -122,6 +122,8 @@ def payment_pending(request, payment_id):
 
 # payment/views.py
 
+# payment/views.py
+
 @login_required
 def verify_payment(request, payment_id):
     payment = get_object_or_404(InstaPayPayment, id=payment_id)
@@ -144,26 +146,14 @@ def verify_payment(request, payment_id):
             booking.status = 'CONFIRMED'
             booking.save()
             
-            # ✅ **تقفيل السلوتات هنا (بس بعد الدفع)**
-            start_h = booking.start_time.hour
-            end_h = booking.end_time.hour
-            if end_h == 0:
-                end_h = 24
-            duration = end_h - start_h if end_h > start_h else 1
-            date_str = booking.booking_date.strftime('%Y-%m-%d')
-            
-            for i in range(duration):
-                h = (start_h + i) % 24
-                st = f"{h:02d}:00:00"
-                slot = booking.slot.objects.filter(
-                    field=booking.field,
-                    date=date_str,
-                    start_time=st
-                ).first()
-                if slot:
-                    slot.is_available = False
-                    slot.slot_type = 'BOOKED'
-                    slot.save()
+            # ✅ تقفيل السلوت (بس)
+            try:
+                slot = booking.slot  # ✅ كائن واحد
+                slot.is_available = False
+                slot.slot_type = 'BOOKED'
+                slot.save()
+            except Exception as e:
+                print(f"Error updating slot: {e}")
             
             # ✅ إشعار للاعب
             from notifications.utils import create_notification
@@ -185,7 +175,6 @@ def verify_payment(request, payment_id):
             booking.status = 'CANCELLED'
             booking.save()
             
-            # ✅ إشعار للاعب
             from notifications.utils import create_notification
             create_notification(
                 user=booking.player,
@@ -197,6 +186,8 @@ def verify_payment(request, payment_id):
             messages.warning(request, '❌ تم رفض الدفع')
         
         return redirect('venues:owner_dashboard')
+    
+    return redirect('venues:owner_dashboard')
 
 @player_required
 def manual_review(request, payment_id):
