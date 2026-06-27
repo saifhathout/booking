@@ -36,6 +36,11 @@ def get_slot_range(start_hour, duration):
 
 # booking/utils.py
 
+# booking/utils.py
+
+from datetime import timedelta
+
+
 def get_booked_set(field, start_date, end_date):
     """الحصول على مجموعة الحجوزات المحجوزة"""
     from venues.models import VenueSlot
@@ -48,14 +53,15 @@ def get_booked_set(field, start_date, end_date):
     
     booked_set = set()
     for slot in booked_slots:
-        # ✅ تحويل 0 إلى 24 عشان يتطابق مع system
         hour = slot.start_time.hour
         if hour == 0:
-            hour = 24
-        booked_set.add(f"{slot.date}_{hour}")
+            # ✅ 12 AM → 24، وترجعه لليوم السابق
+            prev_date = slot.date - timedelta(days=1)
+            booked_set.add(f"{prev_date}_24")
+        else:
+            booked_set.add(f"{slot.date}_{hour}")
     
     return booked_set
-
 def display_hour(hour):
     """عرض الساعة بتنسيق 12 ساعة مع AM/PM"""
     return format_time(hour)

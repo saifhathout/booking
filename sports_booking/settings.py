@@ -21,7 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-        'channels',  # ✅ أضف هذا
+        # 'channels',  # ✅ أضف هذا
     'crispy_forms',
     'crispy_bootstrap5',
     'accounts.apps.AccountsConfig',
@@ -35,15 +35,17 @@ INSTALLED_APPS = [
     'notifications.apps.NotificationsConfig',  # ← أضف
 ]
 
-ASGI_APPLICATION = 'sports_booking.asgi.application'
+# ASGI_APPLICATION = 'sports_booking.asgi.application'
 
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -111,10 +113,7 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880
 
 
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
-        },
-    },
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
 }

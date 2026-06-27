@@ -12,4 +12,7 @@ urlpatterns = [
     path('rooms/<int:room_id>/leave/', views.leave_room, name='leave_room'),
     path('room/<int:room_id>/kick/<int:player_id>/', views.kick_player, name='kick_player'),
     path('room/<int:room_id>/cancel/', views.cancel_room, name='cancel_room'),
+        path('room/<int:room_id>/messages/', views.get_chat_messages, name='get_chat_messages'),
+    path('room/<int:room_id>/send-message/', views.send_message, name='send_message'),
+
 ]

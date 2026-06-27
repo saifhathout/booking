@@ -1,228 +1,124 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block title %}Game Rooms{% endblock %}
 
 {% block content %}
 
-<div class="max-w-7xl mx-auto animate-fade-up">
+<div class="max-w-7xl mx-auto animate-fade-up px-4">
 
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-
         <div>
             <h1 class="text-4xl font-black tracking-wide text-[#1A2A4A]">
                 GAME <span class="text-[#12E6FF]">ROOMS</span>
             </h1>
-
             <p class="text-gray-500 mt-2">
                 Join an existing room or create your own.
             </p>
         </div>
-
         <a href="{% url 'teams:create_room' %}"
-           class="bg-[#1A2A4A] hover:bg-[#24395E] transition
-                  text-white px-6 py-3 rounded-2xl font-semibold shadow-lg">
+           class="bg-[#1A2A4A] hover:bg-[#24395E] transition text-white px-6 py-3 rounded-2xl font-semibold shadow-lg">
             + Host Room
         </a>
-
     </div>
 
     {% if rooms %}
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {% for room in rooms %}
+                <div class="rounded-3xl bg-white/60 backdrop-blur-xl border border-white/40 shadow-xl p-6 hover:-translate-y-1 hover:shadow-2xl transition relative">
 
-        {% for room in rooms %}
-
-        <div class="rounded-3xl
-                    bg-white/60
-                    backdrop-blur-xl
-                    border border-white/40
-                    shadow-xl
-                    p-6
-                    hover:-translate-y-1
-                    hover:shadow-2xl
-                    transition">
-
-            <!-- Top -->
-
-            <div class="flex justify-between items-start mb-5">
-
-                <div class="flex items-center gap-4">
-
-                    <div class="w-12 h-12 rounded-2xl bg-[#1A2A4A]
-                                flex items-center justify-center
-                                text-white font-bold text-lg">
-
-                        {{ room.host.username|first|upper }}
-
-                    </div>
-
-                    <div>
-
-                        <h3 class="font-bold text-lg text-[#1A2A4A]">
-                            {{ room.title }}
-                        </h3>
-
-                        <p class="text-sm text-gray-500">
-                            Host: {{ room.host.username }}
-                        </p>
-
-                    </div>
-
-                </div>
-
-                <span class="px-3 py-1 rounded-full
-                             bg-[#12E6FF]/20
-                             text-[#1A2A4A]
-                             text-xs
-                             font-semibold">
-
-                    {{ room.sport_type }}
-
-                </span>
-
-            </div>
-
-            <!-- Players -->
-
-            <div class="flex gap-2 mb-5">
-
-                {% for i in "12345678910"|make_list %}
-
-                    {% if forloop.counter <= room.max_players %}
-
-                        {% if forloop.counter <= room.players_joined %}
-
-                        <div class="w-9 h-9 rounded-xl
-                                    bg-[#12E6FF]
-                                    text-[#1A2A4A]
-                                    font-bold
-                                    flex items-center justify-center">
-
-                            ✓
-
-                        </div>
-
+                    <!-- Status Badge -->
+                    <div class="absolute top-4 right-4">
+                        {% if room.status == 'OPEN' %}
+                            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">🟢 Open</span>
+                        {% elif room.status == 'FULL' %}
+                            <span class="px-3 py-1 rounded-full bg-red-100 text-red-600 text-xs font-semibold">🔴 Full</span>
+                        {% elif room.status == 'CANCELLED' %}
+                            <span class="px-3 py-1 rounded-full bg-gray-200 text-gray-500 text-xs font-semibold">❌ Cancelled</span>
                         {% else %}
-
-                        <div class="w-9 h-9 rounded-xl
-                                    border-2
-                                    border-dashed
-                                    border-[#D9D2BF]
-                                    bg-white
-                                    text-gray-400
-                                    flex items-center justify-center">
-
-                            +
-
-                        </div>
-
+                            <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold">⏳ Started</span>
                         {% endif %}
+                    </div>
 
+                    <!-- Top -->
+                    <div class="flex justify-between items-start mb-5">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-[#1A2A4A] flex items-center justify-center text-white font-bold text-lg">
+                                {{ room.host.username|first|upper }}
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-[#1A2A4A]">{{ room.title }}</h3>
+                                <p class="text-sm text-gray-500">Host: {{ room.host.username }}</p>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1 rounded-full bg-[#12E6FF]/20 text-[#1A2A4A] text-xs font-semibold">
+                            {{ room.sport_type }}
+                        </span>
+                    </div>
+
+                    <!-- Players -->
+                    <div class="flex gap-2 mb-5">
+                        {% for i in "12345678910"|make_list %}
+                            {% if forloop.counter <= room.max_players %}
+                                {% if forloop.counter <= room.players_joined %}
+                                    <div class="w-9 h-9 rounded-xl bg-[#12E6FF] text-[#1A2A4A] font-bold flex items-center justify-center">
+                                        ✓
+                                    </div>
+                                {% else %}
+                                    <div class="w-9 h-9 rounded-xl border-2 border-dashed border-[#D9D2BF] bg-white text-gray-400 flex items-center justify-center">
+                                        +
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <!-- Info -->
+                    <div class="space-y-2 mb-6">
+                        <p class="text-sm text-gray-600">🎾 {{ room.get_sport_type_display }}</p>
+                        <p class="text-sm text-gray-600">📅 {{ room.date|date:"D, M d" }}</p>
+                        <p class="text-sm text-gray-600">⏰ {{ room.time|time:"g:i A" }}</p>
+                        <p class="text-sm text-gray-600">👥 {{ room.players_joined }}/{{ room.max_players }} Players</p>
+                    </div>
+
+                    <!-- Button -->
+                    {% if room.status == 'OPEN' or room.status == 'FULL' %}
+                        {% if request.user != room.host and room.spots_left > 0 %}
+                            <a href="{% url 'teams:join_room' room.id %}"
+                               class="block text-center bg-[#1A2A4A] hover:bg-[#24395E] text-white rounded-2xl py-3 font-semibold transition">
+                                Join Room
+                            </a>
+                        {% elif request.user == room.host %}
+                            <a href="{% url 'teams:room_detail' room.id %}"
+                               class="block text-center border-2 border-[#1A2A4A] text-[#1A2A4A] rounded-2xl py-3 font-semibold hover:bg-[#1A2A4A] hover:text-white transition">
+                                Open Room
+                            </a>
+                        {% else %}
+                            <div class="text-center text-gray-400 text-sm font-semibold py-3">
+                                Room is full
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center text-gray-400 text-sm font-semibold py-3">
+                            Room is not available
+                        </div>
                     {% endif %}
-
-                {% endfor %}
-
-            </div>
-
-            <!-- Info -->
-
-            <div class="space-y-2 mb-6">
-
-                <p class="text-sm text-gray-600">
-                    🎾 {{ room.get_sport_type_display }}
-                </p>
-
-                <p class="text-sm text-gray-600">
-                    📅 {{ room.date }}
-                </p>
-
-                <p class="text-sm text-gray-600">
-                    👥 {{ room.players_joined }}/{{ room.max_players }} Players
-                </p>
-
-            </div>
-
-            <!-- Button -->
-
-            {% if request.user != room.host and room.spots_left > 0 %}
-
-            <a href="{% url 'teams:join_room' room.id %}"
-               class="block text-center
-                      bg-[#1A2A4A]
-                      hover:bg-[#24395E]
-                      text-white
-                      rounded-2xl
-                      py-3
-                      font-semibold
-                      transition">
-
-                Join Room
-
-            </a>
-
-            {% elif request.user == room.host %}
-
-            <a href="{% url 'teams:room_detail' room.id %}"
-               class="block text-center
-                      border-2 border-[#1A2A4A]
-                      text-[#1A2A4A]
-                      rounded-2xl
-                      py-3
-                      font-semibold
-                      hover:bg-[#1A2A4A]
-                      hover:text-white
-                      transition">
-
-                Open Room
-
-            </a>
-
-            {% endif %}
+                </div>
+            {% endfor %}
 
         </div>
-
-        {% endfor %}
-
-    </div>
-
     {% else %}
-
-    <div class="rounded-3xl
-                bg-white/60
-                backdrop-blur-xl
-                border border-white/40
-                shadow-xl
-                p-20
-                text-center">
-
-        <div class="text-6xl mb-5">
-            🎮
+        <div class="rounded-3xl bg-white/60 backdrop-blur-xl border border-white/40 shadow-xl p-20 text-center">
+            <div class="text-6xl mb-5">🎮</div>
+            <h2 class="text-3xl font-bold text-[#1A2A4A] mb-2">No Rooms Yet</h2>
+            <p class="text-gray-500 mb-8">Create the first room and invite your friends.</p>
+            <a href="{% url 'teams:create_room' %}"
+               class="inline-block bg-[#1A2A4A] hover:bg-[#24395E] text-white px-8 py-3 rounded-2xl font-semibold transition">
+                Create Room
+            </a>
         </div>
-
-        <h2 class="text-3xl font-bold text-[#1A2A4A] mb-2">
-            No Rooms Yet
-        </h2>
-
-        <p class="text-gray-500 mb-8">
-            Create the first room and invite your friends.
-        </p>
-
-        <a href="{% url 'teams:create_room' %}"
-           class="inline-block
-                  bg-[#1A2A4A]
-                  hover:bg-[#24395E]
-                  text-white
-                  px-8 py-3
-                  rounded-2xl
-                  font-semibold
-                  transition">
-
-            Create Room
-
-        </a>
-
-    </div>
-
     {% endif %}
 
 </div>
