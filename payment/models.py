@@ -2,7 +2,7 @@
 
 from django.db import models
 from django.conf import settings
-from venues.models import Booking
+from booking.models import Booking
 
 
 class InstaPayPayment(models.Model):
@@ -11,6 +11,7 @@ class InstaPayPayment(models.Model):
         ('approved', 'تم التأكيد'),
         ('rejected', 'مرفوض'),
         ('manual_review', 'مراجعة يدوية'),
+        ('expired', 'منتهي'),
     )
 
     booking = models.OneToOneField(
@@ -21,10 +22,10 @@ class InstaPayPayment(models.Model):
     
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, 
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        db_index=True
     )
 
-    # بيانات الدفع
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     paid_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
@@ -38,17 +39,16 @@ class InstaPayPayment(models.Model):
         blank=True
     )
 
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', db_index=True)
     confidence_score = models.FloatField(default=0.0)
     notes = models.TextField(blank=True, null=True)
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     verified_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"InstaPay #{self.id} - {self.status} - {self.amount} EGP"
 
     class Meta:
-        verbose_name = "InstaPay Payment"
-        verbose_name_plural = "InstaPay Payments"
         ordering = ['-created_at']
+        db_table = 'payment_instapaypayment'

@@ -88,7 +88,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LOGIN_URL = 'accounts:login'
-LOGIN_REDIRECT_URL = 'dashboard:home'
+LOGIN_REDIRECT_URL = 'booking:browse_fields'
 LOGOUT_REDIRECT_URL = 'accounts:login'
 
 LANGUAGE_CODE = 'en-us'

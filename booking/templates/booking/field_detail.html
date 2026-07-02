@@ -1,3 +1,4 @@
+<!-- booking/templates/booking/field_detail.html -->
 {% extends 'base.html' %}
 {% load static %}
 
@@ -7,68 +8,84 @@
 
 <div class="animate-fade-up max-w-6xl mx-auto px-4">
 
-    <!-- ✅ Back Button -->
-    <div class="mb-4">
-        <a href="{% url 'booking:browse' %}" class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#1A2A4A] transition">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-            </svg>
-            Back
-        </a>
-    </div>
-
-    <!-- Header Card -->
-    <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-6 mb-6">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div class="flex items-center gap-4">
-                <div class="w-14 h-14 rounded-2xl bg-[#1A2A4A] text-white flex items-center justify-center text-2xl">
-                    {% if field.sport_type == 'FOOTBALL' %}⚽
-                    {% elif field.sport_type == 'PADEL' %}🎾
-                    {% elif field.sport_type == 'BASKETBALL' %}🏀
-                    {% elif field.sport_type == 'TENNIS' %}🎾
-                    {% else %}🏟️{% endif %}
-                </div>
-                <div>
-                    <h1 class="text-2xl font-bold text-[#1A2A4A]">{{ field.name }}</h1>
-                    <p class="text-sm text-gray-500">{{ field.venue.name }}</p>
+    <!-- ✅ Header Card - Glassmorphism -->
+    <div class="rounded-[32px] overflow-hidden bg-white/60 backdrop-blur-xl border border-white/40 shadow-xl mb-8">
+        
+        <!-- Image -->
+        <div class="relative h-72 w-full overflow-hidden bg-[#1A2A4A]">
+            {% if field.image %}
+                <img src="{{ field.image.url }}" alt="{{ field.name }}" class="w-full h-full object-cover">
+            {% elif field.sport_type == 'FOOTBALL' %}
+                <img src="/static/img/fields/volta.webp" alt="Football" class="w-full h-full object-cover">
+            {% elif field.sport_type == 'PADEL' %}
+                <img src="/static/img/fields/20220522_Campo_padel_MONDO_superficie.jpg" alt="Padel" class="w-full h-full object-cover">
+            {% elif field.sport_type == 'BASKETBALL' %}
+                <img src="/static/img/fields/panoramic-ملاعب-بادبول.webp" alt="Basketball" class="w-full h-full object-cover">
+            {% else %}
+                <div class="w-full h-full bg-gradient-to-br from-[#1A2A4A] to-[#24395E] flex items-center justify-center text-7xl">🏟️</div>
+            {% endif %}
+            
+            <!-- Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+            
+            <!-- Price -->
+            <div class="absolute top-5 right-5 bg-white/85 backdrop-blur-xl rounded-2xl px-5 py-3 shadow-lg">
+                <p class="text-xs text-gray-500 font-semibold">Per Hour</p>
+                <h2 class="text-2xl font-black text-[#1A2A4A]">EGP {{ field.price_per_hour|floatformat:"0" }}</h2>
+            </div>
+            
+            <!-- Field Info -->
+            <div class="absolute bottom-6 left-6">
+                <h1 class="text-4xl font-black text-white drop-shadow-lg">{{ field.name }}</h1>
+                <div class="flex items-center gap-2 mt-2">
+                    <i class="fas fa-location-dot text-[#12E6FF]"></i>
+                    <p class="text-white/80 drop-shadow-lg">{{ field.venue.name }}</p>
                 </div>
             </div>
-            <div class="flex items-center gap-3">
-                <span class="bg-[#1A2A4A]/80 backdrop-blur text-white px-4 py-2 rounded-full text-sm font-semibold border border-white/20">
-                    EGP {{ field.price_per_hour }}/hr
-                </span>
-                {% if user.is_venue_owner %}
-                    <a href="{% url 'venues:field_edit' field.id %}" class="text-sm text-[#12E6FF] hover:text-[#1A2A4A] transition">✏️ Edit</a>
-                {% endif %}
+            
+            <!-- Sport Icon -->
+            <div class="absolute top-5 left-5 w-12 h-12 rounded-2xl bg-white/85 backdrop-blur-xl border border-white/40 flex items-center justify-center text-2xl shadow-lg">
+                {% if field.sport_type == 'FOOTBALL' %}⚽
+                {% elif field.sport_type == 'PADEL' %}🎾
+                {% elif field.sport_type == 'BASKETBALL' %}🏀
+                {% elif field.sport_type == 'TENNIS' %}🎾
+                {% else %}🏟️{% endif %}
             </div>
         </div>
     </div>
 
-    <!-- ✅ Stats - Different Info -->
-    <div class="grid grid-cols-3 gap-4 mb-6">
-        <div class="rounded-2xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-md p-4 text-center">
-            <p class="text-xs text-gray-400">Today's Hours</p>
-            <p class="text-sm font-bold text-[#1A2A4A]">8:00 AM – 12:00 AM</p>
+    <!-- Stats -->
+    <div class="grid grid-cols-3 gap-4 mb-8">
+        <div class="rounded-3xl bg-white/60 backdrop-blur-xl border border-white/40 shadow-lg p-5 text-center">
+            <p class="text-gray-500 text-sm font-semibold">Price</p>
+            <h2 class="font-black text-[#1A2A4A] text-xl">EGP {{ field.price_per_hour }}</h2>
         </div>
-        <div class="rounded-2xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-md p-4 text-center">
-            <p class="text-xs text-gray-400">Max Players</p>
-            <p class="text-sm font-bold text-[#1A2A4A]">{{ field.max_players|default:"10" }}</p>
+        <div class="rounded-3xl bg-white/60 backdrop-blur-xl border border-white/40 shadow-lg p-5 text-center">
+            <p class="text-gray-500 text-sm font-semibold">Sport</p>
+            <h2 class="font-bold text-[#1A2A4A]">{{ field.get_sport_type_display }}</h2>
         </div>
-        <div class="rounded-2xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-md p-4 text-center">
-            <p class="text-xs text-gray-400">Available Today</p>
-            <p class="text-sm font-bold text-[#12E6FF]">{{ available_today|default:"6" }}</p>
+        <div class="rounded-3xl bg-white/60 backdrop-blur-xl border border-white/40 shadow-lg p-5 text-center">
+            <p class="text-gray-500 text-sm font-semibold">Available Today</p>
+            <h2 class="font-bold text-[#12E6FF]">{{ available_today|default:"0" }}</h2>
         </div>
     </div>
 
-    <!-- Days -->
+    <!-- Legend - Pills -->
+    <div class="flex flex-wrap gap-3 mb-8">
+        <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 text-sm font-semibold">🟢 Available</span>
+        <span class="px-4 py-2 rounded-full bg-red-100 text-red-600 text-sm font-semibold">🔴 Booked</span>
+        <span class="px-4 py-2 rounded-full bg-gray-100 text-gray-500 text-sm font-semibold">⚪ Past</span>
+    </div>
+
+    <!-- Days & Slots -->
     {% for day_data in all_slots_list %}
-        <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl mb-5 overflow-hidden">
-
-            <!-- ✅ Day Header with Available Count -->
-            <div class="px-5 py-4 border-b border-gray-200/50 flex justify-between items-center">
+        <div class="rounded-3xl bg-white/60 backdrop-blur-xl border border-white/30 shadow-lg mb-4 overflow-hidden">
+            
+            <!-- Day Header -->
+            <div class="px-6 py-5 border-b border-gray-200/50 flex justify-between items-center">
                 <div>
-                    <h3 class="font-bold text-lg text-[#1A2A4A]">{{ day_data.date|date:"l" }}</h3>
-                    <p class="text-xs text-gray-400">{{ day_data.date|date:"M d, Y" }}</p>
+                    <h2 class="font-bold text-xl text-[#1A2A4A]">{{ day_data.date|date:"l" }}</h2>
+                    <span class="text-sm text-gray-500">{{ day_data.date|date:"M d, Y" }}</span>
                 </div>
                 <div class="flex items-center gap-3">
                     <span class="text-xs bg-[#12E6FF]/10 text-[#1A2A4A] px-3 py-1 rounded-full font-semibold">
@@ -80,48 +97,27 @@
                 </div>
             </div>
 
-            <!-- ✅ Slots with Legend inside each day -->
-            <div class="px-5 py-4">
-                <!-- Mini Legend -->
-                <div class="flex gap-4 mb-4 text-xs">
-                    <span class="flex items-center gap-1.5">
-                        <span class="w-3 h-3 rounded-full bg-[#12E6FF]"></span>
-                        Available
-                    </span>
-                    <span class="flex items-center gap-1.5">
-                        <span class="w-3 h-3 rounded-full bg-[#1A2A4A]"></span>
-                        Booked
-                    </span>
-                    <span class="flex items-center gap-1.5">
-                        <span class="w-3 h-3 rounded-full bg-gray-300"></span>
-                        Past
-                    </span>
-                </div>
-
-                <!-- ✅ Slots Grid - Mobile Friendly -->
-                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
-                    {% for slot in day_data.slots %}
-                        {% if slot.is_booked %}
-                            <!-- ✅ Booked Slot -->
-                            <div class="rounded-2xl bg-[#1A2A4A] text-white py-4 px-2 text-center flex flex-col items-center gap-1">
-                                <span class="text-xs font-medium">🔒</span>
-                                <span class="text-sm font-bold">{{ slot.time }}</span>
-                            </div>
-                        {% elif slot.hour <= current_hour and day_data.date == today %}
-                            <!-- ✅ Past Slot -->
-                            <div class="rounded-2xl bg-gray-100 text-gray-400 py-4 px-2 text-center flex flex-col items-center gap-1">
-                                <span class="text-xs">⏰</span>
-                                <span class="text-sm font-medium">{{ slot.time }}</span>
-                            </div>
-                        {% else %}
-                            <!-- ✅ Available Slot -->
-                            <a href="{% url 'booking:book_slot' slot.slot_id %}" 
-                               class="rounded-2xl bg-[#12E6FF]/10 hover:bg-[#12E6FF]/20 text-[#1A2A4A] py-4 px-2 text-center font-bold transition hover:scale-105 border border-[#12E6FF]/20">
-                                <span class="text-sm">{{ slot.time }}</span>
-                            </a>
-                        {% endif %}
-                    {% endfor %}
-                </div>
+            <!-- Slots Grid -->
+            <div class="p-5 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
+                {% for slot in day_data.slots %}
+                    {% if slot.is_booked %}
+                        <!-- Booked Slot -->
+                        <div class="bg-red-100 border border-red-300 rounded-2xl py-4 text-center">
+                            <span class="text-sm font-bold text-red-600 line-through">{{ slot.time }}</span>
+                        </div>
+                    {% elif slot.hour <= current_hour and day_data.date == today %}
+                        <!-- Past Slot -->
+                        <div class="bg-gray-100 text-gray-400 rounded-2xl py-4 text-center">
+                            <span class="text-sm font-medium">{{ slot.time }}</span>
+                        </div>
+                    {% else %}
+                        <!-- Available Slot -->
+                        <a href="{% url 'booking:book_slot' slot.slot_id %}" 
+                           class="rounded-2xl bg-[#1A2A4A] text-white py-4 text-center transition duration-300 hover:bg-[#24395E] hover:scale-105 shadow-lg">
+                            <span class="text-sm font-bold">{{ slot.time }}</span>
+                        </a>
+                    {% endif %}
+                {% endfor %}
             </div>
         </div>
     {% endfor %}

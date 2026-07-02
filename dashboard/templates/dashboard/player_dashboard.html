@@ -59,7 +59,7 @@
     <!-- TAB 2: FIND SQUAD -->
     <div id="squadTab" class="hidden">
         <div class="khub-card p-4 mb-6">
-            <form method="GET" action="{% url 'teams:find_players' %}" class="flex gap-2">
+<form method="GET" action="{% url 'teams:room_list' %}" class="flex gap-2">
                 <select name="sport_type" class="input-khub flex-1">
                     <option value="">All Sports</option>
                     <option value="PADEL">🎾 Padel</option>
@@ -71,7 +71,7 @@
         </div>
 
         <div class="text-center mb-6">
-            <a href="{% url 'teams:create_post' %}" class="btn-outline text-xs px-8 py-3 inline-block">
+            <a href="{% url 'teams:create_room' %}" class="btn-outline text-xs px-8 py-3 inline-block">
                 + Create Post
             </a>
         </div>

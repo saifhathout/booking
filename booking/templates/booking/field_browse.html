@@ -1,3 +1,4 @@
+<!-- booking/templates/booking/field_browse.html -->    
 {% extends 'base.html' %}
 {% load static %}
 
@@ -8,48 +9,58 @@
 <div class="animate-fade-up max-w-6xl mx-auto px-4">
 
     <!-- ✅ 1. Hero Section - مع Stats -->
-    <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-8 mb-8 relative overflow-hidden">
+    <div class="rounded-3xl bg-[#1A2A4A] backdrop-blur-xl border border-white/40 shadow-xl p-8 mb-8 relative overflow-hidden">
         <!-- Subtle Background Pattern -->
         <div class="absolute inset-0 opacity-5">
-            <div class="absolute inset-0" style="background-image: repeating-linear-gradient(45deg, #1A2A4A 0px, #1A2A4A 2px, transparent 2px, transparent 10px);"></div>
+            <div class="absolute inset-0" style="background-image: repeating-linear-gradient(45deg, #bf8383 0px, #ffffff 2px, transparent 2px, transparent 10px);"></div>
         </div>
         
         <div class="relative z-10">
-            <p class="text-xs font-bold tracking-[3px] text-[#12E6FF] uppercase">
+            <p class="text-xs font-bold tracking-[3px] text-[#12E6FF]/60 uppercase">
                 BOOK NOW
             </p>
-            <h1 class="text-4xl font-black tracking-wide text-[#1A2A4A]">
+            <h1 class="text-4xl font-black tracking-wide text-white">
                 FIND YOUR
-                <span class="text-[#12E6FF]">FIELD</span>
+                <span class="text-[#12E6FF]/60">VIBE</span>
             </h1>
             <p class="text-gray-500 mt-2">
-                Book your favorite field in seconds.
+                Book in seconds.
             </p>
             
             <!-- Stats -->
             <div class="flex gap-6 mt-6">
                 <div>
-                    <p class="text-2xl font-black text-[#1A2A4A]">{{ total_fields|default:"4" }}</p>
+                    <p class="text-2xl font-black text-white">{{ total_fields|default:"4" }}</p>
                     <p class="text-xs text-gray-500">Fields</p>
                 </div>
                 <div>
-                    <p class="text-2xl font-black text-[#1A2A4A]">{{ total_bookings|default:"12" }}</p>
+                    <p class="text-2xl font-black text-white">{{ total_bookings|default:"12" }}</p>
                     <p class="text-xs text-gray-500">Bookings</p>
                 </div>
                 <div>
-                    <p class="text-2xl font-black text-[#12E6FF]">{{ total_players|default:"28" }}</p>
+                    <p class="text-2xl font-black text-[#12E6FF]/60">{{ total_players|default:"28" }}</p>
                     <p class="text-xs text-gray-500">Players</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ✅ 2. Fields Grid -->
-    <div class="grid grid-cols-2 md:grid-cols-2 gap-6 mb-12">
-        {% for field in fields|slice:":4" %}
-            <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl overflow-hidden hover:-translate-y-1 hover:shadow-2xl transition">
+    <!-- ✅ ALL FIELDS - Horizontal Slider -->
+    <div class="mb-12">
+        <div class="flex justify-between items-center mb-5">
+            <h2 class="text-3xl font-black text-[#1A2A4A]">
+                ALL <span class="text-[#12E6FF]/60">FIELDS</span>
+            </h2>
+            <span class="text-sm text-gray-400">← Swipe →</span>
+        </div>
+
+        <div class="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide" id="slider">
+            {% for field in fields %}
+            <a href="{% url 'booking:field_detail' field.id %}" 
+               class="min-w-[300px] md:min-w-[320px] rounded-3xl bg-[#1A2A4A] backdrop-blur-xl border border-white/40 shadow-xl overflow-hidden snap-start hover:-translate-y-1 hover:shadow-2xl transition flex-shrink-0">
+                
                 <!-- Image -->
-                <div class="h-56 relative overflow-hidden bg-[#1A2A4A]/10">
+                <div class="h-48 relative overflow-hidden bg-[#1A2A4A]/10">
                     {% if field.image %}
                         <img src="{{ field.image.url }}" alt="{{ field.name }}" class="w-full h-full object-cover">
                     {% elif field.sport_type == 'FOOTBALL' %}
@@ -59,7 +70,7 @@
                     {% elif field.sport_type == 'BASKETBALL' %}
                         <img src="/static/img/fields/panoramic-ملاعب-بادبول.webp" alt="Basketball" class="w-full h-full object-cover">
                     {% else %}
-                        <div class="w-full h-full bg-gradient-to-br from-[#1A2A4A] to-[#24395E] flex items-center justify-center text-6xl">
+                        <div class="w-full h-full bg-gradient-to-br from-[#1A2A4A] to-[#24395E] flex items-center justify-center text-5xl">
                             {% if field.sport_type == 'FOOTBALL' %}⚽
                             {% elif field.sport_type == 'PADEL' %}🎾
                             {% elif field.sport_type == 'BASKETBALL' %}🏀
@@ -67,104 +78,63 @@
                         </div>
                     {% endif %}
                     
-                    <!-- Overlay -->
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
                     
-                    <!-- ✅ 3. Price Badge - Darker -->
-                    <div class="absolute top-4 right-4 bg-[#1A2A4A]/80 backdrop-blur text-white px-3 py-1 rounded-full text-xs font-semibold border border-white/20">
-                        EGP {{ field.price_per_hour }}/hr
+                    <!-- ✅ Price Badge -->
+                    <div class="absolute top-3 right-3 bg-[#1A2A4A]/80 backdrop-blur text-white px-3 py-1 rounded-full text-xs font-semibold border border-white/20">
+                        EGP {{ field.price_per_hour }}
                     </div>
                     
-                    <!-- Sport Icon -->
-                    <div class="absolute top-4 left-4 w-10 h-10 rounded-xl bg-white/90 backdrop-blur border border-white/40 flex items-center justify-center text-xl shadow-lg">
+                    
+                    <!-- ✅ Sport Icon -->
+                    <!-- <div class="absolute top-3 left-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur flex items-center justify-center text-sm shadow-lg">
                         {% if field.sport_type == 'FOOTBALL' %}⚽
                         {% elif field.sport_type == 'PADEL' %}🎾
                         {% elif field.sport_type == 'BASKETBALL' %}🏀
                         {% else %}🏟️{% endif %}
-                    </div>
+                    </div> -->
                     
-                    <!-- Field Name -->
-                    <div class="absolute bottom-4 left-4 z-10">
-                        <h3 class="text-xl font-bold text-white drop-shadow-lg">
-                            {{ field.name }}
-                        </h3>
-                        <p class="text-white/70 text-xs drop-shadow-lg">
-                            {{ field.venue.name }}
-                        </p>
+                    <!-- ✅ Field Name -->
+                    <div class="absolute bottom-3 left-3">
+                        <span class="text-white font-bold text-sm drop-shadow-lg">{{ field.name }}</span>
+                        <p class="text-white/70 text-xs drop-shadow-lg">{{ field.venue.name }}</p>
                     </div>
                 </div>
                 
-                <!-- Book Now -->
-                <div class="p-5">
-                    <a href="{% url 'booking:field_detail' field.id %}" 
-                       class="block text-center bg-[#1A2A4A] hover:bg-[#24395E] text-white rounded-2xl py-3 font-semibold transition">
-                        BOOK NOW →
-                    </a>
+                <div class="p-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-gray-500"></span>
+                        <span class="text-xs text-green-500">● open</span>
+                    </div>
                 </div>
-            </div>
-        {% empty %}
-            <!-- ✅ 6. Empty State for Fields -->
-            <div class="col-span-2 rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-12 text-center">
-                <div class="text-5xl mb-4">🏟️</div>
-                <h3 class="text-xl font-bold text-[#1A2A4A]">No Fields Available</h3>
-                <p class="text-gray-500 mt-2">Check back later for new fields.</p>
-            </div>
-        {% endfor %}
+            </a>
+            {% endfor %}
+        </div>
     </div>
 
-    <!-- ✅ 4. NO TEAM - Glassmorphism -->
-<div class="text-center" style="margin-bottom: 50px;margin-top: 50px;">
-    <h2 class="text-4xl font-black text-[#1A2A4A]">
-        NO
-        <span class="text-[#12E6FF]">TEAM?</span>
-    </h2>
-    <p class="text-gray-500 mt-3 text-lg">
-        No problem. Find your squad here.
-    </p>
-</div>
-    <!-- ✅ 5. Recent Posts - Equal Cards -->
-    {% if recent_posts %}
-        <div class="mb-12">
-            <h2 class="text-2xl font-bold text-[#1A2A4A] mb-5">📢 Recent Posts</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {% for post in recent_posts|slice:":2" %}
-                    <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-6 hover:-translate-y-1 hover:shadow-2xl transition">
-                        <div class="flex items-center gap-3 mb-3">
-                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#1A2A4A] to-[#4e69ba] text-white font-bold flex items-center justify-center">
-                                {{ post.player.username|first|upper }}
-                            </div>
-                            <div>
-                                <p class="font-bold text-[#1A2A4A]">{{ post.player.username }}</p>
-                                <p class="text-xs text-gray-500">{{ post.created_at|timesince }} ago</p>
-                            </div>
-                        </div>
-                        <p class="text-sm text-gray-600">{{ post.message|truncatechars:60 }}</p>
-                        <div class="flex items-center gap-2 mt-3">
-                            <span class="text-xs bg-gray-100 px-3 py-1 rounded-full">{{ post.get_sport_type_display }}</span>
-                            <span class="text-xs bg-gray-100 px-3 py-1 rounded-full">👥 {{ post.players_needed }}</span>
-                        </div>
-                        <a href="{% url 'teams:join_post' post.id %}" 
-                           class="block text-center bg-[#1A2A4A] hover:bg-[#24395E] text-white rounded-2xl py-3 font-semibold transition mt-4">
-                            JOIN ROOM →
-                        </a>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-    {% endif %}
-
-    <!-- ✅ 4. BUILD & BATTLE - Moved to Bottom -->
-    <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-10 text-center">
-        <h2 class="text-4xl font-black text-[#1A2A4A]">
-            BUILD &
-            <span class="text-[#12E6FF]">BATTLE</span>
+    <!-- ✅ NO TEAM Section -->
+    <div class="rounded-3xl bg-[#1A2A4A] backdrop-blur-xl border border-white/40 shadow-xl p-12 text-center mb-8">
+        <h2 class="text-4xl font-black text-white">
+            NO
+            <span class="text-[#12E6FF]/60">TEAM?</span>
         </h2>
-        <p class="text-gray-500 mt-3">Find teammates and dominate.</p>
-        <a href="{% url 'teams:room_list' %}" class="inline-block bg-[#1A2A4A] hover:bg-[#24395E] text-white rounded-2xl px-8 py-3 font-semibold transition mt-5">
+        <p class="text-gray-500 mt-3">No problem. Find your squad here.</p>
+        <a href="{% url 'teams:room_list' %}" class="inline-block bg-white hover:bg-[#24395E] text-[#12E6FF]/60 rounded-2xl px-8 py-3 font-semibold transition mt-5">
             Find Squad →
         </a>
     </div>
 
 </div>
+
+<!-- ✅ CSS - Hide scrollbar -->
+<style>
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
 
 {% endblock %}
