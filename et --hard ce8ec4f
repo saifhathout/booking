@@ -1,0 +1,57 @@
+[33m201e3b8[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m more problems
+[33mce8ec4f[m fix chat
+[33m55c5eb0[m fix payment
+[33m694aee3[m Add channels for real-time chat
+[33m1d96dad[m new desgin with new features
+[33m7b4a36f[m payment
+[33m991ade0[m[33m ([m[1;32magents/mobile-header-notification-count[m[33m)[m remove one signal
+[33m3d95a31[m Remove macOS metadata files causing Nixpacks build failures
+[33ma5334c2[m updates on ui
+[33m45bff6a[m add rooms
+[33me414104[m revert sql
+[33m17e6292[m postgres
+[33md62e2b7[m notifications without secret
+[33m7356afa[m remove webpush
+[33m23ce9c0[m clean requirements
+[33mca477c2[m fix push notifications
+[33ma3179a6[m fixxx
+[33m82b1f16[m race condition
+[33md6eaf00[m web push notifications
+[33m79d322a[m fix city
+[33m63c2149[m remove city
+[33mae76292[m fix chat
+[33mb7934cf[m fix req
+[33mbf2b174[m add whitenoise for static files
+[33m146fb76[m trigger redeploy
+[33m00e5a00[m Add files via upload
+[33m6d1b66d[m remove notifications folder
+[33m607a2e1[m fix requirements for linux
+[33mc029c90[m clean requirements
+[33m63ac302[m trigger redeploy
+[33mf8bc3bb[m fix hostss
+[33mf0c647e[m fix hosts
+[33m82dc71b[m fix allawed hosts
+[33m11d43e6[m updates based on owner
+[33md120ff3[m fix notifcaiton
+[33ma2c64f1[m nofication
+[33m44ce06a[m fix chat
+[33me116a9d[m fix chat refresh
+[33m86a9e5b[m fix 11 am
+[33m5815098[m fix chat
+[33mabe0d94[m fix chat +add feature cancel
+[33mf88716b[m update join teams
+[33mbae3708[m update schedule
+[33mf99483c[m fix allowed hosts + update booking clender
+[33ma116098[m fix merge conflict
+[33m61afed5[m update ui + booking system + time slots
+[33ma7f0db5[m Delete create_all_templates.py
+[33m967baaa[m Delete create_templates.py
+[33m84a4a40[m Update settings.py
+[33m0d362e9[m Add files via upload
+[33m0f06bb6[m Add files via upload
+[33m935f48a[m Update register_venue_owner.html
+[33md8b97a1[m Update register_player.html
+[33mf40ebdb[m Revamp login.html layout and styles
+[33me96f775[m Add files via upload
+[33mcbc7f73[m Add files via upload
+[33m0beaec2[m Add files via upload

@@ -46,6 +46,14 @@
                                     <div class="mt-3 space-y-1 text-gray-600 text-sm">
                                         <p>📅 {{ booking.booking_date|date:"D, M j" }}</p>
                                         <p>⏰ {{ booking.start_time|time:"g:i A" }} - {{ booking.end_time|time:"g:i A" }}</p>
+                                        {% if booking.status == 'LOCKED' and booking.locked_until %}
+                                            <p class="text-orange-600">
+                                                ⏳ ينتهي القفل خلال: 
+                                                <span class="font-bold countdown" data-expires="{{ booking.locked_until|date:'Y-m-d H:i:s' }}">
+                                                    {{ booking.locked_until|timeuntil }}
+                                                </span>
+                                            </p>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
@@ -53,22 +61,65 @@
                             <!-- Right -->
                             <div class="flex flex-col items-start lg:items-end justify-between">
                                 <div class="flex flex-wrap items-center gap-3">
-                                    <h3 class="text-3xl font-black text-[#1A2A4A]">${{ booking.field.price_per_hour }}</h3>
+                                    <h3 class="text-3xl font-black text-[#1A2A4A]">EGP {{ booking.total_price|floatformat:2 }}</h3>
                                     
+                                    <!-- ✅ حالة الحجز -->
                                     {% if booking.status == "PENDING" %}
-                                        <span class="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full text-sm font-semibold">⏳ Pending</span>
+                                        <span class="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold">⏳ Pending</span>
+                                    
+                                    {% elif booking.status == "LOCKED" %}
+                                        <span class="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full text-sm font-semibold">
+                                            🔒 Locked - Awaiting Payment
+                                        </span>
+                                    
                                     {% elif booking.status == "CONFIRMED" %}
                                         <span class="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-semibold">✅ Confirmed</span>
-                                    {% else %}
+                                    
+                                    {% elif booking.status == "EXPIRED" %}
+                                        <span class="bg-gray-200 text-gray-600 px-4 py-2 rounded-full text-sm font-semibold">⏰ Expired</span>
+                                    
+                                    {% elif booking.status == "CANCELLED" %}
                                         <span class="bg-red-100 text-red-600 px-4 py-2 rounded-full text-sm font-semibold">❌ Cancelled</span>
+                                    
+                                    {% elif booking.status == "REJECTED" %}
+                                        <span class="bg-red-100 text-red-600 px-4 py-2 rounded-full text-sm font-semibold">🚫 Rejected</span>
                                     {% endif %}
                                 </div>
 
-                                {% if booking.status == "PENDING" or booking.status == "CONFIRMED" %}
-                                    <button onclick="openModal('cancelModal{{ booking.id }}')" class="mt-3 text-red-500 hover:text-red-700 font-semibold text-sm border border-red-200 hover:border-red-400 px-4 py-2 rounded-full transition">
-                                        Cancel Booking
-                                    </button>
-                                {% endif %}
+                                <!-- ✅ أزرار الإجراءات حسب الحالة -->
+                                <div class="mt-3 flex flex-wrap gap-2">
+                                    {% if booking.status == "LOCKED" %}
+                                        <!-- ✅ زر إتمام الدفع -->
+                                        <a href="{% url 'payment:initiate_instapay' booking.id %}" 
+                                           class="bg-[#12E6FF] hover:bg-[#0ECCE3] text-[#1A2A4A] px-5 py-2 rounded-full text-sm font-bold transition">
+                                            💳 Complete Payment
+                                        </a>
+                                        
+                                        <!-- ✅ زر إلغاء القفل -->
+                                        <button onclick="openModal('cancelModal{{ booking.id }}')" 
+                                                class="text-red-500 hover:text-red-700 font-semibold text-sm border border-red-200 hover:border-red-400 px-4 py-2 rounded-full transition">
+                                            Cancel Booking
+                                        </button>
+                                    
+                                    {% elif booking.status == "CONFIRMED" %}
+                                        <button onclick="openModal('cancelModal{{ booking.id }}')" 
+                                                class="text-red-500 hover:text-red-700 font-semibold text-sm border border-red-200 hover:border-red-400 px-4 py-2 rounded-full transition">
+                                            Cancel Booking
+                                        </button>
+                                    
+                                    {% elif booking.status == "EXPIRED" %}
+                                        <a href="{% url 'booking:field_detail' booking.field.id %}" 
+                                           class="text-blue-500 hover:text-blue-700 font-semibold text-sm border border-blue-200 hover:border-blue-400 px-4 py-2 rounded-full transition">
+                                            🔄 Book Again
+                                        </a>
+                                    
+                                    {% elif booking.status == "PENDING" %}
+                                        <a href="{% url 'payment:initiate_instapay' booking.id %}" 
+                                           class="bg-[#12E6FF] hover:bg-[#0ECCE3] text-[#1A2A4A] px-5 py-2 rounded-full text-sm font-bold transition">
+                                            💳 Pay Now
+                                        </a>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -79,14 +130,29 @@
                         <div class="relative w-full max-w-md mx-4 rounded-3xl bg-white shadow-2xl p-8">
                             <div class="text-center">
                                 <div class="w-20 h-20 mx-auto rounded-full bg-red-100 flex items-center justify-center text-4xl mb-5">⚠️</div>
-                                <h2 class="text-2xl font-bold text-[#1A2A4A]">Cancel Booking?</h2>
+                                <h2 class="text-2xl font-bold text-[#1A2A4A]">
+                                    {% if booking.status == "LOCKED" %}
+                                        Cancel Payment?
+                                    {% else %}
+                                        Cancel Booking?
+                                    {% endif %}
+                                </h2>
                                 <p class="text-gray-500 mt-3">{{ booking.field.name }}</p>
                                 <p class="text-gray-500">{{ booking.booking_date|date:"D, M j" }}</p>
+                                
+                                {% if booking.status == "LOCKED" %}
+                                    <p class="text-yellow-600 text-sm mt-2">
+                                        ⚠️ سيتم تحرير السلوتات وستصبح متاحة للآخرين
+                                    </p>
+                                {% endif %}
+                                
                                 <div class="flex gap-3 mt-8">
-                                    <button onclick="closeModal('cancelModal{{ booking.id }}')" class="flex-1 border border-gray-300 rounded-2xl py-3 hover:bg-gray-100">
+                                    <button onclick="closeModal('cancelModal{{ booking.id }}')" 
+                                            class="flex-1 border border-gray-300 rounded-2xl py-3 hover:bg-gray-100 transition">
                                         Keep
                                     </button>
-                                    <a href="{% url 'booking:cancel_booking' booking.id %}" class="flex-1 bg-red-500 hover:bg-red-600 text-white rounded-2xl py-3 text-center">
+                                    <a href="{% url 'booking:cancel_booking' booking.id %}" 
+                                       class="flex-1 bg-red-500 hover:bg-red-600 text-white rounded-2xl py-3 text-center transition">
                                         Cancel
                                     </a>
                                 </div>
@@ -137,8 +203,18 @@
                                 </div>
                             </div>
                             <div class="flex flex-col items-start lg:items-end justify-between">
-                                <h3 class="text-2xl font-black text-gray-500">EGP {{ booking.field.price_per_hour }}</h3>
-                                <span class="bg-gray-200 text-gray-600 rounded-full px-4 py-2 text-sm font-semibold">✓ Completed</span>
+                                <h3 class="text-2xl font-black text-gray-500">EGP {{ booking.total_price|floatformat:2 }}</h3>
+                                <span class="bg-gray-200 text-gray-600 rounded-full px-4 py-2 text-sm font-semibold">
+                                    {% if booking.status == "EXPIRED" %}
+                                        ⏰ Expired
+                                    {% elif booking.status == "CANCELLED" %}
+                                        ❌ Cancelled
+                                    {% elif booking.status == "REJECTED" %}
+                                        🚫 Rejected
+                                    {% else %}
+                                        ✓ Completed
+                                    {% endif %}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -159,10 +235,38 @@ function openModal(id) {
     document.getElementById(id).style.display = 'flex'; 
     document.getElementById(id).classList.remove('hidden'); 
 }
+
 function closeModal(id) { 
     document.getElementById(id).style.display = 'none'; 
     document.getElementById(id).classList.add('hidden'); 
 }
+
+// ✅ عداد تنازلي لجميع عناصر countdown
+document.addEventListener('DOMContentLoaded', function() {
+    const countdownElements = document.querySelectorAll('.countdown');
+    
+    countdownElements.forEach(function(element) {
+        const expires = new Date(element.dataset.expires).getTime();
+        
+        const interval = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = expires - now;
+            
+            if (distance < 0) {
+                clearInterval(interval);
+                element.innerHTML = '⏰ انتهت الصلاحية';
+                // تحديث حالة الحجز إلى EXPIRED
+                location.reload();
+                return;
+            }
+            
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            element.innerHTML = `${minutes}m ${seconds}s`;
+        }, 1000);
+    });
+});
 </script>
 
 {% endblock %}

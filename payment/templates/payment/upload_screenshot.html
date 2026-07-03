@@ -18,131 +18,199 @@
             <p class="text-gray-500 mt-2">Upload your InstaPay payment screenshot.</p>
         </div>
 
-        <!-- ✅ 2. Upload Area -->
-        <div class="rounded-3xl bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl p-8 mb-6 hover:shadow-2xl transition duration-300">
-
-            <form method="POST" enctype="multipart/form-data" id="upload-form">
-                {% csrf_token %}
-
-                <!-- ✅ 2. Upload Area with Drag & Drop -->
-                <div id="drop-area" 
-                     class="rounded-3xl border-2 border-dashed border-[#1A2A4A]/20 bg-[#F8F9FC] p-12 hover:border-[#1A2A4A] hover:bg-[#EEF3FF] transition duration-300 cursor-pointer text-center">
-
-                    <input type="file" 
-                           name="screenshot" 
-                           id="screenshot" 
-                           accept="image/*" 
-                           class="hidden" 
-                           required>
-
-                    <label for="screenshot" class="cursor-pointer block">
-                        <div class="text-6xl mb-4 text-[#1A2A4A]">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                        </div>
-                        <p class="font-semibold text-[#1A2A4A] text-lg">Drag & Drop</p>
-                        <p class="text-gray-400">or</p>
-                        <p class="text-[#1A2A4A] font-semibold underline">Choose Image</p>
-                        <p class="text-sm text-gray-400 mt-2">JPG, PNG, JPEG — Max 10MB</p>
-                    </label>
-
-                    <!-- ✅ 3. Image Preview -->
-                    <img id="preview" class="hidden rounded-2xl mt-6 w-full max-h-80 object-cover shadow-lg">
-
-                    <!-- ✅ 4. File Name -->
-                    <p id="filename" class="text-center text-sm text-gray-500 mt-4"></p>
+        <!-- ✅ 2. Booking Summary -->
+        <div class="rounded-3xl bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl p-6 mb-6">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-[#1A2A4A] text-white flex items-center justify-center text-2xl">
+                    {% if booking.field.sport_type == 'FOOTBALL' %}⚽
+                    {% elif booking.field.sport_type == 'PADEL' %}🎾
+                    {% else %}🏟️{% endif %}
                 </div>
-
-                <!-- ✅ 6. Instructions Card -->
-                <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 mt-6">
-                    <h3 class="font-bold text-[#1A2A4A] mb-2">📋 Requirements</h3>
-                    <ul class="space-y-2 text-sm text-gray-700">
-                        <li>✅ Amount must be visible</li>
-                        <li>✅ InstaPay number visible</li>
-                        <li>✅ Status shows "Successful"</li>
-                    </ul>
+                <div>
+                    <h3 class="font-bold text-[#1A2A4A] text-lg">{{ booking.field.name }}</h3>
+                    <div class="text-sm text-gray-500 space-y-0.5">
+                        <p>📅 {{ booking.booking_date|date:"D, M j, Y" }}</p>
+                        <p>⏰ {{ booking.start_time|time:"g:i A" }} — {{ booking.end_time|time:"g:i A" }}</p>
+                        <p>💰 {{ payment.amount|floatformat:"0" }} EGP</p>
+                    </div>
                 </div>
-
-                <!-- ✅ 5. Upload Button -->
-                <button type="submit" 
-                        id="upload-btn"
-                        class="w-full bg-[#1A2A4A] hover:bg-[#24395E] text-white font-bold py-5 px-6 rounded-2xl text-lg shadow-xl transition duration-300 hover:scale-[1.02] mt-6">
-                    ⬆ Upload Screenshot
-                </button>
-
-                <a href="{% url 'booking:history' %}" 
-                   class="block text-center text-gray-500 hover:text-[#1A2A4A] mt-4 text-sm transition">
-                    ← Back to Bookings
-                </a>
-            </form>
-
+            </div>
         </div>
 
-        <!-- ⏳ Expiry -->
-        <div class="rounded-3xl bg-yellow-50 border border-yellow-300 shadow-lg p-5 flex items-center gap-4">
-            <span class="text-2xl">⏳</span>
-            <div>
-                <p class="font-semibold text-yellow-800">Payment expires in <span class="font-black">30 minutes</span></p>
-                <p class="text-sm text-yellow-600">Please complete your payment before expiry.</p>
+        <!-- ✅ 3. Lock Expiry Timer (NEW) -->
+        <div class="rounded-3xl 
+            {% if booking.is_locked_expired %}
+                bg-red-50 border-2 border-red-300
+            {% else %}
+                bg-yellow-50 border border-yellow-300
+            {% endif %} 
+            shadow-lg p-5 mb-6 text-center">
+            
+            <div class="flex items-center justify-center gap-3">
+                <span class="text-2xl">
+                    {% if booking.is_locked_expired %}⏰{% else %}🔒{% endif %}
+                </span>
+                <div>
+                    {% if booking.is_locked_expired %}
+                        <p class="font-bold text-red-700 text-lg">⏰ Reservation Expired!</p>
+                        <p class="text-sm text-red-600">The lock on this booking has expired</p>
+                        <a href="{% url 'booking:field_detail' booking.field.id %}" 
+                           class="inline-block mt-3 bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-xl font-bold text-sm transition">
+                            🔄 Book Again
+                        </a>
+                    {% else %}
+                        <p class="font-semibold text-yellow-800">⏳ Time Remaining to Upload</p>
+                        <p class="text-2xl font-black text-yellow-900" id="countdown" 
+                           data-expires="{{ booking.locked_until|date:'Y-m-d H:i:s' }}">
+                            {{ booking.locked_until|timeuntil }}
+                        </p>
+                        <p class="text-xs text-yellow-600 mt-1">Upload before time expires</p>
+                    {% endif %}
+                </div>
             </div>
+        </div>
+
+        <!-- ✅ 4. Upload Area -->
+        <div class="rounded-3xl bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl p-8 mb-6 hover:shadow-2xl transition duration-300">
+
+            {% if booking.is_locked_expired %}
+                <!-- ❌ Expired - Disabled -->
+                <div class="rounded-3xl border-2 border-dashed border-red-300 bg-red-50 p-12 text-center">
+                    <div class="text-6xl mb-4 text-red-400">⏰</div>
+                    <p class="font-bold text-red-600 text-lg">This booking has expired</p>
+                    <p class="text-gray-500 mt-2">Please make a new booking</p>
+                    <a href="{% url 'booking:field_detail' booking.field.id %}" 
+                       class="inline-block mt-4 bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-2xl font-bold transition">
+                        🔄 Book Again
+                    </a>
+                </div>
+            {% else %}
+                <!-- ✅ Active - Form -->
+                <form method="POST" enctype="multipart/form-data" id="upload-form">
+                    {% csrf_token %}
+
+                    <!-- ✅ Drag & Drop Area -->
+                    <div id="drop-area" 
+                         class="rounded-3xl border-2 border-dashed border-[#1A2A4A]/20 bg-[#F8F9FC] p-12 hover:border-[#1A2A4A] hover:bg-[#EEF3FF] transition duration-300 cursor-pointer text-center">
+
+                        <input type="file" 
+                               name="screenshot" 
+                               id="screenshot" 
+                               accept="image/*" 
+                               class="hidden" 
+                               required>
+
+                        <label for="screenshot" class="cursor-pointer block">
+                            <div class="text-6xl mb-4 text-[#1A2A4A]">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <p class="font-semibold text-[#1A2A4A] text-lg">Drag & Drop</p>
+                            <p class="text-gray-400">or</p>
+                            <p class="text-[#1A2A4A] font-semibold underline">Choose Image</p>
+                            <p class="text-sm text-gray-400 mt-2">JPG, PNG, JPEG — Max 10MB</p>
+                        </label>
+
+                        <!-- ✅ Image Preview -->
+                        <img id="preview" class="hidden rounded-2xl mt-6 w-full max-h-80 object-cover shadow-lg">
+
+                        <!-- ✅ File Name -->
+                        <p id="filename" class="text-center text-sm text-gray-500 mt-4"></p>
+                    </div>
+
+                    <!-- ✅ Instructions -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 mt-6">
+                        <h3 class="font-bold text-[#1A2A4A] mb-2">📋 Requirements</h3>
+                        <ul class="space-y-2 text-sm text-gray-700">
+                            <li>✅ Amount must be visible</li>
+                            <li>✅ InstaPay number visible</li>
+                            <li>✅ Status shows "Successful"</li>
+                            <li>✅ Screenshot must be clear</li>
+                        </ul>
+                    </div>
+
+                    <!-- ✅ Upload Button -->
+                    <button type="submit" 
+                            id="upload-btn"
+                            class="w-full bg-[#1A2A4A] hover:bg-[#24395E] text-white font-bold py-5 px-6 rounded-2xl text-lg shadow-xl transition duration-300 hover:scale-[1.02] mt-6">
+                        ⬆ Upload Screenshot
+                    </button>
+
+                    <a href="{% url 'booking:history' %}" 
+                       class="block text-center text-gray-500 hover:text-[#1A2A4A] mt-4 text-sm transition">
+                        ← Back to Bookings
+                    </a>
+                </form>
+            {% endif %}
+        </div>
+
+        <!-- ✅ Cancel Link -->
+        <div class="text-center mt-4">
+            <a href="{% url 'booking:cancel_booking' booking.id %}" 
+               class="text-sm text-red-500 hover:text-red-700 underline-offset-2 hover:underline transition"
+               onclick="return confirm('⚠️ Are you sure you want to cancel this booking? This will release the slots for others.')">
+                ❌ Cancel Reservation & Release Slots
+            </a>
         </div>
 
     </div>
 </div>
 
+<!-- payment/upload_screenshot.html -->
+
 <script>
-    // ✅ 3 & 4. Preview & Filename
-    const input = document.getElementById('screenshot');
-    const preview = document.getElementById('preview');
-    const filename = document.getElementById('filename');
-    const uploadBtn = document.getElementById('upload-btn');
-
-    input.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            preview.src = URL.createObjectURL(file);
-            preview.classList.remove('hidden');
-            filename.textContent = '📎 ' + file.name + ' (' + (file.size / 1024 / 1024).toFixed(2) + ' MB)';
-            
-            // ✅ Auto-submit after selection (optional)
-            // document.getElementById('upload-form').submit();
-        }
-    });
-
-    // ✅ 8. Loading
-    document.getElementById('upload-form').addEventListener('submit', function(e) {
-        if (input.files.length === 0) {
-            e.preventDefault();
-            alert('❌ Please select an image first.');
-            return;
-        }
-        uploadBtn.disabled = true;
-        uploadBtn.innerHTML = '⏳ Uploading...';
-        uploadBtn.classList.add('opacity-70');
-    });
-
-    // ✅ 10. Drag & Drop
-    const dropArea = document.getElementById('drop-area');
-
-    dropArea.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        this.classList.add('border-[#1A2A4A]', 'bg-[#EEF3FF]');
-    });
-
-    dropArea.addEventListener('dragleave', function(e) {
-        e.preventDefault();
-        this.classList.remove('border-[#1A2A4A]', 'bg-[#EEF3FF]');
-    });
-
-    dropArea.addEventListener('drop', function(e) {
-        e.preventDefault();
-        this.classList.remove('border-[#1A2A4A]', 'bg-[#EEF3FF]');
+    // ✅ Countdown Timer - بدون Refresh تلقائي
+    document.addEventListener('DOMContentLoaded', function() {
+        const countdownElement = document.getElementById('countdown');
+        if (!countdownElement) return;
         
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            input.files = files;
-            input.dispatchEvent(new Event('change'));
-        }
+        const expires = new Date(countdownElement.dataset.expires).getTime();
+        
+        const interval = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = expires - now;
+            
+            if (distance < 0) {
+                clearInterval(interval);
+                countdownElement.innerHTML = '⏰ Expired';
+                countdownElement.style.color = '#DC2626';
+                countdownElement.style.fontSize = '2rem';
+                
+                // ✅ تعطيل الأزرار بدلاً من Refresh
+                document.querySelectorAll('button[type="submit"], .upload-btn').forEach(btn => {
+                    btn.disabled = true;
+                    btn.classList.add('opacity-50', 'cursor-not-allowed');
+                    btn.textContent = '⏰ Expired';
+                });
+                
+                // ✅ إظهار رسالة للمستخدم
+                const expiredDiv = document.createElement('div');
+                expiredDiv.className = 'mt-4 p-4 bg-red-50 border-2 border-red-300 rounded-2xl text-center';
+                expiredDiv.innerHTML = `
+                    <p class="font-bold text-red-700">⏰ انتهت صلاحية الحجز!</p>
+                    <a href="{% url 'booking:field_detail' booking.field.id %}" 
+                       class="inline-block mt-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition">
+                        🔄 Book Again
+                    </a>
+                `;
+                document.querySelector('.max-w-2xl').appendChild(expiredDiv);
+                
+                return;
+            }
+            
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            if (minutes > 0) {
+                countdownElement.innerHTML = `${minutes}m ${seconds}s`;
+            } else {
+                countdownElement.innerHTML = `${seconds}s`;
+                if (seconds < 30) {
+                    countdownElement.style.color = '#DC2626';
+                    countdownElement.style.fontSize = '2.5rem';
+                }
+            }
+        }, 1000);
     });
 </script>
 
-{% endblock %}
+{% endblock %}  

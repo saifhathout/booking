@@ -13,10 +13,10 @@ class InstaPayPayment(models.Model):
         ('manual_review', 'مراجعة يدوية'),
     )
 
-    booking = models.OneToOneField(
+    booking = models.ForeignKey(
         Booking, 
         on_delete=models.CASCADE, 
-        related_name='instapay_payment'
+        related_name='payments'
     )
     
     user = models.ForeignKey(
