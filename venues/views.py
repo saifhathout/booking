@@ -84,6 +84,8 @@ def field_edit(request, field_id):
 
 # ========== SCHEDULE ==========
 
+# venues/views.py
+
 @venue_owner_required
 def field_schedule_view(request, field_id):
     field = get_object_or_404(Field, id=field_id, venue__owner=request.user)
@@ -92,67 +94,126 @@ def field_schedule_view(request, field_id):
     now = datetime.now()
     current_hour = now.hour
     
+    # ✅ جلب جميع السلوتات من قاعدة البيانات
     all_slots = VenueSlot.objects.filter(
-        field=field, date__gte=today, date__lte=today + timedelta(days=6)
+        field=field, 
+        date__gte=today, 
+        date__lte=today + timedelta(days=6)
     ).order_by('date', 'start_time')
     
+    # ✅ جلب الحجوزات المؤكدة
     bookings = Booking.objects.filter(
-        field=field, booking_date__gte=today, status='CONFIRMED'
+        field=field, 
+        status='CONFIRMED'
     ).select_related('player')
     
+    # ✅ إنشاء قاموس للحجوزات
     booking_map = {}
     for b in bookings:
-        # ✅ استخدام السلوتات بدلاً من الحسابات
         for slot in b.slots.all():
             key = f"{slot.date}_{slot.start_time.hour}"
             booking_map[key] = {
                 'player_name': b.player.username,
                 'booking_id': b.id,
-                'is_locked': False
             }
     
+    # ✅ إنشاء قاموس للسلوتات
     slot_map = {}
     for slot in all_slots:
-        if not slot.is_available:
-            key = f"{slot.date}_{slot.start_time.hour}"
-            slot_map[key] = {
-                'type': slot.slot_type,
-                'is_locked': slot.slot_type == 'LOCKED'
-            }
+        key = f"{slot.date}_{slot.start_time.hour}"
+        slot_map[key] = {
+            'type': slot.slot_type,
+            'is_available': slot.is_available,
+        }
     
     def format_time(hour):
-        if hour == 0 or hour == 24: return "12:00 AM"
-        elif hour < 12: return f"{hour}:00 AM"
-        elif hour == 12: return "12:00 PM"
-        else: return f"{hour-12}:00 PM"
+        if hour == 0 or hour == 24:
+            return "12:00 AM"
+        elif hour < 12:
+            return f"{hour}:00 AM"
+        elif hour == 12:
+            return "12:00 PM"
+        else:
+            return f"{hour-12}:00 PM"
     
     all_slots_list = []
     for i in range(7):
         day = today + timedelta(days=i)
         day_slots = []
+        available_count = 0
+        booked_count = 0
+        blocked_count = 0
         
-        for hour in range(1, 25):
-            key = f"{day}_{hour % 24}"
+        for hour in range(1, 25):  # 1-24
+            # ✅ حساب التاريخ الفعلي للسلوت
+            # 12:00 AM (hour=24) تنتمي إلى اليوم التالي
+            if hour == 24:
+                slot_date = day + timedelta(days=1)
+                slot_hour = 0
+            else:
+                slot_date = day
+                slot_hour = hour
             
-            # ✅ جلب البيانات
+            # ✅ البحث في القواميس
+            key = f"{slot_date}_{slot_hour}"
             slot_data = slot_map.get(key)
             booking_data = booking_map.get(key)
             
+            # ✅ تحديد حالة السلوت
             is_booked = booking_data is not None
-            is_locked = slot_data and slot_data.get('is_locked', False)
             is_blocked = slot_data and slot_data.get('type') == 'BLOCKED'
+            is_locked = slot_data and slot_data.get('type') == 'LOCKED'
+            is_available = slot_data and slot_data.get('is_available', True) and not is_booked and not is_blocked and not is_locked
+            
+            # ✅ إذا كان السلوت غير موجود في قاعدة البيانات، اعتبره متاح
+            if not slot_data and not is_booked:
+                is_available = True
+            
+            # ✅ تحديد إذا كان السلوت في الماضي
+            is_past = False
+            if day == today and hour <= current_hour:
+                is_past = True
+            
+            # ✅ إحصائيات
+            if is_booked:
+                booked_count += 1
+            elif is_blocked:
+                blocked_count += 1
+            elif is_available and not is_past:
+                available_count += 1
+            
+            # ✅ تحديد slot_type للعرض
+            slot_type = None
+            if is_booked:
+                slot_type = 'BOOKED'
+            elif is_locked:
+                slot_type = 'LOCKED'
+            elif is_blocked:
+                slot_type = 'BLOCKED'
+            elif is_available and not is_past:
+                slot_type = 'AVAILABLE'
             
             day_slots.append({
                 'hour': hour,
-                'time': format_time(hour % 24),
+                'time': format_time(hour),
+                'slot_date': slot_date,
+                'slot_hour': slot_hour,
+                'slot_type': slot_type,
                 'is_booked': is_booked,
                 'is_locked': is_locked,
                 'is_blocked': is_blocked,
+                'is_available': is_available,
+                'is_past': is_past,
                 'booking': booking_data,
-                'slot_type': slot_data.get('type') if slot_data else None,
             })
         
-        all_slots_list.append({'date': day, 'slots': day_slots})
+        all_slots_list.append({
+            'date': day,
+            'slots': day_slots,
+            'available_count': available_count,
+            'booked_count': booked_count,
+            'blocked_count': blocked_count,
+        })
     
     return render(request, 'venues/field_schedule.html', {
         'field': field,
@@ -161,15 +222,23 @@ def field_schedule_view(request, field_id):
         'current_hour': current_hour,
     })
 
-
 # ========== BLOCK / UNBLOCK ==========
+
+# venues/views.py
 
 @venue_owner_required
 def block_slot(request, field_id, date, hour):
     field = get_object_or_404(Field, id=field_id, venue__owner=request.user)
-    store_hour = hour % 24
     
-    # ✅ تصحيح end_time
+    # ✅ تحويل الساعة من 1-24 إلى 0-23
+    if hour == 24:
+        store_hour = 0
+        slot_date = datetime.strptime(date, '%Y-%m-%d').date() + timedelta(days=1)
+    else:
+        store_hour = hour
+        slot_date = datetime.strptime(date, '%Y-%m-%d').date()
+    
+    # ✅ حساب end_time
     if store_hour == 23:
         end_time = "00:00:00"
     else:
@@ -178,12 +247,12 @@ def block_slot(request, field_id, date, hour):
     try:
         with transaction.atomic():
             slot, created = VenueSlot.objects.get_or_create(
-                field=field, 
-                date=date, 
+                field=field,
+                date=slot_date,
                 start_time=f"{store_hour}:00:00",
                 defaults={
-                    'end_time': end_time, 
-                    'is_available': False, 
+                    'end_time': end_time,
+                    'is_available': False,
                     'slot_type': 'BLOCKED'
                 }
             )
@@ -206,12 +275,19 @@ def block_slot(request, field_id, date, hour):
 @venue_owner_required
 def unblock_slot(request, field_id, date, hour):
     field = get_object_or_404(Field, id=field_id, venue__owner=request.user)
-    store_hour = hour % 24
+    
+    # ✅ تحويل الساعة من 1-24 إلى 0-23
+    if hour == 24:
+        store_hour = 0
+        slot_date = datetime.strptime(date, '%Y-%m-%d').date() + timedelta(days=1)
+    else:
+        store_hour = hour
+        slot_date = datetime.strptime(date, '%Y-%m-%d').date()
     
     deleted = VenueSlot.objects.filter(
-        field=field, 
-        date=date, 
-        start_time=f"{store_hour}:00:00", 
+        field=field,
+        date=slot_date,
+        start_time=f"{store_hour}:00:00",
         is_available=False,
         slot_type='BLOCKED'
     ).delete()
@@ -223,8 +299,9 @@ def unblock_slot(request, field_id, date, hour):
     
     return redirect('venues:field_schedule', field_id=field.id)
 
-
 # ========== OWNER DASHBOARD ==========
+
+# venues/views.py
 
 # venues/views.py
 
@@ -243,27 +320,7 @@ def owner_dashboard(request):
         status='CONFIRMED'
     ).aggregate(total=Sum('total_price'))['total'] or 0
     
-    # ✅ 2. حساب التغير في الإيرادات (اختياري)
-    # احسب إيرادات الشهر الماضي والشهر الحالي
-    from django.db.models.functions import TruncMonth
-    current_month = timezone.now().month
-    last_month = timezone.now().month - 1 or 12
-    
-    current_revenue = Booking.objects.filter(
-        field__venue__in=venues,
-        status='CONFIRMED',
-        created_at__month=current_month
-    ).aggregate(total=Sum('total_price'))['total'] or 0
-    
-    last_month_revenue = Booking.objects.filter(
-        field__venue__in=venues,
-        status='CONFIRMED',
-        created_at__month=last_month
-    ).aggregate(total=Sum('total_price'))['total'] or 1  # تجنب القسمة على صفر
-    
-    revenue_change = int(((current_revenue - last_month_revenue) / last_month_revenue) * 100)
-    
-    # ✅ 3. طلبات الدفع في انتظار المراجعة
+    # ✅ 2. طلبات الدفع في انتظار المراجعة (الأهم!)
     pending_reviews = InstaPayPayment.objects.filter(
         status__in=['pending', 'manual_review'],
         booking__field__venue__in=venues
@@ -273,32 +330,30 @@ def owner_dashboard(request):
         'booking__player'
     ).order_by('-created_at')
     
-    # ✅ 4. الإشعارات غير المقروءة (مع إضافة notification_type مؤقتاً)
+    # ✅ 3. الإشعارات غير المقروءة
     notifications = Notification.objects.filter(
         user=request.user,
         is_read=False
-    ).order_by('-created_at')[:10]
+    ).order_by('-created_at')[:20]
     
-    # ✅ 5. الملاعب (أول 4 فقط)
+    # ✅ 4. الملاعب
     all_fields = Field.objects.filter(venue__in=venues, is_active=True)[:4]
     
-    # ✅ 6. آخر تحديث
-    last_updated = timezone.now()
+    # ✅ للتصحيح - طباعة عدد الطلبات
+    print(f"📊 Pending reviews: {pending_reviews.count()}")
+    print(f"🔔 Notifications: {notifications.count()}")
     
     context = {
         'total_fields': total_fields,
         'total_bookings': total_bookings,
         'total_revenue': total_revenue,
-        'revenue_change': revenue_change,
         'pending_reviews': pending_reviews,
         'notifications': notifications,
         'all_fields': all_fields,
-        'last_updated': last_updated,
         'venues': venues,
     }
     
     return render(request, 'venues/owner_dashboard.html', context)
-
 
 # ========== BOOKING DETAILS ==========
 

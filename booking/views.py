@@ -12,7 +12,7 @@ from datetime import datetime, timedelta  # ✅ مهم للـ datetime.combine �
 
 from accounts.decorators import player_required
 from venues.models import Field, VenueSlot, Booking
-from notifications.utils import create_notification, send_push
+from notifications.utils import create_notification  # ✅ فقط create_notification
 from .utils import format_time, get_booked_set, normalize_hour, get_slot_range
 
 
