@@ -15,8 +15,7 @@ class GameRoom(models.Model):
     SPORT_CHOICES = [
         ('FOOTBALL', 'Football'),
         ('PADEL', 'Padel'),
-        ('BASKETBALL', 'Basketball'),
-        ('TENNIS', 'Tennis'),
+        ('PADOAL', 'Padoal'),
     ]
     
     title = models.CharField(max_length=100)

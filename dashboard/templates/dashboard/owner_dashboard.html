@@ -5,205 +5,218 @@
 
 {% block content %}
 
-<div class="animate-fade-up max-w-6xl mx-auto px-4">
+<div class="max-w-6xl mx-auto px-4 py-6">
 
-    <!-- ✅ Header -->
-    <div class="mb-10">
-        <p class="text-xs uppercase tracking-[4px] text-gray-400 mb-2" style="font-family:'Orbitron',sans-serif;">
-            Owner Panel
-        </p>
-        <h1 class="text-4xl font-black tracking-wide text-[#1A2A4A]">
-            DASH<span class="text-[#12E6FF]">BOARD</span>
-        </h1>
-        <p class="text-gray-500 mt-2">
-            Manage your venue, bookings and payments.
-        </p>
-    </div>
-
-    <!-- ✅ Statistics -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div class="rounded-2xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-md p-4 text-center">
-            <div class="text-2xl mb-1">🏟️</div>
-            <p class="text-2xl font-black text-[#1A2A4A]">{{ total_fields }}</p>
-            <p class="text-[10px] text-gray-400 uppercase tracking-wide">Fields</p>
-        </div>
-        <div class="rounded-2xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-md p-4 text-center">
-            <div class="text-2xl mb-1">📅</div>
-            <p class="text-2xl font-black text-[#1A2A4A]">{{ total_bookings }}</p>
-            <p class="text-[10px] text-gray-400 uppercase tracking-wide">Bookings</p>
-        </div>
-        <div class="rounded-2xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-md p-4 text-center">
-            <div class="text-2xl mb-1">💰</div>
-            <p class="text-sm font-black text-[#1A2A4A] truncate">EGP {{ total_revenue|floatformat:0 }}</p>
-            <p class="text-[10px] text-gray-400 uppercase tracking-wide">Revenue</p>
-        </div>
-        <div class="rounded-2xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-md p-4 text-center">
-            <div class="text-2xl mb-1">📈</div>
-            <p class="text-lg font-black text-[#12E6FF]">{{ revenue_change|default:"+0" }}%</p>
-            <p class="text-[10px] text-gray-400 uppercase tracking-wide">vs last month</p>
-        </div>
-    </div>
-
-    <!-- ✅ Revenue Card -->
-    <div class="rounded-3xl bg-gradient-to-r from-[#1A2A4A] to-[#24395E] p-6 mb-6 text-white">
-        <div class="flex justify-between items-center">
+    <!-- Header with Logo - Royal Style -->
+    <div class="flex items-center justify-between mb-6 bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 rounded-2xl shadow-xl p-4 hover:border-[#D4A853]/30 transition">
+        <div class="flex items-center gap-4">
+            <!-- ✅ Logo - Gold -->
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#D4A853] to-[#B8923E] flex items-center justify-center text-2xl shadow-lg shadow-[#D4A853]/20">
+                {% if request.user.venues.first.logo %}
+                    <img src="{{ request.user.venues.first.logo.url }}" alt="Logo" class="w-10 h-10 rounded-lg object-cover">
+                {% else %}
+                    <span class="text-[#0f1724]">🏟️</span>
+                {% endif %}
+            </div>
             <div>
-                <p class="text-sm opacity-80">Revenue <span class="text-xs opacity-60">(All time)</span></p>
-                <p class="text-3xl font-black">EGP {{ total_revenue|floatformat:0 }}</p>
-                <p class="text-xs opacity-60 mt-1">Updated {{ last_updated|timesince }} ago</p>
+                <h1 class="text-2xl font-bold text-white">
+                    {% if request.user.venues.first.brand_name %}
+                        {{ request.user.venues.first.brand_name }}
+                    {% else %}
+                        My Venue
+                    {% endif %}
+                </h1>
+                <p class="text-xs text-white/40">Owner Dashboard</p>
             </div>
-            <div class="text-5xl opacity-30">📈</div>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="text-sm text-white/30 hidden md:block">{{ request.user.username }}</span>
+            <!-- <a href="{% url 'venues:venue_create' %}" 
+               class="bg-gradient-to-r from-[#D4A853] to-[#B8923E] hover:from-[#E8C96A] hover:to-[#C9A227] text-[#0f1724] px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-1 shadow-lg shadow-[#D4A853]/30 hover:shadow-[#D4A853]/50">
+                <span>➕</span> Add Venue
+            </a> -->
         </div>
     </div>
 
-    <!-- ✅ Pending Reviews - مع الرابط الصحيح -->
-    <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-6 mb-6">
-        <div class="flex justify-between items-center mb-4">
-            <div>
-                <h2 class="text-lg font-bold text-[#1A2A4A]">⚠️ Pending Reviews</h2>
-                <p class="text-sm text-gray-500">{{ pending_reviews|length }} waiting for review</p>
-            </div>
-            <a href="{% url 'venues:booking_requests' %}" class="text-sm text-[#12E6FF] font-bold hover:text-[#1A2A4A] transition">View All →</a>
-        </div>
-        {% if pending_reviews %}
-            <div class="space-y-3">
-                {% for payment in pending_reviews|slice:":3" %}
-                    <div class="flex items-center justify-between p-4 rounded-2xl bg-white/50 border border-gray-100 hover:border-[#12E6FF] transition">
-                        <div>
-                            <p class="font-bold text-[#1A2A4A]">{{ payment.booking.field.name }}</p>
-                            <p class="text-sm text-gray-500">
-                                👤 {{ payment.booking.player.username }} · 
-                                📅 {{ payment.booking.booking_date|date:"D, M j" }} · 
-                                ⏰ {{ payment.booking.start_time|time:"g:i A" }}
-                            </p>
-                            <p class="text-xs font-bold text-[#12E6FF]">💰 EGP {{ payment.amount }}</p>
-                            {% if payment.screenshot %}
-                                <span class="text-xs text-green-600">✅ صورة مرفوعة</span>
-                            {% else %}
-                                <span class="text-xs text-red-500">❌ بدون صورة</span>
-                            {% endif %}
-                        </div>
-                        <a href="{% url 'payment:verify_payment' payment.id %}" 
-                           class="bg-[#12E6FF] hover:bg-[#0fd0e8] text-[#1A2A4A] px-4 py-2 rounded-xl text-sm font-bold transition">
-                            Review →
-                        </a>
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="text-center py-8">
-                <p class="text-gray-500">✅ No pending reviews</p>
-            </div>
-        {% endif %}
-    </div>
-
-    <!-- ✅ My Fields -->
-    <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-6 mb-6">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-bold text-[#1A2A4A]">🏟️ My Fields</h2>
-            <a href="{% url 'venues:list' %}" class="text-sm text-[#12E6FF] font-bold hover:text-[#1A2A4A] transition">View All →</a>
-        </div>
-        <div class="space-y-3">
-            {% for field in all_fields|slice:":4" %}
-                <a href="{% url 'venues:field_schedule' field.id %}" 
-                   class="flex items-center justify-between p-4 rounded-2xl bg-white/50 border border-gray-100 hover:border-[#12E6FF] transition">
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-[#1A2A4A] text-white flex items-center justify-center text-lg">
-                            {% if field.sport_type == 'FOOTBALL' %}⚽
-                            {% elif field.sport_type == 'PADEL' %}🎾
-                            {% else %}🏟️{% endif %}
-                        </div>
-                        <div>
-                            <p class="font-bold text-[#1A2A4A]">{{ field.name }}</p>
-                            <p class="text-xs text-gray-500">{{ field.bookings.count }} bookings</p>
-                        </div>
-                    </div>
-                    <span class="text-xs text-[#12E6FF] font-semibold">View →</span>
-                </a>
-            {% empty %}
-                <p class="text-gray-500 text-center py-4">No fields yet. <a href="{% url 'venues:create' %}" class="text-[#12E6FF]">Create one →</a></p>
-            {% endfor %}
-        </div>
-    </div>
-
-    <!-- ✅ Recent Activity - مع روابط الإشعارات -->
-    <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-6 mb-6">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-bold text-[#1A2A4A]">🔔 Recent Activity</h2>
-            <a href="{% url 'notifications:list' %}" class="text-sm text-[#12E6FF] font-bold hover:text-[#1A2A4A] transition">View All →</a>
-        </div>
-        <div class="space-y-3">
-            {% for notification in notifications|slice:":3" %}
-                <a href="{{ notification.url|default:'#' }}" 
-                   class="block flex items-start gap-3 p-3 rounded-2xl bg-white/50 border border-gray-100 hover:border-[#12E6FF] transition {% if not notification.is_read %}bg-blue-50/50 border-blue-200{% endif %}">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1A2A4A] to-[#4e69ba] text-white flex items-center justify-center text-lg flex-shrink-0">
-                        {% if 'دفع' in notification.title or 'payment' in notification.title|lower %}💳
-                        {% elif 'حجز' in notification.title or 'booking' in notification.title|lower %}📅
-                        {% elif 'إلغاء' in notification.title or 'cancel' in notification.title|lower %}❌
-                        {% elif 'تأكيد' in notification.title or 'confirm' in notification.title|lower %}✅
-                        {% else %}🔔{% endif %}
-                    </div>
-                    <div class="flex-1">
-                        <div class="flex items-center gap-2">
-                            <p class="font-bold text-sm text-[#1A2A4A]">{{ notification.title }}</p>
-                            {% if not notification.is_read %}
-                                <span class="w-2 h-2 rounded-full bg-[#12E6FF] animate-pulse"></span>
-                            {% endif %}
-                        </div>
-                        <p class="text-xs text-gray-500">{{ notification.message }}</p>
-                        <p class="text-[10px] text-gray-400 mt-1">{{ notification.created_at|timesince }} ago</p>
-                    </div>
-                </a>
-            {% empty %}
-                <div class="text-center py-8">
-                    <p class="text-gray-500">📭 No recent activity</p>
+    <!-- Stats - Royal Style -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 rounded-xl p-4 shadow-lg hover:border-[#D4A853]/30 transition">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-white/40 uppercase tracking-wider">Fields</p>
+                    <p class="text-2xl font-bold text-white">{{ total_fields }}</p>
                 </div>
+                <span class="text-2xl">🏟️</span>
+            </div>
+        </div>
+        <div class="bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 rounded-xl p-4 shadow-lg hover:border-[#D4A853]/30 transition">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-white/40 uppercase tracking-wider">Bookings</p>
+                    <p class="text-2xl font-bold text-white">{{ total_bookings }}</p>
+                </div>
+                <span class="text-2xl">📅</span>
+            </div>
+        </div>
+        <div class="bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 rounded-xl p-4 shadow-lg hover:border-[#D4A853]/30 transition">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-white/40 uppercase tracking-wider">Revenue</p>
+                    <p class="text-2xl font-bold text-[#D4A853]">EGP {{ total_revenue|floatformat:0 }}</p>
+                </div>
+                <span class="text-2xl">💰</span>
+            </div>
+        </div>
+        <div class="bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 rounded-xl p-4 shadow-lg hover:border-[#D4A853]/30 transition">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-white/40 uppercase tracking-wider">Pending</p>
+                    <p class="text-2xl font-bold text-yellow-400">{{ pending_reviews|length }}</p>
+                </div>
+                <span class="text-2xl">⚠️</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Fields - Royal Style -->
+    <div class="bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 rounded-xl shadow-lg p-5 mb-6 hover:border-[#D4A853]/30 transition">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="font-bold text-white text-lg">🏟️ My Fields</h2>
+            <a href="{% url 'venues:venue_list' %}" class="text-sm text-[#D4A853] hover:text-[#E8C96A] transition">View All</a>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {% for field in all_fields|slice:":8" %}
+                <a href="{% url 'venues:field_schedule' field.id %}" 
+                   class="group bg-[#0f1724]/50 hover:bg-[#D4A853]/10 rounded-xl p-4 text-center border border-[#D4A853]/10 hover:border-[#D4A853]/30 transition hover:-translate-y-1">
+                    <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-[#D4A853] to-[#B8923E] flex items-center justify-center text-3xl shadow-lg shadow-[#D4A853]/20 group-hover:scale-110 transition">
+                        {% if field.sport_type == 'FOOTBALL' %}⚽
+                        {% elif field.sport_type == 'PADEL' %}🎾
+                        {% elif field.sport_type == 'BASKETBALL' %}🏀
+                        {% elif field.sport_type == 'TENNIS' %}🎾
+                        {% elif field.sport_type == 'CRICKET' %}🏏
+                        {% elif field.sport_type == 'VOLLEYBALL' %}🏐
+                        {% else %}🏟️{% endif %}
+                    </div>
+                    <p class="font-semibold text-white text-sm mt-2">{{ field.name }}</p>
+                    <p class="text-xs text-white/40">{{ field.bookings.count }} bookings</p>
+                    <span class="text-xs text-[#D4A853] opacity-0 group-hover:opacity-100 transition">View Schedule →</span>
+                </a>
+            {% empty %}
+                <p class="text-white/40 text-center py-8 col-span-full">No fields yet. <a href="{% url 'venues:venue_create' %}" class="text-[#D4A853] hover:underline">Create one</a></p>
             {% endfor %}
         </div>
     </div>
 
-    <!-- ✅ Quick Actions -->
-    <!-- dashboard/templates/dashboard/owner_dashboard.html -->
+    <!-- Two Columns: Pending Reviews + Recent Activity -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        
+        <!-- Pending Reviews -->
+        <div class="bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 rounded-xl shadow-lg p-5 hover:border-[#D4A853]/30 transition">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="font-bold text-white text-lg">⚠️ Pending Reviews</h2>
+                <a href="{% url 'venues:booking_requests' %}" class="text-sm text-[#D4A853] hover:text-[#E8C96A] transition">View All</a>
+            </div>
+            
+            {% if pending_reviews %}
+                <div class="space-y-2 max-h-[400px] overflow-y-auto pr-1">
+                    {% for payment in pending_reviews|slice:":5" %}
+                        <div class="flex items-center justify-between p-3 bg-[#0f1724]/50 rounded-lg hover:bg-[#D4A853]/10 transition border border-[#D4A853]/10">
+                            <div>
+                                <p class="font-semibold text-white text-sm">{{ payment.booking.field.name }}</p>
+                                <p class="text-xs text-white/40">
+                                    👤 {{ payment.booking.player.username }} · 
+                                    📅 {{ payment.booking.booking_date|date:"D, M j" }}
+                                </p>
+                                <p class="text-xs font-bold text-[#D4A853]">EGP {{ payment.amount }}</p>
+                            </div>
+                            <a href="{% url 'payment:verify_payment' payment.id %}" 
+                               class="bg-gradient-to-r from-[#D4A853] to-[#B8923E] hover:from-[#E8C96A] hover:to-[#C9A227] text-[#0f1724] px-4 py-1.5 rounded-lg text-sm font-bold transition shadow-lg shadow-[#D4A853]/20">
+                                Review
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-white/40 text-center py-8 text-sm">✅ All clear</p>
+            {% endif %}
+        </div>
 
-<!-- ✅ Quick Actions -->
-<div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-6">
-    <h2 class="text-lg font-bold text-[#1A2A4A] mb-4">⚡ Quick Actions</h2>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <!-- Recent Activity -->
+        <div class="bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 rounded-xl shadow-lg p-5 hover:border-[#D4A853]/30 transition">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="font-bold text-white text-lg">🔔 Recent Activity</h2>
+                <a href="{% url 'notifications:list' %}" class="text-sm text-[#D4A853] hover:text-[#E8C96A] transition">View All</a>
+            </div>
+            
+            {% if notifications %}
+                <div class="space-y-1.5 max-h-[400px] overflow-y-auto pr-1">
+                    {% for notification in notifications|slice:":5" %}
+                        <a href="{{ notification.url|default:'#' }}" 
+                           class="block p-3 rounded-lg hover:bg-[#D4A853]/10 transition {% if not notification.is_read %}bg-[#D4A853]/10 border-l-4 border-[#D4A853]{% endif %}">
+                            <div class="flex items-start gap-3">
+                                <span class="text-lg flex-shrink-0">
+                                    {% if 'دفع' in notification.title %}💳
+                                    {% elif 'حجز' in notification.title %}📅
+                                    {% elif 'إلغاء' in notification.title %}❌
+                                    {% elif 'تأكيد' in notification.title %}✅
+                                    {% else %}🔔{% endif %}
+                                </span>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-semibold text-white">{{ notification.title }}</p>
+                                    <p class="text-xs text-white/40 truncate">{{ notification.message|truncatechars:50 }}</p>
+                                    <p class="text-[10px] text-white/30 mt-0.5">{{ notification.created_at|timesince }} ago</p>
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-white/40 text-center py-8 text-sm">📭 No activity</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Actions - Royal Style -->
+    <!-- <div class="grid grid-cols-4 gap-2">
         <a href="{% url 'venues:booking_requests' %}" 
-           class="p-4 rounded-2xl bg-white/50 border border-gray-100 hover:border-[#12E6FF] transition text-center hover:scale-105">
-            <div class="text-2xl mb-1">📋</div>
-            <p class="text-sm font-bold text-[#1A2A4A]">Bookings</p>
+           class="bg-[#0f1724]/50 hover:bg-[#D4A853]/10 rounded-xl p-3 text-center transition hover:-translate-y-1 border border-[#D4A853]/10 hover:border-[#D4A853]/30">
+            <div class="text-xl">📋</div>
+            <p class="text-xs font-bold text-white/60 mt-1">Bookings</p>
         </a>
         <a href="{% url 'venues:venue_list' %}" 
-           class="p-4 rounded-2xl bg-white/50 border border-gray-100 hover:border-[#12E6FF] transition text-center hover:scale-105">
-            <div class="text-2xl mb-1">🏟️</div>
-            <p class="text-sm font-bold text-[#1A2A4A]">Fields</p>
+           class="bg-[#0f1724]/50 hover:bg-[#D4A853]/10 rounded-xl p-3 text-center transition hover:-translate-y-1 border border-[#D4A853]/10 hover:border-[#D4A853]/30">
+            <div class="text-xl">🏟️</div>
+            <p class="text-xs font-bold text-white/60 mt-1">Venues</p>
         </a>
         <a href="{% url 'venues:venue_create' %}" 
-           class="p-4 rounded-2xl bg-white/50 border border-gray-100 hover:border-[#12E6FF] transition text-center hover:scale-105">
-            <div class="text-2xl mb-1">➕</div>
-            <p class="text-sm font-bold text-[#1A2A4A]">Add Field</p>
+           class="bg-[#0f1724]/50 hover:bg-[#D4A853]/10 rounded-xl p-3 text-center transition hover:-translate-y-1 border border-[#D4A853]/10 hover:border-[#D4A853]/30">
+            <div class="text-xl">➕</div>
+            <p class="text-xs font-bold text-white/60 mt-1">Add</p>
         </a>
         <a href="{% url 'venues:booking_requests' %}" 
-           class="p-4 rounded-2xl bg-white/50 border border-gray-100 hover:border-[#12E6FF] transition text-center hover:scale-105">
-            <div class="text-2xl mb-1">💳</div>
-            <p class="text-sm font-bold text-[#1A2A4A]">Payments</p>
+           class="bg-[#0f1724]/50 hover:bg-[#D4A853]/10 rounded-xl p-3 text-center transition hover:-translate-y-1 border border-[#D4A853]/10 hover:border-[#D4A853]/30">
+            <div class="text-xl">💳</div>
+            <p class="text-xs font-bold text-white/60 mt-1">Payments</p>
         </a>
-    </div>
-</div>
+    </div> -->
 </div>
 
 <style>
-    /* ✅ Smooth hover animations */
-    .hover\:scale-105:hover {
-        transform: scale(1.05);
+    /* Scrollbar styling - Gold */
+    .max-h-\[400px\]::-webkit-scrollbar {
+        width: 4px;
     }
-    .animate-pulse {
-        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    .max-h-\[400px\]::-webkit-scrollbar-track {
+        background: rgba(212, 168, 83, 0.05);
+        border-radius: 10px;
     }
-    @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.5; }
+    .max-h-\[400px\]::-webkit-scrollbar-thumb {
+        background: #D4A853;
+        border-radius: 10px;
+    }
+    .hover\:-translate-y-1:hover {
+        transform: translateY(-4px);
     }
 </style>
 

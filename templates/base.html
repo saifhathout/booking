@@ -6,63 +6,133 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#F0E8D8">
+    <meta name="theme-color" content="#0f1724">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="{% static 'img/logo.png' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- ✅ Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Syne:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <title>K-HUB - {% block title %}{% endblock %}</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Syne:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+    
     <style>
+        /* ✅ Premium Navy + Gold Palette */
         :root {
-            --chrome: #C9A227;        /* ✅ ذهبي */
-            --navy: #1A2A4A;           /* ✅ أزرق غامق */
-            --beige: #F0E8D8;          /* ✅ بيج فاتح */
-            --white: #F0E8D8;          /* ✅ بيج فاتح */
-            --pink: #C9A227;           /* ✅ ذهبي */
-            --purple: #8B5CF6;
-            --border: #1A2A4A;         /* ✅ أزرق غامق */
-            --gold: #C9A227;           /* ✅ ذهبي */
-            --text-light: #F0E8D8;     /* ✅ بيج فاتح */
-            --text-dark: #1A2A4A;      /* ✅ أزرق غامق */
+            --gold: #D4A853;
+            --gold-light: #E8C96A;
+            --gold-dark: #B8923E;
+            --gold-glow: rgba(212, 168, 83, 0.3);
+            --navy: #0f1724;
+            --navy-dark: #0A0F1E;
+            --navy-light: #1A2A4A;
+            --navy-card: #162035;
+            --beige: #F0E8D8;
+            --beige-light: #F8F4EC;
+            --cream: #FDFBF7;
+            --white: #FFFFFF;
+            --shadow: rgba(15, 23, 36, 0.3);
+            --shadow-gold: rgba(212, 168, 83, 0.15);
         }
         
-        * { font-family: 'Cinzel', sans-serif; }
-        h1, h2, h3 { font-family: 'Cinzel', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: -1px; }
-        .orbitron { font-family: 'Cinzel', sans-serif; }
+        /* ✅ Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         
         body {
-            background: var(--beige);
-            color: var(--navy);
+            background: var(--navy);
+            color: var(--beige);
             min-height: 100vh;
-            font-weight: 500;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 400;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            position: relative;
         }
         
-        /* Animated Pattern */
+        /* ✅ Sports Background - More Visible for Mobile */
         body::before {
             content: '';
             position: fixed;
             inset: 0;
             background-image: 
-                linear-gradient(rgba(26,42,74,0.06) 2px, transparent 2px),
-                linear-gradient(90deg, rgba(26,42,74,0.06) 2px, transparent 2px);
-            background-size: 60px 60px;
-            animation: gridMove 20s linear infinite;
+                /* Football Field Pattern - أكثر وضوحاً */
+                repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(212,168,83,0.05) 39px, rgba(212,168,83,0.05) 40px),
+                repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(212,168,83,0.05) 39px, rgba(212,168,83,0.05) 40px),
+                /* Center Circle - أكثر وضوحاً */
+                radial-gradient(circle at 50% 50%, transparent 0%, transparent 35%, rgba(212,168,83,0.04) 35%, rgba(212,168,83,0.04) 36%, transparent 36%),
+                radial-gradient(circle at 50% 50%, transparent 0%, transparent 48%, rgba(212,168,83,0.04) 48%, rgba(212,168,83,0.04) 49%, transparent 49%),
+                /* Center Line */
+                repeating-linear-gradient(180deg, transparent, transparent 49.5%, rgba(212,168,83,0.04) 49.5%, rgba(212,168,83,0.04) 50.5%, transparent 50.5%);
+            background-size: 60px 60px, 60px 60px, 300px 300px, 200px 200px, 100% 100%;
+            background-position: 0 0, 0 0, 50% 50%, 50% 50%, 50% 50%;
             pointer-events: none;
             z-index: 0;
         }
         
-        @keyframes gridMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(60px, 60px); }
+        /* ✅ Sports Icons Overlay - More Visible for Mobile */
+        .sports-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+            opacity: 0.08;
         }
         
-        /* Glow Orbs */
+        .sports-overlay .icon {
+            position: absolute;
+            font-size: 50px;
+            animation: floatIcon 20s linear infinite;
+            text-shadow: 0 0 20px rgba(212,168,83,0.1);
+        }
+        
+        .sports-overlay .icon:nth-child(1) { top: 8%; left: 5%; animation-delay: 0s; font-size: 60px; }
+        .sports-overlay .icon:nth-child(2) { top: 15%; right: 5%; animation-delay: -3s; font-size: 45px; }
+        .sports-overlay .icon:nth-child(3) { bottom: 25%; left: 3%; animation-delay: -6s; font-size: 65px; }
+        .sports-overlay .icon:nth-child(4) { bottom: 15%; right: 3%; animation-delay: -9s; font-size: 50px; }
+        .sports-overlay .icon:nth-child(5) { top: 45%; left: 3%; animation-delay: -12s; font-size: 40px; }
+        .sports-overlay .icon:nth-child(6) { top: 5%; left: 45%; animation-delay: -15s; font-size: 35px; }
+        .sports-overlay .icon:nth-child(7) { bottom: 5%; left: 45%; animation-delay: -18s; font-size: 38px; }
+        
+        @keyframes floatIcon {
+            0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            25% { transform: translate(25px, -15px) rotate(5deg) scale(1.05); }
+            50% { transform: translate(-15px, 25px) rotate(-5deg) scale(0.95); }
+            75% { transform: translate(10px, -10px) rotate(3deg) scale(1.02); }
+            100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+        }
+        
+        /* ✅ Premium Typography */
+        h1, h2, h3, h4 {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .font-syne {
+            font-family: 'Syne', sans-serif;
+        }
+        
+        .font-outfit {
+            font-family: 'Outfit', sans-serif;
+        }
+        
+        /* ✅ Gold Gradient Text */
+        .text-gold-gradient {
+            background: linear-gradient(135deg, var(--gold), var(--gold-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* ✅ Glow Orbs - More Visible */
         .glow-orb {
             position: fixed;
             border-radius: 50%;
@@ -70,80 +140,79 @@
             opacity: 0.08;
             pointer-events: none;
             z-index: 0;
-            animation: orbFloat 8s ease-in-out infinite;
+            animation: orbFloat 10s ease-in-out infinite;
         }
-        .glow-1 { width: 500px; height: 500px; background: var(--chrome); top: -100px; right: -100px; }
-        .glow-2 { width: 400px; height: 400px; background: var(--purple); bottom: -100px; left: -100px; animation-delay: -4s; }
-        .glow-3 { width: 300px; height: 300px; background: var(--pink); top: 50%; left: 50%; animation-delay: -6s; }
+        .glow-1 { width: 400px; height: 400px; background: var(--gold); top: -100px; right: -100px; }
+        .glow-2 { width: 350px; height: 350px; background: var(--gold-light); bottom: -80px; left: -80px; animation-delay: -5s; }
+        .glow-3 { width: 250px; height: 250px; background: var(--gold); top: 40%; right: 30%; animation-delay: -8s; opacity: 0.06; }
         
         @keyframes orbFloat {
             0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -30px) scale(1.05); }
-            66% { transform: translate(-20px, 20px) scale(0.95); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
         }
         
-        /* Chrome Border */
+        /* ✅ Gold Border Top */
         body::after {
             content: '';
             position: fixed;
-            top: 0; left: 0; right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--chrome), var(--purple), var(--pink), var(--gold), var(--chrome));
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold-dark), var(--gold));
             background-size: 300% 100%;
-            animation: chromeSlide 2s linear infinite;
+            animation: goldSlide 3s linear infinite;
             z-index: 100;
-            box-shadow: 0 0 20px rgba(201,162,39,0.3);
+            box-shadow: 0 0 30px rgba(212, 168, 83, 0.2);
         }
         
-        @keyframes chromeSlide {
+        @keyframes goldSlide {
             0% { background-position: 0% 50%; }
             100% { background-position: 300% 50%; }
         }
         
-        main { position: relative; z-index: 1; padding-bottom: 80px; }
-        
-        /* ✅ CARDS - Navy Blue */
-        .khub-card {
-            background: #d2caba;
-            color: #304a80;
-            border: 1px solid rgba(146, 97, 0, 0.1);
-            border-radius: 18px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+        /* ✅ Main Content */
+        main {
             position: relative;
-            overflow: hidden;
+            z-index: 1;
+            padding-bottom: 100px;
+            min-height: 100vh;
         }
         
-        .khub-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 50%;
-            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%);
-            pointer-events: none;
-            border-radius: 18px 18px 0 0;
+        /* ✅ Royal Cards - Navy with Gold Accent */
+        .card-royal {
+            background: var(--navy-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 168, 83, 0.08);
+            border-radius: 20px;
+            box-shadow: 
+                0 4px 24px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(212, 168, 83, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        .khub-card:hover {
+        .card-royal:hover {
             transform: translateY(-4px);
-            border-color: var(--chrome);
-            box-shadow: 0 12px 40px rgba(201,162,39,0.15);
+            border-color: rgba(212, 168, 83, 0.2);
+            box-shadow: 
+                0 12px 48px rgba(0, 0, 0, 0.3),
+                0 0 30px rgba(212, 168, 83, 0.05);
         }
         
-        /* ✅ BUTTONS - Gold */
-        .btn-chrome {
-            background: linear-gradient(135deg, #C9A227, #A8881E);
-            color: #1A2A4A;
+        /* ✅ Gold Button - Royal */
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--navy);
             padding: 16px 32px;
             border-radius: 14px;
-            font-weight: 800;
+            font-weight: 700;
             font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 1px;
             border: none;
-            box-shadow: 0 4px 16px rgba(201,162,39,0.3);
+            box-shadow: 0 4px 24px rgba(212, 168, 83, 0.3);
             transition: all 0.3s ease;
             cursor: pointer;
             font-family: 'Syne', sans-serif;
@@ -151,149 +220,233 @@
             overflow: hidden;
         }
         
-        .btn-chrome::after {
+        .btn-gold::after {
             content: '';
             position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s ease;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            transition: left 0.6s ease;
         }
         
-        .btn-chrome:hover::after {
+        .btn-gold:hover::after {
             left: 100%;
         }
         
-        .btn-chrome:hover {
+        .btn-gold:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 28px rgba(201,162,39,0.4);
+            box-shadow: 0 8px 32px rgba(212, 168, 83, 0.4);
         }
         
-        .btn-outline {
+        /* ✅ Outline Gold */
+        .btn-outline-gold {
             background: transparent;
-            color: #F0E8D8;
-            padding: 16px 32px;
+            color: var(--gold);
+            padding: 14px 28px;
             border-radius: 14px;
-            font-weight: 800;
-            font-size: 14px;
+            font-weight: 600;
+            font-size: 13px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            border: 1px solid rgba(240,232,216,0.2);
+            border: 1.5px solid rgba(212, 168, 83, 0.3);
             transition: all 0.3s ease;
             cursor: pointer;
             font-family: 'Syne', sans-serif;
         }
         
-        .btn-outline:hover {
-            border-color: var(--chrome);
-            color: var(--chrome);
-            background: rgba(201,162,39,0.05);
+        .btn-outline-gold:hover {
+            border-color: var(--gold);
+            background: rgba(212, 168, 83, 0.05);
             transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(212, 168, 83, 0.1);
         }
         
-        /* Inputs */
-        .input-khub {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(240,232,216,0.1);
+        /* ✅ Premium Input */
+        .input-royal {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 168, 83, 0.08);
             border-radius: 14px;
             padding: 16px 20px;
-            color: #F0E8D8;
+            color: var(--beige);
             width: 100%;
             font-size: 15px;
-            font-weight: 600;
-            transition: all 0.2s ease;
+            font-weight: 500;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.3s ease;
         }
         
-        .input-khub:focus {
+        .input-royal:focus {
             outline: none;
-            border-color: var(--chrome);
-            box-shadow: 0 0 20px rgba(201,162,39,0.08);
-            background: rgba(255,255,255,0.08);
+            border-color: var(--gold);
+            box-shadow: 0 0 0 4px rgba(212, 168, 83, 0.05);
+            background: rgba(255, 255, 255, 0.08);
         }
         
-        .input-khub::placeholder {
-            color: rgba(240,232,216,0.3);
+        .input-royal::placeholder {
+            color: rgba(240, 232, 216, 0.3);
         }
         
-        /* Badges */
-        .badge-khub {
-            padding: 7px 16px;
+        /* ✅ Royal Badges */
+        .badge-royal {
+            padding: 6px 16px;
             border-radius: 10px;
             font-size: 10px;
-            font-weight: 800;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            border: 1px solid rgba(240,232,216,0.1);
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Syne', sans-serif;
         }
-        .badge-chrome { background: rgba(201,162,39,0.15); color: #C9A227; border-color: rgba(201,162,39,0.2); }
-        .badge-pink { background: rgba(201,162,39,0.15); color: #C9A227; border-color: rgba(201,162,39,0.2); }
-        .badge-purple { background: rgba(139,92,246,0.15); color: #8B5CF6; border-color: rgba(139,92,246,0.2); }
-        .badge-gold { background: rgba(201,162,39,0.15); color: #C9A227; border-color: rgba(201,162,39,0.2); }
+        .badge-gold { background: rgba(212, 168, 83, 0.12); color: var(--gold); border: 1px solid rgba(212, 168, 83, 0.1); }
+        .badge-navy { background: rgba(255, 255, 255, 0.05); color: var(--beige); border: 1px solid rgba(255, 255, 255, 0.05); }
         
-        /* Badge Price */
-        .badge-price {
-            background: rgba(201,162,39,0.12);
-            color: #C9A227;
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-size: 10px;
-            font-weight: 700;
-            font-family: 'Orbitron', sans-serif;
+        /* ✅ Gold Line Decor */
+        .gold-line {
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light));
+            border-radius: 4px;
+            margin: 8px 0;
         }
         
-        /* Field Icons */
-        .field-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            border: 2px solid rgba(240,232,216,0.15);
-            flex-shrink: 0;
+        .gold-line-center {
+            width: 70px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            border-radius: 4px;
+            margin: 12px auto;
         }
         
-        .field-icon.football { background: rgba(201,162,39,0.15); color: #C9A227; }
-        .field-icon.padel { background: rgba(139,92,246,0.15); color: #8B5CF6; }
-        .field-icon.basketball { background: rgba(255,107,53,0.15); color: #FF6B35; }
-        .field-icon.tennis { background: rgba(16,185,129,0.15); color: #10B981; }
-        
-        @keyframes fadeUp { 
-            from { opacity: 0; transform: translateY(10px); } 
-            to { opacity: 1; transform: translateY(0); } 
+        /* ✅ Animations */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fade-up { animation: fadeUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        .animate-fade-up {
+            animation: fadeUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
         
-        ::selection { background: var(--chrome); color: #1A2A4A; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--beige); }
-        ::-webkit-scrollbar-thumb { background: var(--navy); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--chrome); }
+        /* ✅ Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--navy); }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--gold-dark); }
+        
+        /* ✅ Selection */
+        ::selection { background: var(--gold); color: var(--navy); }
+        
+        /* ✅ Mobile Optimizations */
+        @media (max-width: 640px) {
+            .card-royal {
+                border-radius: 16px;
+                padding: 14px;
+            }
+            .btn-gold {
+                padding: 12px 20px;
+                font-size: 12px;
+            }
+            .sports-overlay .icon {
+                font-size: 30px !important;
+            }
+            .sports-overlay {
+                opacity: 0.06;
+            }
+            body::before {
+                background-size: 40px 40px, 40px 40px, 200px 200px, 150px 150px, 100% 100%;
+            }
+        }
+        
+        /* ✅ Logo Container - Royal Glow */
+        .logo-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .logo-container::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: var(--gold);
+            opacity: 0.1;
+            filter: blur(30px);
+            animation: logoGlow 4s ease-in-out infinite;
+        }
+        
+        @keyframes logoGlow {
+            0%, 100% { opacity: 0.1; transform: scale(1); }
+            50% { opacity: 0.2; transform: scale(1.05); }
+        }
+        
+        /* ✅ Premium Glassmorphism Card - Navy */
+        .glass-royal {
+            background: rgba(22, 32, 53, 0.70);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(212, 168, 83, 0.06);
+            border-radius: 20px;
+            box-shadow: 
+                0 8px 40px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(212, 168, 83, 0.05);
+        }
+        
+        /* ✅ Gold Text */
+        .text-gold {
+            color: var(--gold);
+        }
     </style>
 </head>
+
 <body>
-    <!-- ✅ استخدم static هنا -->    
+    <!-- ✅ Sports Icons Overlay -->
+    <div class="sports-overlay">
+        <span class="icon">⚽</span>
+        <span class="icon">🎾</span>
+        <span class="icon">🏀</span>
+        <span class="icon">⚾</span>
+        <span class="icon">🏟️</span>
+        <span class="icon">🏐</span>
+        <span class="icon">🥅</span>
+    </div>
+    
+    <!-- ✅ Glow Orbs -->
     <div class="glow-orb glow-1"></div>
     <div class="glow-orb glow-2"></div>
     <div class="glow-orb glow-3"></div>
+    
+    <!-- ✅ Navbar -->
     {% include 'navbar.html' %}
     {% include 'mobile_header.html' %}
     
-    <main class="container mx-auto px-4 py-6 max-w-7xl  animate-fade-up">
+    <!-- ✅ Main Content -->
+    <main class="container mx-auto px-4 py-6 max-w-7xl animate-fade-up">
+        
+        <!-- ✅ Messages -->
         {% include 'messages.html' %}
-  <div class="flex justify-center items-center py-4 ">
-        <img src="{% static 'img/logo.png' %}" 
-             alt="K-HUB" 
-             class="w-32 h-32 rounded-xl border-2 border-white/10 object-cover ">
-    </div>
+        
+        <!-- ✅ Royal Logo - Navy + Gold -->
+        <div class="flex justify-center items-center py-6">
+            <div class="logo-container">
+                <img src="{% static 'img/logo.png' %}" 
+                     alt="K-HUB" 
+                     class="w-24 h-24 sm:w-28 sm:h-28 object-cover shadow-2xl shadow-gold/10">
+            </div>
+        </div>
+        
+        <!-- ✅ Gold Line Decor -->
+        <div class="gold-line-center"></div>
+        
+        <!-- ✅ Content Block -->
         {% block content %}{% endblock %}
+        
     </main>
     
-    
+    <!-- ✅ Mobile Navigation -->
     {% include 'mobile_nav.html' %}
     
+    <!-- ✅ Notifications -->
     {% if user.is_authenticated %}
     <script>
     fetch('/notifications/api/count/')

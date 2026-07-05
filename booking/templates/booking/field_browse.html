@@ -7,144 +7,194 @@
 
 <div class="animate-fade-up max-w-6xl mx-auto px-4">
 
-    <!-- ✅ 1. Hero Section - مع Stats -->
-    <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-8 mb-8 relative overflow-hidden">
-        <!-- Subtle Background Pattern -->
+    <!-- ✅ Hero Section - Royal Navy + Gold -->
+    <div class="rounded-3xl bg-gradient-to-br from-[#0f1724] via-[#1A2A4A] to-[#0f1724] p-8 mb-8 relative overflow-hidden border border-[#D4A853]/20 shadow-2xl shadow-[#D4A853]/10">
+        
+        <!-- Background Pattern -->
         <div class="absolute inset-0 opacity-5">
-            <div class="absolute inset-0" style="background-image: repeating-linear-gradient(45deg, #1A2A4A 0px, #1A2A4A 2px, transparent 2px, transparent 10px);"></div>
+            <div class="absolute inset-0" style="background-image: 
+                repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(212,168,83,0.1) 49px, rgba(212,168,83,0.1) 50px),
+                repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(212,168,83,0.1) 49px, rgba(212,168,83,0.1) 50px);
+            "></div>
         </div>
         
+        <!-- Gold Glow Effect -->
+        <div class="absolute top-0 left-1/4 w-2 h-12 bg-[#D4A853]/10 blur-xl"></div>
+        <div class="absolute top-0 right-1/4 w-2 h-12 bg-[#D4A853]/10 blur-xl"></div>
+        
         <div class="relative z-10">
-            <p class="text-xs font-bold tracking-[3px] text-[#12E6FF] uppercase">
-                BOOK NOW
-            </p>
-            <h1 class="text-4xl font-black tracking-wide text-[#1A2A4A]">
+            <!-- Gold Badge -->
+            <div class="flex items-center gap-3 mb-4">
+                <span class="px-4 py-1.5 bg-[#D4A853]/20 border border-[#D4A853]/30 rounded-full text-[#D4A853] text-xs font-bold tracking-wider uppercase flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-[#D4A853] animate-pulse"></span>
+                    Premium Club
+                </span>
+                <span class="text-white/40 text-xs font-semibold tracking-wider">|</span>
+                <span class="text-white/60 text-xs font-semibold tracking-wider">👑 K-HUB</span>
+            </div>
+            
+            <!-- Main Title -->
+            <h1 class="text-5xl md:text-6xl font-black tracking-tight text-white leading-tight">
                 FIND YOUR
-                <span class="text-[#12E6FF]">FIELD</span>
+                <span class="text-[#D4A853] block md:inline">FIELD</span>
             </h1>
-            <p class="text-gray-500 mt-2">
+            <p class="text-white/60 text-lg mt-2 font-medium tracking-wide">
                 Book your favorite field in seconds.
             </p>
             
-            <!-- Stats -->
-            <div class="flex gap-6 mt-6">
-                <div>
-                    <p class="text-2xl font-black text-[#1A2A4A]">{{ total_fields|default:"4" }}</p>
-                    <p class="text-xs text-gray-500">Fields</p>
+            <!-- ✅ Scoreboard Stats - Royal Style -->
+            <div class="mt-6 grid grid-cols-3 gap-4 max-w-lg">
+                <div class="bg-white/5 backdrop-blur border border-[#D4A853]/10 rounded-2xl p-4 text-center hover:bg-white/10 transition">
+                    <div class="flex items-center justify-center gap-2">
+                        <span class="text-2xl">🏟️</span>
+                        <p class="text-3xl font-black text-white">{{ total_fields|default:"4" }}</p>
+                    </div>
+                    <p class="text-xs text-white/50 font-medium tracking-wider uppercase mt-1">Fields</p>
                 </div>
-                <div>
-                    <p class="text-2xl font-black text-[#1A2A4A]">{{ total_bookings|default:"12" }}</p>
-                    <p class="text-xs text-gray-500">Bookings</p>
+                
+                <div class="bg-white/5 backdrop-blur border border-[#D4A853]/10 rounded-2xl p-4 text-center hover:bg-white/10 transition">
+                    <div class="flex items-center justify-center gap-2">
+                        <span class="text-2xl">📅</span>
+                        <p class="text-3xl font-black text-white">{{ total_bookings|default:"12" }}</p>
+                    </div>
+                    <p class="text-xs text-white/50 font-medium tracking-wider uppercase mt-1">Bookings</p>
                 </div>
-                <div>
-                    <p class="text-2xl font-black text-[#12E6FF]">{{ total_players|default:"28" }}</p>
-                    <p class="text-xs text-gray-500">Players</p>
+                
+                <div class="bg-white/5 backdrop-blur border border-[#D4A853]/10 rounded-2xl p-4 text-center hover:bg-white/10 transition">
+                    <div class="flex items-center justify-center gap-2">
+                        <span class="text-2xl">👥</span>
+                        <p class="text-3xl font-black text-[#D4A853]">{{ total_players|default:"28" }}</p>
+                    </div>
+                    <p class="text-xs text-white/50 font-medium tracking-wider uppercase mt-1">Members</p>
                 </div>
             </div>
+            
+            <!-- Quick Action Button - Gold -->
+            <!-- <div class="mt-6">
+                <a href="{% url 'booking:browse' %}" 
+                   class="inline-flex items-center gap-2 bg-gradient-to-r from-[#D4A853] to-[#B8923E] hover:from-[#E8C96A] hover:to-[#C9A227] text-[#0f1724] px-8 py-3.5 rounded-2xl font-bold transition shadow-lg shadow-[#D4A853]/30 hover:shadow-[#D4A853]/50 hover:-translate-y-1">
+                    <span>⚡</span> Book Now
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div> -->
         </div>
     </div>
 
-    <!-- ✅ 2. Fields Grid -->
-    <div class="grid grid-cols-2 md:grid-cols-2 gap-6 mb-12">
-        {% for field in fields|slice:":4" %}
-            <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl overflow-hidden hover:-translate-y-1 hover:shadow-2xl transition">
-                <!-- Image -->
-                <div class="h-56 relative overflow-hidden bg-[#1A2A4A]/10">
+    <!-- ✅ Slider / Carousel - Royal Style -->
+    <div class="relative mb-8 overflow-hidden rounded-3xl bg-[#162035]/80 backdrop-blur border border-[#D4A853]/10 shadow-xl">
+        <div id="slider" class="flex transition-transform duration-500 ease-in-out">
+            {% for field in fields|slice:":6" %}
+                <div class="min-w-full relative h-80 md:h-96 flex-shrink-0">
+                    <!-- Image -->
                     {% if field.image %}
                         <img src="{{ field.image.url }}" alt="{{ field.name }}" class="w-full h-full object-cover">
                     {% elif field.sport_type == 'FOOTBALL' %}
-                        <img src="/static/img/fields/volta.webp" alt="Football" class="w-full h-full object-cover">
+                        <img src="{% static 'img/fields/volta.webp' %}" alt="Football" class="w-full h-full object-cover">
                     {% elif field.sport_type == 'PADEL' %}
-                        <img src="/static/img/fields/20220522_Campo_padel_MONDO_superficie.jpg" alt="Padel" class="w-full h-full object-cover">
+                        <img src="{% static 'img/fields/20220522_Campo_padel_MONDO_superficie.jpg' %}" alt="Padel" class="w-full h-full object-cover">
                     {% elif field.sport_type == 'BASKETBALL' %}
-                        <img src="/static/img/fields/panoramic-ملاعب-بادبول.webp" alt="Basketball" class="w-full h-full object-cover">
+                        <img src="{% static 'img/fields/panoramic-ملاعب-بادبول.webp' %}" alt="Basketball" class="w-full h-full object-cover">
+                    {% elif field.sport_type == 'TENNIS' %}
+                        <img src="{% static 'img/fields/tennis.jpg' %}" alt="Tennis" class="w-full h-full object-cover">
+                    {% elif field.sport_type == 'CRICKET' %}
+                        <img src="{% static 'img/fields/cricket.jpg' %}" alt="Cricket" class="w-full h-full object-cover">
+                    {% elif field.sport_type == 'VOLLEYBALL' %}
+                        <img src="{% static 'img/fields/volleyball.jpg' %}" alt="Volleyball" class="w-full h-full object-cover">
                     {% else %}
-                        <div class="w-full h-full bg-gradient-to-br from-[#1A2A4A] to-[#24395E] flex items-center justify-center text-6xl">
+                        <div class="w-full h-full bg-gradient-to-br from-[#0f1724] to-[#1A2A4A] flex items-center justify-center text-8xl">
                             {% if field.sport_type == 'FOOTBALL' %}⚽
                             {% elif field.sport_type == 'PADEL' %}🎾
                             {% elif field.sport_type == 'BASKETBALL' %}🏀
+                            {% elif field.sport_type == 'TENNIS' %}🎾
+                            {% elif field.sport_type == 'CRICKET' %}🏏
+                            {% elif field.sport_type == 'VOLLEYBALL' %}🏐
                             {% else %}🏟️{% endif %}
                         </div>
                     {% endif %}
                     
                     <!-- Overlay -->
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#0f1724]/90 via-[#0f1724]/30 to-transparent"></div>
                     
-                    <!-- ✅ 3. Price Badge - Darker -->
-                    <div class="absolute top-4 right-4 bg-[#1A2A4A]/80 backdrop-blur text-white px-3 py-1 rounded-full text-xs font-semibold border border-white/20">
-                        EGP {{ field.price_per_hour }}/hr
-                    </div>
+                    <!-- Gold Accent Line -->
+                    <div class="absolute bottom-20 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4A853]/30 to-transparent"></div>
                     
-                    <!-- Sport Icon -->
-                    <div class="absolute top-4 left-4 w-10 h-10 rounded-xl bg-white/90 backdrop-blur border border-white/40 flex items-center justify-center text-xl shadow-lg">
-                        {% if field.sport_type == 'FOOTBALL' %}⚽
-                        {% elif field.sport_type == 'PADEL' %}🎾
-                        {% elif field.sport_type == 'BASKETBALL' %}🏀
-                        {% else %}🏟️{% endif %}
-                    </div>
-                    
-                    <!-- Field Name -->
-                    <div class="absolute bottom-4 left-4 z-10">
-                        <h3 class="text-xl font-bold text-white drop-shadow-lg">
-                            {{ field.name }}
-                        </h3>
-                        <p class="text-white/70 text-xs drop-shadow-lg">
-                            {{ field.venue.name }}
-                        </p>
+                    <!-- Content -->
+                    <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
+                        <h2 class="text-2xl font-bold">{{ field.name }}</h2>
+                        <p class="text-white/50 text-sm">{{ field.venue.name }}</p>
+                        <div class="flex items-center gap-4 mt-3">
+                            <!-- <span class="bg-[#D4A853]/20 border border-[#D4A853]/30 text-[#D4A853] px-4 py-1.5 rounded-lg text-sm font-bold">
+                                EGP {{ field.price_per_hour }}/hr
+                            </span> -->
+                            <a href="{% url 'booking:field_detail' field.id %}" 
+                               class="bg-gradient-to-r from-[#D4A853] to-[#B8923E] text-[#0f1724] px-5 py-1.5 rounded-lg text-sm font-bold hover:shadow-lg hover:shadow-[#D4A853]/20 transition">
+                                Book Now →
+                            </a>
+                        </div>
                     </div>
                 </div>
-                
-                <!-- Book Now -->
-                <div class="p-5">
-                    <a href="{% url 'booking:field_detail' field.id %}" 
-                       class="block text-center bg-[#1A2A4A] hover:bg-[#24395E] text-white rounded-2xl py-3 font-semibold transition">
-                        BOOK NOW →
-                    </a>
+            {% empty %}
+                <div class="min-w-full h-80 flex items-center justify-center bg-[#0f1724]">
+                    <p class="text-white/40">No fields available</p>
                 </div>
+            {% endfor %}
+        </div>
+
+        <!-- Slider Controls - Gold -->
+        {% if fields|length > 1 %}
+            <button id="prevBtn" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-[#D4A853]/10 backdrop-blur hover:bg-[#D4A853]/20 border border-[#D4A853]/20 text-white flex items-center justify-center text-2xl transition z-10 hover:scale-110">
+                ‹
+            </button>
+            <button id="nextBtn" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-[#D4A853]/10 backdrop-blur hover:bg-[#D4A853]/20 border border-[#D4A853]/20 text-white flex items-center justify-center text-2xl transition z-10 hover:scale-110">
+                ›
+            </button>
+
+            <!-- Dots - Gold -->
+            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                {% for field in fields|slice:":6" %}
+                    <button class="dot w-2.5 h-2.5 rounded-full bg-white/30 hover:bg-[#D4A853] transition {% if forloop.first %}bg-[#D4A853]{% endif %}" data-index="{{ forloop.counter0 }}"></button>
+                {% endfor %}
             </div>
-        {% empty %}
-            <!-- ✅ 6. Empty State for Fields -->
-            <div class="col-span-2 rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-12 text-center">
-                <div class="text-5xl mb-4">🏟️</div>
-                <h3 class="text-xl font-bold text-[#1A2A4A]">No Fields Available</h3>
-                <p class="text-gray-500 mt-2">Check back later for new fields.</p>
-            </div>
-        {% endfor %}
+        {% endif %}
     </div>
 
-    <!-- ✅ 4. NO TEAM - Glassmorphism -->
-<div class="text-center" style="margin-bottom: 50px;margin-top: 50px;">
-    <h2 class="text-4xl font-black text-[#1A2A4A]">
-        NO
-        <span class="text-[#12E6FF]">TEAM?</span>
-    </h2>
-    <p class="text-gray-500 mt-3 text-lg">
-        No problem. Find your squad here.
-    </p>
-</div>
-    <!-- ✅ 5. Recent Posts - Equal Cards -->
+    <!-- ✅ NO TEAM - Royal Style -->
+    <div class="text-center" style="margin-bottom: 50px;margin-top: 50px;">
+        <div class="gold-line-center"></div>
+        <h2 class="text-4xl font-black text-white">
+            NO <span class="text-[#D4A853]">TEAM?</span>
+        </h2>
+        <p class="text-white/50 mt-3 text-lg">No problem. Find your squad here.</p>
+        <div class="gold-line-center"></div>
+    </div>
+
+    <!-- ✅ Recent Posts - Royal Style -->
     {% if recent_posts %}
         <div class="mb-12">
-            <h2 class="text-2xl font-bold text-[#1A2A4A] mb-5">📢 Recent Posts</h2>
+            <h2 class="text-2xl font-bold text-white mb-5 flex items-center gap-2">
+                <span class="text-[#D4A853]">◆</span> Recent Posts
+            </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {% for post in recent_posts|slice:":2" %}
-                    <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-6 hover:-translate-y-1 hover:shadow-2xl transition">
+                    <div class="rounded-3xl bg-[#162035]/80 backdrop-blur border border-[#D4A853]/10 shadow-xl p-6 hover:-translate-y-1 hover:border-[#D4A853]/30 transition">
                         <div class="flex items-center gap-3 mb-3">
-                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#1A2A4A] to-[#4e69ba] text-white font-bold flex items-center justify-center">
+                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#D4A853] to-[#B8923E] text-[#0f1724] font-bold flex items-center justify-center text-xl">
                                 {{ post.player.username|first|upper }}
                             </div>
                             <div>
-                                <p class="font-bold text-[#1A2A4A]">{{ post.player.username }}</p>
-                                <p class="text-xs text-gray-500">{{ post.created_at|timesince }} ago</p>
+                                <p class="font-bold text-white">{{ post.player.username }}</p>
+                                <p class="text-xs text-white/40">{{ post.created_at|timesince }} ago</p>
                             </div>
                         </div>
-                        <p class="text-sm text-gray-600">{{ post.message|truncatechars:60 }}</p>
+                        <p class="text-sm text-white/70">{{ post.message|truncatechars:60 }}</p>
                         <div class="flex items-center gap-2 mt-3">
-                            <span class="text-xs bg-gray-100 px-3 py-1 rounded-full">{{ post.get_sport_type_display }}</span>
-                            <span class="text-xs bg-gray-100 px-3 py-1 rounded-full">👥 {{ post.players_needed }}</span>
+                            <span class="text-xs bg-[#D4A853]/10 text-[#D4A853] px-3 py-1 rounded-full border border-[#D4A853]/20">{{ post.get_sport_type_display }}</span>
+                            <span class="text-xs bg-[#D4A853]/10 text-[#D4A853] px-3 py-1 rounded-full border border-[#D4A853]/20">👥 {{ post.players_needed }}</span>
                         </div>
                         <a href="{% url 'teams:join_post' post.id %}" 
-                           class="block text-center bg-[#1A2A4A] hover:bg-[#24395E] text-white rounded-2xl py-3 font-semibold transition mt-4">
+                           class="block text-center bg-gradient-to-r from-[#D4A853] to-[#B8923E] hover:from-[#E8C96A] hover:to-[#C9A227] text-[#0f1724] rounded-2xl py-3 font-bold transition mt-4 shadow-lg shadow-[#D4A853]/20 hover:shadow-[#D4A853]/40">
                             JOIN ROOM →
                         </a>
                     </div>
@@ -153,18 +203,100 @@
         </div>
     {% endif %}
 
-    <!-- ✅ 4. BUILD & BATTLE - Moved to Bottom -->
-    <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-10 text-center">
-        <h2 class="text-4xl font-black text-[#1A2A4A]">
-            BUILD &
-            <span class="text-[#12E6FF]">BATTLE</span>
+    <!-- ✅ BUILD & BATTLE - Royal Style -->
+    <div class="rounded-3xl bg-gradient-to-br from-[#0f1724] via-[#1A2A4A] to-[#0f1724] border border-[#D4A853]/20 shadow-xl shadow-[#D4A853]/10 p-10 text-center">
+        <div class="gold-line-center"></div>
+        <h2 class="text-4xl font-black text-white">
+            BUILD & <span class="text-[#D4A853]">BATTLE</span>
         </h2>
-        <p class="text-gray-500 mt-3">Find teammates and dominate.</p>
-        <a href="{% url 'teams:room_list' %}" class="inline-block bg-[#1A2A4A] hover:bg-[#24395E] text-white rounded-2xl px-8 py-3 font-semibold transition mt-5">
+        <p class="text-white/50 mt-3">Find teammates and dominate.</p>
+        <a href="{% url 'teams:room_list' %}" class="inline-block bg-gradient-to-r from-[#D4A853] to-[#B8923E] hover:from-[#E8C96A] hover:to-[#C9A227] text-[#0f1724] rounded-2xl px-8 py-3 font-bold transition shadow-lg shadow-[#D4A853]/30 hover:shadow-[#D4A853]/50 hover:-translate-y-1 mt-5">
             Find Squad →
         </a>
+        <div class="gold-line-center mt-4"></div>
     </div>
 
 </div>
 
-{% endblock %}
+<!-- ✅ JavaScript for Slider -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const slider = document.getElementById('slider');
+        const slides = slider ? slider.querySelectorAll('.min-w-full') : [];
+        const totalSlides = slides.length;
+        let currentIndex = 0;
+        let autoPlayInterval;
+
+        if (totalSlides <= 1) return;
+
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const dots = document.querySelectorAll('.dot');
+
+        function goToSlide(index) {
+            if (index < 0) index = totalSlides - 1;
+            if (index >= totalSlides) index = 0;
+            currentIndex = index;
+            slider.style.transform = 'translateX(-' + currentIndex * 100 + '%)';
+            
+            dots.forEach(function(dot, i) {
+                dot.classList.toggle('bg-[#D4A853]', i === currentIndex);
+                dot.classList.toggle('bg-white/30', i !== currentIndex);
+            });
+        }
+
+        function nextSlide() {
+            goToSlide(currentIndex + 1);
+        }
+
+        function prevSlide() {
+            goToSlide(currentIndex - 1);
+        }
+
+        if (nextBtn) nextBtn.addEventListener('click', function() { nextSlide(); resetAutoPlay(); });
+        if (prevBtn) prevBtn.addEventListener('click', function() { prevSlide(); resetAutoPlay(); });
+
+        dots.forEach(function(dot, index) {
+            dot.addEventListener('click', function() {
+                goToSlide(index);
+                resetAutoPlay();
+            });
+        });
+
+        function startAutoPlay() {
+            autoPlayInterval = setInterval(nextSlide, 4000);
+        }
+
+        function resetAutoPlay() {
+            clearInterval(autoPlayInterval);
+            startAutoPlay();
+        }
+
+        startAutoPlay();
+
+        var sliderContainer = document.querySelector('.relative.overflow-hidden');
+        if (sliderContainer) {
+            sliderContainer.addEventListener('mouseenter', function() {
+                clearInterval(autoPlayInterval);
+            });
+            sliderContainer.addEventListener('mouseleave', function() {
+                startAutoPlay();
+            });
+        }
+    });
+</script>
+
+<style>
+    #slider {
+        will-change: transform;
+    }
+    .gold-line-center {
+        width: 70px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #D4A853, transparent);
+        border-radius: 4px;
+        margin: 12px auto;
+    }
+</style>
+
+{% endblock %}  

@@ -4,206 +4,248 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.utils import timezone
-from datetime import date, timedelta
 from django.http import JsonResponse
-import json
+from django.utils import timezone
 
 from accounts.decorators import player_required
-from .models import GameRoom, RoomPlayer, RoomChat  # ✅ RoomChat
 from notifications.utils import create_notification
+from .models import GameRoom, RoomPlayer, RoomChat  # ✅ GameRoom
 
-
-# ========== GAME ROOMS ==========
 
 @player_required
 def room_list(request):
-    today = date.today()
-    
-    rooms = GameRoom.objects.filter(
-        is_active=True,
-        date__gte=today
-    ).exclude(
-        status='CANCELLED'
-    ).order_by('date', 'time')
-    
+    rooms = GameRoom.objects.filter(status='OPEN').order_by('-created_at')
     return render(request, 'teams/room_list.html', {'rooms': rooms})
 
 
 @player_required
 def create_room(request):
     if request.method == 'POST':
+        title = request.POST.get('title')
+        sport_type = request.POST.get('sport_type')
+        max_players = request.POST.get('max_players', 4)
+        date = request.POST.get('date')
+        time = request.POST.get('time')
+        court_name = request.POST.get('court_name', '')
+        description = request.POST.get('description', '')
+        
         room = GameRoom.objects.create(
             host=request.user,
-            sport_type=request.POST.get('sport_type'),
-            title=request.POST.get('title', f"{request.user.username}'s Room"),
-            max_players=request.POST.get('max_players', 4),
-            date=request.POST.get('date'),
-            time=request.POST.get('time') or None,
+            title=title,
+            sport_type=sport_type,
+            max_players=int(max_players),
+            date=date,
+            time=time,
+            court_name=court_name,
+            description=description,
+            status='OPEN'
         )
-        RoomPlayer.objects.create(room=room, player=request.user, status='JOINED')
-        messages.success(request, 'Room created!')
+        
+        RoomPlayer.objects.create(room=room, player=request.user)
+        
+        messages.success(request, f'✅ Room "{room.title}" created successfully!')
         return redirect('teams:room_detail', room_id=room.id)
+    
     return render(request, 'teams/create_room.html')
 
 
 @player_required
 def room_detail(request, room_id):
     room = get_object_or_404(GameRoom, id=room_id)
+    players = RoomPlayer.objects.filter(room=room).select_related('player')
+    chat_messages = RoomChat.objects.filter(room=room).order_by('created_at')[:50]
     
-    # ✅ استخدم RoomChat مش RoomMessage
-    chat_messages = RoomChat.objects.filter(room=room).select_related('sender').order_by('created_at')
-    
-    players = RoomPlayer.objects.filter(room=room)
+    players_count = players.count()
+    is_host = request.user == room.host
     is_in_room = RoomPlayer.objects.filter(room=room, player=request.user).exists()
-    is_host = room.host == request.user
-    spots_left = room.max_players - players.count()
+    spots_left = room.max_players - players_count
     
     context = {
         'room': room,
-        'chat_messages': chat_messages,
         'players': players,
-        'is_in_room': is_in_room,
+        'chat_messages': chat_messages,
         'is_host': is_host,
+        'is_in_room': is_in_room,
         'spots_left': spots_left,
     }
-    
     return render(request, 'teams/room_detail.html', context)
 
 
 @player_required
 def join_room(request, room_id):
-    room = get_object_or_404(GameRoom, id=room_id, is_active=True)
+    room = get_object_or_404(GameRoom, id=room_id)
     
-    if room.players_joined >= room.max_players:
-        messages.error(request, 'Room is full!')
+    players_count = RoomPlayer.objects.filter(room=room).count()
+    
+    if players_count >= room.max_players:
+        messages.error(request, '❌ This room is full!')
         return redirect('teams:room_list')
     
-    room_player, created = RoomPlayer.objects.update_or_create(
-        room=room,
-        player=request.user,
-        defaults={'status': 'JOINED'}
-    )
-    
-    if not created and room_player.status == 'JOINED':
-        messages.info(request, 'You are already in this room.')
+    if RoomPlayer.objects.filter(room=room, player=request.user).exists():
+        messages.warning(request, '⚠️ You are already in this room!')
         return redirect('teams:room_detail', room_id=room.id)
+    
+    RoomPlayer.objects.create(room=room, player=request.user)
+    
+    if players_count + 1 >= room.max_players:
+        room.status = 'FULL'
+        room.save()
     
     create_notification(
         user=room.host,
-        title="👥 New player joined!",
+        title=f"👥 New player joined {room.title}",
         message=f"{request.user.username} joined your room.",
-        url=f"/teams/room/{room.id}/"
+        url=f"/teams/rooms/{room.id}/"
     )
     
-    messages.success(request, '✅ Joined room successfully!')
+    messages.success(request, f'✅ You joined "{room.title}"!')
     return redirect('teams:room_detail', room_id=room.id)
 
 
 @player_required
 def leave_room(request, room_id):
     room = get_object_or_404(GameRoom, id=room_id)
-    room_player = get_object_or_404(RoomPlayer, room=room, player=request.user)
     
     if request.user == room.host:
-        messages.error(request, "❌ You are the host. Cancel the room instead.")
+        messages.error(request, '❌ You are the host. Cancel the room instead.')
         return redirect('teams:room_detail', room_id=room.id)
     
-    room_player.delete()
-    messages.success(request, '✅ Left room successfully!')
+    RoomPlayer.objects.filter(room=room, player=request.user).delete()
+    
+    if room.status == 'FULL':
+        room.status = 'OPEN'
+        room.save()
+    
+    messages.success(request, f'✅ You left "{room.title}".')
     return redirect('teams:room_list')
-
-
-@player_required
-def kick_player(request, room_id, player_id):
-    room = get_object_or_404(GameRoom, id=room_id, host=request.user)
-    room_player = get_object_or_404(RoomPlayer, room=room, player_id=player_id)
-    
-    if room_player.player == room.host:
-        messages.error(request, "Can't kick the host!")
-        return redirect('teams:room_detail', room_id=room.id)
-    
-    create_notification(
-        user=room_player.player,
-        title="🚫 You were kicked",
-        message=f"You were kicked from {room.title}.",
-        url="/teams/room_list/"
-    )
-    
-    room_player.delete()
-    messages.success(request, f"✅ {room_player.player.username} kicked!")
-    return redirect('teams:room_detail', room_id=room.id)
 
 
 @player_required
 def cancel_room(request, room_id):
     room = get_object_or_404(GameRoom, id=room_id, host=request.user)
     
-    players = RoomPlayer.objects.filter(room=room)
-    for rp in players:
-        if rp.player != request.user:
+    room.status = 'CANCELLED'
+    room.save()
+    
+    for player in RoomPlayer.objects.filter(room=room).select_related('player'):
+        if player.player != request.user:
             create_notification(
-                user=rp.player,
-                title="❌ Room cancelled",
-                message=f"{room.title} has been cancelled by host.",
-                url="/teams/room_list/"
+                user=player.player,
+                title=f"❌ Room cancelled: {room.title}",
+                message=f"{request.user.username} cancelled the room.",
+                url="/teams/rooms/"
             )
     
-    room.delete()
-    messages.success(request, '✅ Room cancelled!')
+    messages.success(request, f'✅ Room "{room.title}" cancelled.')
     return redirect('teams:room_list')
 
 
-# ========== CHAT API (HTTP Polling) ==========
-
 @player_required
-def get_chat_messages(request, room_id):
-    """API لجلب الرسائل الجديدة (HTTP Polling)"""
-    room = get_object_or_404(GameRoom, id=room_id)
+def kick_player(request, room_id, player_id):
+    room = get_object_or_404(GameRoom, id=room_id, host=request.user)
     
-    last_id = request.GET.get('last_id', 0)
+    if request.user.id == player_id:
+        messages.error(request, '❌ You cannot kick yourself.')
+        return redirect('teams:room_detail', room_id=room.id)
     
-    messages = RoomChat.objects.filter(
-        room=room,
-        id__gt=last_id
-    ).select_related('sender').order_by('created_at')[:50]
+    RoomPlayer.objects.filter(room=room, player_id=player_id).delete()
     
-    data = []
-    for msg in messages:
-        data.append({
-            'id': msg.id,
-            'username': msg.sender.username,
-            'message': msg.message,
-            'created_at': msg.created_at.strftime('%I:%M %p'),
-        })
+    if room.status == 'FULL':
+        room.status = 'OPEN'
+        room.save()
     
-    return JsonResponse({'messages': data})
+    messages.success(request, '✅ Player kicked from the room.')
+    return redirect('teams:room_detail', room_id=room.id)
+
+
+# teams/views.py
+
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
+from accounts.decorators import player_required
+from .models import GameRoom, RoomPlayer, RoomChat
+import json
 
 
 @player_required
 def send_message(request, room_id):
-    """إرسال رسالة جديدة"""
-    if request.method != 'POST':
-        return JsonResponse({'success': False, 'error': 'Invalid method'})
+    """إرسال رسالة في الشات"""
     
+    # ✅ التحقق من وجود الغرفة
     room = get_object_or_404(GameRoom, id=room_id)
     
+    # ✅ التحقق من أن المستخدم في الغرفة
     if not RoomPlayer.objects.filter(room=room, player=request.user).exists():
-        return JsonResponse({'success': False, 'error': 'Not a member'})
+        return JsonResponse({
+            'success': False, 
+            'error': 'You are not in this room.'
+        }, status=403)
+    
+    # ✅ التحقق من الطريقة
+    if request.method != 'POST':
+        return JsonResponse({
+            'success': False, 
+            'error': 'Invalid method.'
+        }, status=405)
     
     try:
+        # ✅ قراءة البيانات
         data = json.loads(request.body)
         message = data.get('message', '').strip()
-    except:
-        return JsonResponse({'success': False, 'error': 'Invalid JSON'})
+        
+        # ✅ التحقق من الرسالة
+        if not message:
+            return JsonResponse({
+                'success': False, 
+                'error': 'Message cannot be empty.'
+            }, status=400)
+        
+        # ✅ حفظ الرسالة
+        chat = RoomChat.objects.create(
+            room=room,
+            sender=request.user,
+            message=message
+        )
+        
+        return JsonResponse({
+            'success': True, 
+            'message_id': chat.id,
+            'message': message,
+            'username': request.user.username,
+            'created_at': chat.created_at.strftime('%I:%M %p')
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'success': False, 
+            'error': 'Invalid JSON.'
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'success': False, 
+            'error': str(e)
+        }, status=500)
+
+@player_required
+def get_messages(request, room_id):
+    room = get_object_or_404(GameRoom, id=room_id)
+    last_id = request.GET.get('last_id', 0)
     
-    if not message:
-        return JsonResponse({'success': False, 'error': 'Empty message'})
-    
-    chat = RoomChat.objects.create(
+    messages_list = RoomChat.objects.filter(
         room=room,
-        sender=request.user,
-        message=message
-    )
+        id__gt=last_id
+    ).order_by('created_at')[:50]
     
-    return JsonResponse({'success': True, 'id': chat.id})
+    data = {
+        'messages': [
+            {
+                'id': msg.id,
+                'username': msg.sender.username,
+                'message': msg.message,
+                'created_at': msg.created_at.strftime('%I:%M %p'),
+            }
+            for msg in messages_list
+        ]
+    }
+    return JsonResponse(data)

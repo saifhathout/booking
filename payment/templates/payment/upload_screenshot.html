@@ -5,57 +5,58 @@
 
 {% block content %}
 
-<div class="min-h-screen bg-gradient-to-b from-white to-[#F5F7FA] py-8 px-4">
+<div class="min-h-screen bg-gradient-to-b from-[#0f1724] via-[#1A2A4A] to-[#0f1724] py-8 px-4">
 
     <div class="max-w-2xl mx-auto animate-fade-up">
 
         {% if is_expired %}
-            <!-- ✅ صفحة انتهاء الصلاحية -->
-            <div class="rounded-3xl bg-red-50 border-2 border-red-300 shadow-xl p-12 text-center">
+            <!-- ✅ صفحة انتهاء الصلاحية - Royal Style -->
+            <div class="rounded-3xl bg-red-500/10 border-2 border-red-500/30 shadow-xl shadow-red-500/10 p-12 text-center backdrop-blur">
                 <div class="text-7xl mb-4">⏰</div>
-                <h2 class="text-2xl font-bold text-red-700">انتهت صلاحية الحجز!</h2>
-                <p class="text-gray-600 mt-3">
+                <h2 class="text-2xl font-bold text-red-400">انتهت صلاحية الحجز!</h2>
+                <p class="text-white/50 mt-3">
                     تم تحرير السلوتات وأصبحت متاحة للآخرين.
                 </p>
                 <div class="mt-6 space-y-3">
                     <a href="{% url 'booking:field_detail' booking.field.id %}" 
-                       class="inline-block bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-2xl font-bold transition">
+                       class="inline-block bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-2xl font-bold transition shadow-lg shadow-red-500/30 hover:shadow-red-500/50">
                         🔄 إعادة الحجز
                     </a>
                     <br>
                     <a href="{% url 'booking:history' %}" 
-                       class="inline-block text-gray-500 hover:text-[#1A2A4A] text-sm transition">
+                       class="inline-block text-white/40 hover:text-[#D4A853] text-sm transition">
                         ← العودة للحجوزات
                     </a>
                 </div>
             </div>
 
         {% else %}
-            <!-- ✅ صفحة رفع الصورة -->
+            <!-- ✅ صفحة رفع الصورة - Royal Style -->
 
             <!-- Hero -->
             <div class="text-center mb-8">
-                <div class="w-20 h-20 mx-auto rounded-3xl bg-[#1A2A4A] flex items-center justify-center text-4xl text-white shadow-lg">
+                <div class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-br from-[#D4A853] to-[#B8923E] flex items-center justify-center text-4xl text-[#0f1724] shadow-2xl shadow-[#D4A853]/20">
                     📸
                 </div>
-                <h1 class="text-3xl font-bold mt-4 text-[#1A2A4A]">Upload Payment Proof</h1>
-                <p class="text-gray-500 mt-2">Upload your InstaPay payment screenshot.</p>
+                <h1 class="text-3xl font-bold mt-4 text-white">Upload Payment Proof</h1>
+                <div class="gold-line-center mt-2"></div>
+                <p class="text-white/50 mt-2">Upload your InstaPay payment screenshot.</p>
             </div>
 
-            <!-- Booking Summary -->
-            <div class="rounded-3xl bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl p-6 mb-6">
+            <!-- Booking Summary - Royal Style -->
+            <div class="rounded-3xl bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 shadow-xl p-6 mb-6 hover:border-[#D4A853]/30 transition">
                 <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 rounded-2xl bg-[#1A2A4A] text-white flex items-center justify-center text-2xl">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D4A853] to-[#B8923E] text-[#0f1724] flex items-center justify-center text-2xl shadow-lg shadow-[#D4A853]/20">
                         {% if booking.field.sport_type == 'FOOTBALL' %}⚽
                         {% elif booking.field.sport_type == 'PADEL' %}🎾
                         {% else %}🏟️{% endif %}
                     </div>
                     <div>
-                        <h3 class="font-bold text-[#1A2A4A] text-lg">{{ booking.field.name }}</h3>
-                        <div class="text-sm text-gray-500 space-y-0.5">
+                        <h3 class="font-bold text-white text-lg">{{ booking.field.name }}</h3>
+                        <div class="text-sm text-white/50 space-y-0.5">
                             <p>📅 {{ booking.booking_date|date:"D, M j, Y" }}</p>
                             <p>⏰ {{ booking.start_time|time:"g:i A" }} — {{ booking.end_time|time:"g:i A" }}</p>
-                            <p>💰 {{ payment.amount|floatformat:"0" }} EGP</p>
+                            <p class="font-bold text-[#D4A853]">💰 {{ payment.amount|floatformat:"0" }} EGP</p>
                         </div>
                     </div>
                 </div>
@@ -63,15 +64,15 @@
 
             <!-- ✅ تم إزالة العداد ⏰ -->
 
-            <!-- Upload Area -->
-            <div class="rounded-3xl bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl p-8 mb-6 hover:shadow-2xl transition duration-300">
+            <!-- Upload Area - Royal Style -->
+            <div class="rounded-3xl bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 shadow-xl p-8 mb-6 hover:border-[#D4A853]/30 transition duration-300">
 
                 <form method="POST" enctype="multipart/form-data" id="upload-form">
                     {% csrf_token %}
 
-                    <!-- Drag & Drop Area -->
+                    <!-- Drag & Drop Area - Royal Style -->
                     <div id="drop-area" 
-                         class="rounded-3xl border-2 border-dashed border-[#1A2A4A]/20 bg-[#F8F9FC] p-12 hover:border-[#1A2A4A] hover:bg-[#EEF3FF] transition duration-300 cursor-pointer text-center">
+                         class="rounded-3xl border-2 border-dashed border-[#D4A853]/20 bg-[#0f1724]/30 p-12 hover:border-[#D4A853] hover:bg-[#D4A853]/5 transition duration-300 cursor-pointer text-center">
 
                         <input type="file" 
                                name="screenshot" 
@@ -81,51 +82,51 @@
                                required>
 
                         <label for="screenshot" class="cursor-pointer block">
-                            <div class="text-6xl mb-4 text-[#1A2A4A]">
+                            <div class="text-6xl mb-4 text-[#D4A853]">
                                 <i class="fas fa-cloud-upload-alt"></i>
                             </div>
-                            <p class="font-semibold text-[#1A2A4A] text-lg">Drag & Drop</p>
-                            <p class="text-gray-400">or</p>
-                            <p class="text-[#1A2A4A] font-semibold underline">Choose Image</p>
-                            <p class="text-sm text-gray-400 mt-2">JPG, PNG, JPEG — Max 10MB</p>
+                            <p class="font-semibold text-white text-lg">Drag & Drop</p>
+                            <p class="text-white/30">or</p>
+                            <p class="text-[#D4A853] font-semibold underline hover:text-[#E8C96A] transition">Choose Image</p>
+                            <p class="text-sm text-white/20 mt-2">JPG, PNG, JPEG — Max 10MB</p>
                         </label>
 
                         <!-- Image Preview -->
-                        <img id="preview" class="hidden rounded-2xl mt-6 w-full max-h-80 object-cover shadow-lg">
+                        <img id="preview" class="hidden rounded-2xl mt-6 w-full max-h-80 object-cover shadow-lg shadow-[#D4A853]/10">
 
                         <!-- File Name -->
-                        <p id="filename" class="text-center text-sm text-gray-500 mt-4"></p>
+                        <p id="filename" class="text-center text-sm text-white/40 mt-4"></p>
                     </div>
 
-                    <!-- Instructions -->
-                    <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 mt-6">
-                        <h3 class="font-bold text-[#1A2A4A] mb-2">📋 Requirements</h3>
-                        <ul class="space-y-2 text-sm text-gray-700">
-                            <li>✅ Amount must be visible</li>
-                            <li>✅ InstaPay number visible</li>
-                            <li>✅ Status shows "Successful"</li>
-                            <li>✅ Screenshot must be clear</li>
+                    <!-- Instructions - Royal Style -->
+                    <div class="bg-[#D4A853]/10 border border-[#D4A853]/20 rounded-2xl p-5 mt-6">
+                        <h3 class="font-bold text-[#D4A853] mb-2">📋 Requirements</h3>
+                        <ul class="space-y-2 text-sm text-white/60">
+                            <li class="flex items-center gap-2">✅ Amount must be visible</li>
+                            <li class="flex items-center gap-2">✅ InstaPay number visible</li>
+                            <li class="flex items-center gap-2">✅ Status shows "Successful"</li>
+                            <li class="flex items-center gap-2">✅ Screenshot must be clear</li>
                         </ul>
                     </div>
 
-                    <!-- Upload Button -->
+                    <!-- Upload Button - Gold -->
                     <button type="submit" 
                             id="upload-btn"
-                            class="w-full bg-[#1A2A4A] hover:bg-[#24395E] text-white font-bold py-5 px-6 rounded-2xl text-lg shadow-xl transition duration-300 hover:scale-[1.02] mt-6">
+                            class="w-full bg-gradient-to-r from-[#D4A853] to-[#B8923E] hover:from-[#E8C96A] hover:to-[#C9A227] text-[#0f1724] font-bold py-5 px-6 rounded-2xl text-lg shadow-xl shadow-[#D4A853]/30 hover:shadow-[#D4A853]/50 transition duration-300 hover:scale-[1.02] mt-6">
                         ⬆ Upload Screenshot
                     </button>
 
                     <a href="{% url 'booking:history' %}" 
-                       class="block text-center text-gray-500 hover:text-[#1A2A4A] mt-4 text-sm transition">
+                       class="block text-center text-white/40 hover:text-[#D4A853] mt-4 text-sm transition">
                         ← Back to Bookings
                     </a>
                 </form>
             </div>
 
-            <!-- Cancel Link -->
+            <!-- Cancel Link - Royal Style -->
             <div class="text-center mt-4">
                 <a href="{% url 'booking:cancel_booking' booking.id %}" 
-                   class="text-sm text-red-500 hover:text-red-700 underline-offset-2 hover:underline transition"
+                   class="text-sm text-red-400 hover:text-red-300 underline-offset-2 hover:underline transition"
                    onclick="return confirm('⚠️ Are you sure you want to cancel this booking? This will release the slots for others.')">
                     ❌ Cancel Reservation & Release Slots
                 </a>
@@ -135,6 +136,16 @@
 
     </div>
 </div>
+
+<style>
+    .gold-line-center {
+        width: 60px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #D4A853, transparent);
+        border-radius: 4px;
+        margin: 8px auto;
+    }
+</style>
 
 <script>
     // ✅ Preview & Filename
@@ -189,17 +200,17 @@
     if (dropArea) {
         dropArea.addEventListener('dragover', function(e) {
             e.preventDefault();
-            this.classList.add('border-[#1A2A4A]', 'bg-[#EEF3FF]');
+            this.classList.add('border-[#D4A853]', 'bg-[#D4A853]/5');
         });
 
         dropArea.addEventListener('dragleave', function(e) {
             e.preventDefault();
-            this.classList.remove('border-[#1A2A4A]', 'bg-[#EEF3FF]');
+            this.classList.remove('border-[#D4A853]', 'bg-[#D4A853]/5');
         });
 
         dropArea.addEventListener('drop', function(e) {
             e.preventDefault();
-            this.classList.remove('border-[#1A2A4A]', 'bg-[#EEF3FF]');
+            this.classList.remove('border-[#D4A853]', 'bg-[#D4A853]/5');
             
             const files = e.dataTransfer.files;
             if (files.length > 0) {

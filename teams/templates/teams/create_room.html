@@ -5,93 +5,86 @@
 <div class="max-w-xl mx-auto mt-8 animate-fade-up">
 
     <div class="text-center mb-8">
-        <h1 class="text-4xl font-black tracking-wide text-[#1A2A4A]">
+        <h1 class="text-4xl font-black tracking-wide text-white">
             CREATE
-            <span class="text-[#12E6FF]">ROOM</span>
+            <span class="text-[#D4A853]">ROOM</span>
         </h1>
-
-        <p class="text-[#6B7280] mt-2">
+        <div class="gold-line-center"></div>
+        <p class="text-white/50 mt-2">
             Host your next game and invite players.
         </p>
     </div>
 
-    <div class="rounded-3xl bg-white/60 backdrop-blur-xl border border-white/40 shadow-xl p-8">
+    <div class="rounded-3xl bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 shadow-xl p-8 hover:border-[#D4A853]/30 transition">
 
         <form method="POST" class="space-y-5">
             {% csrf_token %}
 
             <div>
-                <label class="block text-sm font-semibold text-[#1A2A4A] mb-2">
+                <label class="block text-sm font-semibold text-[#D4A853] mb-2">
                     Room Title
                 </label>
-
                 <input
                     type="text"
                     name="title"
                     placeholder="Padel Night"
-                    class="w-full rounded-2xl border border-[#D9D2BF] bg-white px-5 py-4 outline-none focus:border-[#12E6FF] focus:ring-2 focus:ring-[#12E6FF]/30">
+                    class="w-full rounded-2xl border border-[#D4A853]/20 bg-[#0f1724]/50 text-white placeholder-white/30 px-5 py-4 outline-none focus:border-[#D4A853] focus:ring-2 focus:ring-[#D4A853]/30 transition">
             </div>
 
             <div>
-                <label class="block text-sm font-semibold text-[#1A2A4A] mb-2">
+                <label class="block text-sm font-semibold text-[#D4A853] mb-2">
                     Sport
                 </label>
-
                 <select
                     name="sport_type"
-                    class="w-full rounded-2xl border border-[#D9D2BF] bg-white px-5 py-4">
-
-                    <option>Select Sport</option>
-                    <option>🎾 Padel</option>
-                    <option>⚽ Football</option>
-                    <option>🎾 Tennis</option>
-
+                    class="w-full rounded-2xl border border-[#D4A853]/20 bg-[#0f1724]/50 text-white px-5 py-4 outline-none focus:border-[#D4A853] focus:ring-2 focus:ring-[#D4A853]/30 transition">
+                    <option value="" class="bg-[#0f1724]">Select Sport</option>
+                    <option value="PADEL" class="bg-[#0f1724]">🎾 Padel</option>
+                    <option value="FOOTBALL" class="bg-[#0f1724]">⚽ Football</option>
+                    <option value="TENNIS" class="bg-[#0f1724]">🎾 Tennis</option>
+                    <option value="BASKETBALL" class="bg-[#0f1724]">🏀 Basketball</option>
+                    <option value="VOLLEYBALL" class="bg-[#0f1724]">🏐 Volleyball</option>
                 </select>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-
                 <div>
-                    <label class="block text-sm font-semibold text-[#1A2A4A] mb-2">
+                    <label class="block text-sm font-semibold text-[#D4A853] mb-2">
                         Players
                     </label>
-
                     <input
                         type="number"
                         name="max_players"
                         value="4"
-                        class="w-full rounded-2xl border border-[#D9D2BF] bg-white px-5 py-4">
+                        min="2"
+                        max="20"
+                        class="w-full rounded-2xl border border-[#D4A853]/20 bg-[#0f1724]/50 text-white px-5 py-4 outline-none focus:border-[#D4A853] focus:ring-2 focus:ring-[#D4A853]/30 transition">
                 </div>
 
                 <div>
-                    <label class="block text-sm font-semibold text-[#1A2A4A] mb-2">
+                    <label class="block text-sm font-semibold text-[#D4A853] mb-2">
                         Date
                     </label>
-
                     <input
                         type="date"
                         name="date"
-                        class="w-full rounded-2xl border border-[#D9D2BF] bg-white px-5 py-4">
+                        class="w-full rounded-2xl border border-[#D4A853]/20 bg-[#0f1724]/50 text-white px-5 py-4 outline-none focus:border-[#D4A853] focus:ring-2 focus:ring-[#D4A853]/30 transition">
                 </div>
-
             </div>
 
             <div>
-                <label class="block text-sm font-semibold text-[#1A2A4A] mb-2">
+                <label class="block text-sm font-semibold text-[#D4A853] mb-2">
                     Time
                 </label>
-
                 <input
                     type="time"
                     name="time"
-                    class="w-full rounded-2xl border border-[#D9D2BF] bg-white px-5 py-4">
+                    class="w-full rounded-2xl border border-[#D4A853]/20 bg-[#0f1724]/50 text-white px-5 py-4 outline-none focus:border-[#D4A853] focus:ring-2 focus:ring-[#D4A853]/30 transition">
             </div>
 
             <button
-                class="w-full rounded-2xl bg-[#1A2A4A] hover:bg-[#24395E] text-white py-4 font-bold text-lg transition duration-300">
-
+                class="w-full rounded-2xl bg-gradient-to-r from-[#D4A853] to-[#B8923E] hover:from-[#E8C96A] hover:to-[#C9A227] text-[#0f1724] py-4 font-bold text-lg transition duration-300 shadow-lg shadow-[#D4A853]/30 hover:shadow-[#D4A853]/50">
                 🚀 Create Room
-
             </button>
 
         </form>
@@ -99,4 +92,34 @@
     </div>
 
 </div>
+
+<style>
+    .gold-line-center {
+        width: 70px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #D4A853, transparent);
+        border-radius: 4px;
+        margin: 8px auto;
+    }
+    /* Calendar icon color fix for date input */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(0.8) sepia(1) saturate(3) hue-rotate(10deg);
+        cursor: pointer;
+    }
+    input[type="time"]::-webkit-calendar-picker-indicator {
+        filter: invert(0.8) sepia(1) saturate(3) hue-rotate(10deg);
+        cursor: pointer;
+    }
+    input[type="date"]::-webkit-datetime-edit {
+        color: white;
+    }
+    input[type="time"]::-webkit-datetime-edit {
+        color: white;
+    }
+    select option {
+        background: #0f1724;
+        color: white;
+    }
+</style>
+
 {% endblock %}

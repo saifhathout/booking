@@ -1,49 +1,52 @@
-<!-- mobile_header.html - Premium Glass Effect -->
+<!-- mobile_header.html - Premium Glass Effect - Royal Navy + Gold -->
 
 {% load static %}
 
 <!-- ✅ Mobile Header - Premium Glass -->
-<div class="md:hidden fixed top-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-xl border-b border-black/5 shadow-sm">
+<div class="md:hidden fixed top-0 left-0 right-0 z-40 bg-[#0f1724]/80 backdrop-blur-2xl border-b border-[#D4A853]/10 shadow-lg shadow-[#D4A853]/5">
     <div class="max-w-7xl mx-auto px-5">
         <div class="flex items-center justify-between h-16">
             
-            <!-- ✅ Logo - Larger & Premium -->
+            <!-- ✅ Logo - Gold Accent -->
             <a href="/" class="flex items-center gap-3 transition-all duration-300 hover:scale-105">
-                <img src="{% static 'img/logo.png' %}" 
-                     alt="K-HUB" 
-                     class="w-10 h-10 rounded-2xl shadow-lg border-2 border-white/20">
-                <span class="text-xl font-extrabold tracking-wide text-[#1A2A4A]" 
-                      style="font-family: 'Orbitron', sans-serif;">
-                    K<span style="color: #12E6FF;">-HUB</span>
+                <div class="relative">
+                    <img src="{% static 'img/logo.png' %}" 
+                         alt="K-HUB" 
+                         class="w-10 h-10 rounded-2xl shadow-lg  border-[#D4A853]/30">
+                    <div class="absolute -inset-1 rounded-2xl bg-[#D4A853]/10 blur-xl -z-10"></div>
+                </div>
+                <span class="text-xl font-extrabold tracking-wide text-white" 
+                      style="font-family: 'Cinzel', serif;">
+                    <span class="text-[#D4A853]">K</span>-HUB
                 </span>
             </a>
             
             {% if user.is_authenticated %}
             <div class="flex items-center gap-2">
                 
-                <!-- ✅ Notification Bell - Larger -->
+                <!-- ✅ Notification Bell - Gold -->
                 <a href="{% url 'notifications:list' %}" 
-                   class="w-10 h-10 rounded-2xl flex items-center justify-center text-[#1A2A4A] hover:bg-[#1A2A4A]/10 transition-all duration-300 hover:scale-110 relative">
+                   class="w-10 h-10 rounded-2xl flex items-center justify-center text-[#D4A853] hover:bg-[#D4A853]/10 transition-all duration-300 hover:scale-110 relative border border-[#D4A853]/10">
                     <i class="fas fa-bell text-lg"></i>
                     
-                    <!-- ✅ Badge - Better sizing -->
+                    <!-- ✅ Badge - Gold -->
                     <span id="notifBadgeMobile" 
-                          class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center hidden">
+                          class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#D4A853] text-[#0f1724] text-[10px] font-bold flex items-center justify-center hidden shadow-lg shadow-[#D4A853]/30">
                         0
                     </span>
                 </a>
                 
-                <!-- ✅ Avatar - Gradient -->
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#1A2A4A] to-[#4e69ba] flex items-center justify-center text-white font-bold text-sm shadow-lg transition-all duration-300 hover:scale-110">
+                <!-- ✅ Avatar - Gold Gradient -->
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#D4A853] to-[#B8923E] flex items-center justify-center text-[#0f1724] font-bold text-sm shadow-lg shadow-[#D4A853]/20 transition-all duration-300 hover:scale-110 border border-[#D4A853]/30">
                     {{ user.username|first|upper }}
                 </div>
                 
             </div>
             {% else %}
             
-            <!-- ✅ Login Button - Pill Shape -->
+            <!-- ✅ Login Button - Gold Outline -->
             <a href="{% url 'accounts:login' %}" 
-               class="text-sm font-semibold text-[#1A2A4A] px-5 py-2 rounded-full border-2 border-[#1A2A4A]/10 hover:border-[#1A2A4A] hover:bg-[#1A2A4A] hover:text-white transition-all duration-300">
+               class="text-sm font-bold text-[#D4A853] px-5 py-2 rounded-full border-2 border-[#D4A853]/30 hover:border-[#D4A853] hover:bg-[#D4A853] hover:text-[#0f1724] transition-all duration-300 shadow-lg shadow-[#D4A853]/10 hover:shadow-[#D4A853]/30">
                 Login
             </a>
             

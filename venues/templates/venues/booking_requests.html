@@ -1,48 +1,160 @@
 {% extends 'base.html' %}
-{% block title %}Bookings{% endblock %}
+{% load static %}
+
+{% block title %}Booking Requests{% endblock %}
+
 {% block content %}
 
-<div class="animate-fade-up">
-    <div class="mb-10">
-        <p class="text-xs font-bold uppercase tracking-[3px] text-[#4A5568] mb-2" style="font-family: 'Orbitron', sans-serif;">Bookings</p>
-        <h1 class="text-4xl font-black" style="font-family: 'Orbitron', sans-serif;">MY<br><span style="color: #0066FF;">BOOKINGS</span></h1>
+<div class="animate-fade-up max-w-6xl mx-auto px-4">
+
+    <!-- Header - Royal Style -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-10">
+        <div>
+            <p class="uppercase tracking-[4px] text-sm text-[#D4A853] mb-2">Owner Panel</p>
+            <h1 class="text-5xl font-black text-white">
+                BOOKING <span class="text-[#D4A853]">REQUESTS</span>
+            </h1>
+            <div class="gold-line mt-1"></div>
+            <p class="text-white/50 mt-2">Manage all booking requests for your venues.</p>
+        </div>
+        <a href="{% url 'dashboard:owner_dashboard' %}" class="mt-5 md:mt-0 bg-[#162035] hover:bg-[#1A2A4A] text-white px-6 py-3 rounded-2xl font-bold transition border border-[#D4A853]/20 hover:border-[#D4A853]/50">
+            ← Dashboard
+        </a>
+    </div>
+
+    <!-- ✅ Filter Tabs -->
+    <div class="flex flex-wrap gap-2 mb-6">
+        <button class="filter-btn px-4 py-2 rounded-full text-sm font-bold bg-[#D4A853] text-[#0f1724] transition" data-filter="all">All</button>
+        <button class="filter-btn px-4 py-2 rounded-full text-sm font-bold text-white/60 hover:text-white hover:bg-[#D4A853]/20 transition" data-filter="PENDING">⏳ Pending</button>
+        <button class="filter-btn px-4 py-2 rounded-full text-sm font-bold text-white/60 hover:text-white hover:bg-[#D4A853]/20 transition" data-filter="LOCKED">🔒 Locked</button>
+        <button class="filter-btn px-4 py-2 rounded-full text-sm font-bold text-white/60 hover:text-white hover:bg-[#D4A853]/20 transition" data-filter="CONFIRMED">✅ Confirmed</button>
+        <button class="filter-btn px-4 py-2 rounded-full text-sm font-bold text-white/60 hover:text-white hover:bg-[#D4A853]/20 transition" data-filter="CANCELLED">❌ Cancelled</button>
     </div>
 
     {% if bookings %}
-        <div class="space-y-3">
+        <div class="space-y-4" id="bookings-container">
             {% for booking in bookings %}
-                <div class="khub-card p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-[#8B5CF6] flex items-center justify-center text-xl border-2 border-[#0B1D3A] shadow-[3px_3px_0px_#0B1D3A]">
-                            {% if booking.field.sport_type == 'FOOTBALL' %}⚽
-                            {% elif booking.field.sport_type == 'CRICKET' %}🏏
-                            {% elif booking.field.sport_type == 'BASKETBALL' %}🏀
-                            {% elif booking.field.sport_type == 'TENNIS' %}🎾
-                            {% else %}🏟️{% endif %}
+                <div class="booking-item rounded-3xl bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 shadow-xl p-6 hover:border-[#D4A853]/30 transition" data-status="{{ booking.status }}">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        
+                        <!-- Left -->
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D4A853] to-[#B8923E] text-[#0f1724] flex items-center justify-center text-2xl shadow-lg shadow-[#D4A853]/20">
+                                {% if booking.field.sport_type == 'FOOTBALL' %}⚽
+                                {% elif booking.field.sport_type == 'PADEL' %}🎾
+                                {% elif booking.field.sport_type == 'BASKETBALL' %}🏀
+                                {% elif booking.field.sport_type == 'TENNIS' %}🎾
+                                {% elif booking.field.sport_type == 'CRICKET' %}🏏
+                                {% elif booking.field.sport_type == 'VOLLEYBALL' %}🏐
+                                {% else %}🏟️{% endif %}
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-white">{{ booking.field.name }}</h3>
+                                <p class="text-sm text-white/50">{{ booking.field.venue.name }}</p>
+                                <div class="flex flex-wrap items-center gap-2 text-xs text-white/40 mt-1">
+                                    <span>👤 {{ booking.player.username }}</span>
+                                    <span class="hidden sm:inline">·</span>
+                                    <span><i class="far fa-calendar mr-1"></i> {{ booking.booking_date|date:"D, M j" }}</span>
+                                    <span class="hidden sm:inline">·</span>
+                                    <span><i class="far fa-clock mr-1"></i> {{ booking.start_time|time:"g:i A" }} - {{ booking.end_time|time:"g:i A" }}</span>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <h3 class="font-bold text-lg">{{ booking.field.name }}</h3>
-                            <p class="text-sm text-[#4A5568]">{{ booking.player.username }}</p>
-                            <p class="text-xs text-[#4A5568] mt-1">
-                                <i class="far fa-calendar mr-1"></i> {{ booking.booking_date|date:"D, M j" }}
-                                <span class="mx-2">·</span>
-                                <i class="far fa-clock mr-1"></i> {{ booking.start_time }} - {{ booking.end_time }}
-                            </p>
+                        
+                        <!-- Right -->
+                        <div class="flex flex-col items-start md:items-end gap-2">
+                            <!-- Status Badge -->
+                            {% if booking.status == "CONFIRMED" %}
+                                <span class="px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-bold border border-green-500/30">✅ Confirmed</span>
+                            {% elif booking.status == "PENDING" %}
+                                <span class="px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-400 text-xs font-bold border border-yellow-500/30">⏳ Pending</span>
+                            {% elif booking.status == "LOCKED" %}
+                                <span class="px-3 py-1 rounded-full bg-[#D4A853]/20 text-[#D4A853] text-xs font-bold border border-[#D4A853]/30">🔒 Locked - Awaiting Payment</span>
+                            {% elif booking.status == "CANCELLED" %}
+                                <span class="px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs font-bold border border-red-500/30">❌ Cancelled</span>
+                            {% elif booking.status == "EXPIRED" %}
+                                <span class="px-3 py-1 rounded-full bg-white/10 text-white/40 text-xs font-bold border border-white/10">⏰ Expired</span>
+                            {% else %}
+                                <span class="px-3 py-1 rounded-full bg-white/10 text-white/40 text-xs font-bold border border-white/10">{{ booking.status }}</span>
+                            {% endif %}
+
+                            <!-- Action Buttons -->
+                            <div class="flex flex-wrap gap-2 mt-1">
+                                {% if booking.status == "LOCKED" %}
+                                    <!-- ✅ Check if payment exists -->
+                                    {% with payment=booking.instapay_payment %}
+                                        {% if payment %}
+                                            <a href="{% url 'payment:verify_payment' payment.id %}" 
+                                               class="bg-gradient-to-r from-[#D4A853] to-[#B8923E] hover:from-[#E8C96A] hover:to-[#C9A227] text-[#0f1724] px-4 py-1.5 rounded-xl text-xs font-bold transition shadow-lg shadow-[#D4A853]/20 hover:shadow-[#D4A853]/40">
+                                                📸 Review Payment
+                                            </a>
+                                        {% else %}
+                                            <span class="text-white/30 text-xs">No payment uploaded</span>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% elif booking.status == "CONFIRMED" %}
+                                    <span class="text-green-400 text-xs font-bold">✅ Approved</span>
+                                {% elif booking.status == "PENDING" %}
+                                    <span class="text-yellow-400 text-xs font-bold">⏳ Waiting for payment</span>
+                                {% else %}
+                                    <span class="text-white/30 text-xs">No action needed</span>
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span class="font-black text-[#0066FF]" style="font-family: 'Orbitron', sans-serif;">${{ booking.field.price_per_hour }}</span>
-                        <span class="badge-khub badge-chrome text-[10px]">Confirmed ✓</span>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <div class="khub-card p-16 text-center">
-            <span class="text-5xl mb-4 block">📭</span>
-            <p class="text-[#4A5568]">No bookings yet</p>
+        <!-- Empty State - Royal Style -->
+        <div class="rounded-3xl bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 shadow-xl p-20 text-center">
+            <div class="text-6xl mb-5">📭</div>
+            <h2 class="text-3xl font-bold text-white mb-2">No Booking Requests</h2>
+            <p class="text-white/50 mb-8">Players haven't booked your fields yet.</p>
+            <a href="{% url 'dashboard:owner_dashboard' %}" class="inline-block bg-gradient-to-r from-[#D4A853] to-[#B8923E] hover:from-[#E8C96A] hover:to-[#C9A227] text-[#0f1724] px-8 py-3 rounded-2xl font-bold transition shadow-lg shadow-[#D4A853]/30 hover:shadow-[#D4A853]/50">
+                Back to Dashboard →
+            </a>
         </div>
     {% endif %}
 </div>
+
+<script>
+    // ✅ Filter Function
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const bookingItems = document.querySelectorAll('.booking-item');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const filter = this.dataset.filter;
+
+                filterBtns.forEach(b => {
+                    b.classList.remove('bg-[#D4A853]', 'text-[#0f1724]');
+                    b.classList.add('text-white/60');
+                });
+                this.classList.add('bg-[#D4A853]', 'text-[#0f1724]');
+                this.classList.remove('text-white/60');
+
+                bookingItems.forEach(item => {
+                    if (filter === 'all' || item.dataset.status === filter) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+<style>
+    .gold-line {
+        width: 50px;
+        height: 2px;
+        background: linear-gradient(90deg, #D4A853, #E8C96A);
+        border-radius: 4px;
+        margin: 4px 0 8px 0;
+    }
+</style>
 
 {% endblock %}

@@ -139,48 +139,60 @@ def payment_pending(request, payment_id):
 
 # payment/views.py
 
+# payment/views.py
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from django.db import transaction
+
+from venues.models import Booking, VenueSlot
+from notifications.utils import create_notification
+from .models import InstaPayPayment
+
+
 @login_required
 def verify_payment(request, payment_id):
     payment = get_object_or_404(InstaPayPayment, id=payment_id)
     booking = payment.booking
     
-    # ✅ التحقق من الصلاحية
+    # ✅ التحقق من الصلاحية - المالك بس
     if request.user != booking.field.venue.owner:
         messages.error(request, "❌ ليس لديك صلاحية")
-        return redirect('venues:owner_dashboard')
+        return redirect('dashboard:owner_dashboard')
     
     # ✅ منع الضغط المكرر
     if payment.status == 'approved':
         messages.warning(request, '⚠️ هذا الدفع تم تأكيده بالفعل')
-        return redirect('venues:owner_dashboard')
+        return redirect('dashboard:owner_dashboard')
     
     if payment.status == 'rejected':
         messages.warning(request, '⚠️ هذا الدفع مرفوض سابقاً')
-        return redirect('venues:owner_dashboard')
+        return redirect('dashboard:owner_dashboard')
     
-    # ✅ ========== عرض الصفحة ==========
+    # ✅ عرض الصفحة
     if request.method == 'GET':
         return render(request, 'payment/verify_payment.html', {
             'payment': payment,
             'booking': booking,
         })
     
-    # ✅ ========== معالجة POST ==========
+    # ✅ معالجة POST (Approve / Reject)
     if request.method == 'POST':
         action = request.POST.get('action')
         
         if action == 'approve':
             try:
                 with transaction.atomic():
-                    booking = payment.booking
-                    
+                    # ✅ التحقق من حالة الحجز
                     if booking.status == 'CONFIRMED':
                         messages.warning(request, '⚠️ هذا الحجز مؤكد بالفعل')
-                        return redirect('venues:owner_dashboard')
+                        return redirect('dashboard:owner_dashboard')
                     
                     if booking.status in ['CANCELLED', 'EXPIRED']:
                         messages.warning(request, '⚠️ هذا الحجز ملغى أو منتهي الصلاحية')
-                        return redirect('venues:owner_dashboard')
+                        return redirect('dashboard:owner_dashboard')
                     
                     # ✅ التحقق من صلاحية القفل
                     if booking.is_locked_expired():
@@ -188,7 +200,7 @@ def verify_payment(request, payment_id):
                         booking.status = 'EXPIRED'
                         booking.save()
                         messages.error(request, '❌ انتهت صلاحية الحجز')
-                        return redirect('venues:owner_dashboard')
+                        return redirect('dashboard:owner_dashboard')
                     
                     # ✅ التحقق من السلوتات
                     for slot in booking.slots.all():
@@ -196,14 +208,14 @@ def verify_payment(request, payment_id):
                         if slot.is_available or slot.slot_type != 'LOCKED':
                             booking.release_slots()
                             messages.error(request, '❌ السلوتات غير متاحة حالياً')
-                            return redirect('venues:owner_dashboard')
+                            return redirect('dashboard:owner_dashboard')
                     
                     # ✅ تأكيد الدفع
                     payment.status = 'approved'
                     payment.verified_at = timezone.now()
                     payment.save()
                     
-                    # ✅ تأكيد الحجز
+                    # ✅ تأكيد الحجز (قفل السلوتات)
                     booking.confirm_booking()
                     
                     # ✅ إشعار للاعب
@@ -218,28 +230,34 @@ def verify_payment(request, payment_id):
                     
             except Exception as e:
                 messages.error(request, f'❌ حدث خطأ: {str(e)}')
-                return redirect('venues:owner_dashboard')
+                return redirect('dashboard:owner_dashboard')
                 
         elif action == 'reject':
-            with transaction.atomic():
-                payment.status = 'rejected'
-                payment.save()
-                booking = payment.booking
-                booking.release_slots()
+            try:
+                with transaction.atomic():
+                    # ✅ رفض الدفع
+                    payment.status = 'rejected'
+                    payment.save()
+                    
+                    # ✅ تحرير السلوتات
+                    booking.release_slots()
+                    
+                    # ✅ إشعار للاعب
+                    create_notification(
+                        user=booking.player,
+                        title="❌ تم رفض حجزك",
+                        message=f"تم رفض حجز ملعب {booking.field.name}.",
+                        url="/booking/history/"
+                    )
+                    
+                messages.warning(request, '❌ تم رفض الدفع')
                 
-                create_notification(
-                    user=booking.player,
-                    title="❌ تم رفض حجزك",
-                    message=f"تم رفض حجز ملعب {booking.field.name}.",
-                    url="/booking/history/"
-                )
-                
-            messages.warning(request, '❌ تم رفض الدفع')
+            except Exception as e:
+                messages.error(request, f'❌ حدث خطأ: {str(e)}')
         
-        return redirect('venues:owner_dashboard')
+        return redirect('dashboard:owner_dashboard')
     
-    # ✅ لو مش GET ولا POST، ارجع للـ Dashboard
-    return redirect('venues:owner_dashboard')
+    return redirect('dashboard:owner_dashboard')
 
 
 # payment/views.py

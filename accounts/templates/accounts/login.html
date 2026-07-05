@@ -7,29 +7,32 @@
 
 <div class="animate-fade-up max-w-md mx-auto px-4 py-8">
 
-    <!-- ✅ 1. Hero - Glassmorphism -->
-    <!-- <div class="mb-8">
-        <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-8 text-center">
-            <img src="{% static 'img/logo.png' %}" 
-                 alt="K-HUB" 
-                 class="w-20 h-20 mx-auto rounded-3xl shadow-xl mb-5">
-            <h1 class="text-4xl font-black tracking-wide text-[#1A2A4A]">
+    <!-- ✅ Hero - Royal Navy + Gold -->
+    <div class="mb-8">
+        <div class="rounded-3xl bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 shadow-xl p-8 text-center hover:border-[#D4A853]/30 transition">
+            <!-- <div class="logo-container inline-block">
+                <img src="{% static 'img/logo.png' %}" 
+                     alt="K-HUB" 
+                     class="w-20 h-20 mx-auto rounded-3xl shadow-2xl shadow-[#D4A853]/20 border-2 border-[#D4A853]/20">
+            </div> -->
+            <h1 class="text-4xl font-black tracking-wide text-white mt-4">
                 WELCOME
-                <span class="text-[#12E6FF]">BACK</span>
+                <span class="text-[#D4A853]">BACK</span>
             </h1>
-            <p class="text-gray-500 mt-2">
-                Sign in to continue your journey.
+            <div class="gold-line-center"></div>
+            <p class="text-white/50 mt-2">
+                Sign in to join our family.
             </p>
         </div>
-    </div> -->
+    </div>
 
-    <!-- ✅ 2. Form Card - Glassmorphism -->
-    <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-8">
+    <!-- ✅ Form Card - Royal Style -->
+    <div class="rounded-3xl bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 shadow-xl p-8 hover:border-[#D4A853]/30 transition">
 
         <!-- Messages -->
         {% if messages %}
             {% for message in messages %}
-                <div class="rounded-2xl {% if message.tags == 'success' %}bg-green-50 border border-green-200 text-green-700{% else %}bg-red-50 border border-red-200 text-red-600{% endif %} px-5 py-4 mb-5">
+                <div class="rounded-2xl {% if message.tags == 'success' %}bg-green-500/10 border border-green-500/30 text-green-400{% else %}bg-red-500/10 border border-red-500/30 text-red-400{% endif %} px-5 py-4 mb-5">
                     {{ message }}
                 </div>
             {% endfor %}
@@ -40,63 +43,91 @@
             
             <!-- Email / Username -->
             <div class="mb-4">
-                <label class="block text-sm font-semibold text-[#1A2A4A] mb-2">
+                <label class="block text-sm font-semibold text-[#D4A853] mb-2">
                     Email or Username
                 </label>
                 <input type="text" 
                        name="username" 
-                       class="w-full bg-white border border-gray-200 rounded-2xl px-5 py-4 outline-none focus:ring-4 focus:ring-[#12E6FF]/20 focus:border-[#12E6FF] transition"
+                       class="w-full bg-[#0f1724]/50 border border-[#D4A853]/20 rounded-2xl px-5 py-4 text-white placeholder-white/30 outline-none focus:ring-4 focus:ring-[#D4A853]/20 focus:border-[#D4A853] transition"
                        placeholder="Enter your email or username"
                        required>
             </div>
 
             <!-- Password -->
             <div class="mb-6">
-                <label class="block text-sm font-semibold text-[#1A2A4A] mb-2">
+                <label class="block text-sm font-semibold text-[#D4A853] mb-2">
                     Password
                 </label>
                 <input type="password" 
                        name="password" 
-                       class="w-full bg-white border border-gray-200 rounded-2xl px-5 py-4 outline-none focus:ring-4 focus:ring-[#12E6FF]/20 focus:border-[#12E6FF] transition"
+                       class="w-full bg-[#0f1724]/50 border border-[#D4A853]/20 rounded-2xl px-5 py-4 text-white placeholder-white/30 outline-none focus:ring-4 focus:ring-[#D4A853]/20 focus:border-[#D4A853] transition"
                        placeholder="Enter your password"
                        required>
             </div>
 
-            <!-- ✅ 4. Button -->
+            <!-- ✅ Button - Gold -->
             <button type="submit" 
-                    class="w-full bg-[#1A2A4A] hover:bg-[#24395E] text-white rounded-2xl py-4 font-semibold transition shadow-lg">
+                    class="w-full bg-gradient-to-r from-[#D4A853] to-[#B8923E] hover:from-[#E8C96A] hover:to-[#C9A227] text-[#0f1724] rounded-2xl py-4 font-bold transition shadow-lg shadow-[#D4A853]/30 hover:shadow-[#D4A853]/50">
                 Sign In →
             </button>
         </form>
 
         <!-- Divider -->
         <div class="flex items-center gap-4 my-6">
-            <div class="flex-1 h-px bg-gray-200"></div>
-            <span class="text-sm text-gray-400 font-medium">or</span>
-            <div class="flex-1 h-px bg-gray-200"></div>
+            <div class="flex-1 h-px bg-[#D4A853]/20"></div>
+            <span class="text-sm text-white/30 font-medium">or</span>
+            <div class="flex-1 h-px bg-[#D4A853]/20"></div>
         </div>
 
-        <!-- ✅ 6. Register Options -->
-        <div class="grid grid-cols-2 gap-4">
+        <!-- ✅ Register Options - Royal Style -->
+        <div class="grid grid-cols-1 gap-4">
             <a href="{% url 'accounts:register_player' %}" 
-               class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-lg p-6 text-center hover:-translate-y-1 hover:shadow-2xl transition">
+               class="rounded-3xl bg-[#0f1724]/50 backdrop-blur border border-[#D4A853]/10 shadow-lg p-6 text-center hover:-translate-y-1 hover:border-[#D4A853]/30 hover:shadow-[#D4A853]/10 transition">
                 <div class="text-3xl mb-2">👤</div>
-                <p class="text-sm font-bold text-[#1A2A4A]">Player</p>
+                <p class="text-sm font-bold text-white">Player</p>
             </a>
-            <a href="{% url 'accounts:register_venue_owner' %}" 
-               class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-lg p-6 text-center hover:-translate-y-1 hover:shadow-2xl transition">
+            <!-- <a href="{% url 'accounts:register_venue_owner' %}" 
+               class="rounded-3xl bg-[#0f1724]/50 backdrop-blur border border-[#D4A853]/10 shadow-lg p-6 text-center hover:-translate-y-1 hover:border-[#D4A853]/30 hover:shadow-[#D4A853]/10 transition">
                 <div class="text-3xl mb-2">🏟️</div>
-                <p class="text-sm font-bold text-[#1A2A4A]">Venue Owner</p>
-            </a>
+                <p class="text-sm font-bold text-white">Venue Owner</p>
+            </a> -->
         </div>
 
         <!-- Forgot Password -->
         <div class="text-center mt-6">
-            <a href="#" class="text-sm text-gray-400 hover:text-[#1A2A4A] transition">
+            <a href="#" class="text-sm text-white/30 hover:text-[#D4A853] transition">
                 Forgot password?
             </a>
         </div>
     </div>
 </div>
+
+<style>
+    .gold-line-center {
+        width: 60px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #D4A853, transparent);
+        border-radius: 4px;
+        margin: 8px auto;
+    }
+    .logo-container {
+        position: relative;
+        display: inline-block;
+    }
+    .logo-container::before {
+        content: '';
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        background: #D4A853;
+        opacity: 0.1;
+        filter: blur(30px);
+        animation: logoGlow 4s ease-in-out infinite;
+    }
+    @keyframes logoGlow {
+        0%, 100% { opacity: 0.1; transform: scale(1); }
+        50% { opacity: 0.2; transform: scale(1.05); }
+    }
+</style>
 
 {% endblock %}

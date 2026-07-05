@@ -1,99 +1,104 @@
-<!-- Floating Mobile Navigation - Dark Theme -->
+<!-- Floating Mobile Navigation - Royal Navy + Gold Style -->
 <div class="fixed bottom-2 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-[400px]">
-    <div class="bg-[#1A1A2E]/80 backdrop-blur-xl border border-white/5 rounded-[40px] shadow-lg">
+    <div class="bg-[#0f1724]/90 backdrop-blur-2xl border border-[#D4A853]/20 rounded-[40px] shadow-2xl shadow-[#D4A853]/10">
         <div class="flex justify-around items-center h-14 px-1">
             
             {% if user.is_authenticated %}
                 {% if user.is_player %}
                     
-                    <!-- Book -->
-                   <a href="{% url 'booking:browse' %}"
-class="flex flex-col items-center justify-center flex-1 py-1 rounded-xl transition-all duration-300 hover:bg-white/5
-
-{% if request.resolver_match.url_name == 'browse' %}
-bg-white/10
-{% endif %}
-">
-
-<i class="fas fa-futbol text-lg
-
-{% if request.resolver_match.url_name == 'browse' %}
-text-[#4F8CFF]
-{% else %}
-text-gray-400
-{% endif %}"></i>
-
-<span class="text-[9px]
-
-{% if request.resolver_match.url_name == 'browse' %}
-text-[#4F8CFF]
-{% else %}
-text-gray-500
-{% endif %}">
-
-Book
-
-</span>
-
-</a>
-                    
-                    <!-- Rooms -->
-                    <a href="{% url 'teams:room_list' %}" class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-300 hover:bg-white/5 {% if '/teams' in request.path %}bg-white/10{% endif %}">
-                        <i class="fas fa-users text-lg {% if '/teams' in request.path %}text-[#9B6BFF]{% else %}text-gray-400{% endif %}"></i>
-                        <span class="text-[9px] font-semibold tracking-wider {% if '/teams' in request.path %}text-[#9B6BFF]{% else %}text-gray-500{% endif %}">Rooms</span>
+                    <!-- Book - Gold -->
+                    <a href="{% url 'booking:browse' %}"
+                       class="flex flex-col items-center justify-center flex-1 py-1 rounded-xl transition-all duration-300 hover:bg-[#D4A853]/10
+                       {% if request.resolver_match.url_name == 'browse' %}bg-[#D4A853]/15{% endif %}">
+                        <i class="fas fa-futbol text-lg
+                       {% if request.resolver_match.url_name == 'browse' %}text-[#D4A853]{% else %}text-white/40{% endif %}"></i>
+                        <span class="text-[9px] font-bold tracking-wider
+                       {% if request.resolver_match.url_name == 'browse' %}text-[#D4A853]{% else %}text-white/30{% endif %}">
+                            Book
+                        </span>
                     </a>
                     
-                    <!-- Bookings -->
-                    <a href="{% url 'booking:history' %}" class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-300 hover:bg-white/5 {% if '/history' in request.path %}bg-white/10{% endif %}">
-                        <i class="fas fa-clock text-lg {% if '/history' in request.path %}text-[#4F8CFF]{% else %}text-gray-400{% endif %}"></i>
-                        <span class="text-[9px] font-semibold tracking-wider {% if '/history' in request.path %}text-[#4F8CFF]{% else %}text-gray-500{% endif %}">Bookings</span>
+                    <!-- Rooms - Gold -->
+                    <a href="{% url 'teams:room_list' %}" 
+                       class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-300 hover:bg-[#D4A853]/10
+                       {% if '/teams' in request.path %}bg-[#D4A853]/15{% endif %}">
+                        <i class="fas fa-users text-lg 
+                       {% if '/teams' in request.path %}text-[#D4A853]{% else %}text-white/40{% endif %}"></i>
+                        <span class="text-[9px] font-bold tracking-wider 
+                       {% if '/teams' in request.path %}text-[#D4A853]{% else %}text-white/30{% endif %}">Rooms</span>
                     </a>
                     
-                    <!-- Logout -->
-                    <a href="{% url 'accounts:logout' %}" class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-300 hover:bg-red-500/10">
-                        <i class="fas fa-sign-out-alt text-lg text-gray-400 hover:text-red-500"></i>
-                        <span class="text-[9px] font-semibold tracking-wider text-gray-500 hover:text-red-500">Exit</span>
+                    <!-- Bookings - Gold -->
+                    <a href="{% url 'booking:history' %}" 
+                       class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-300 hover:bg-[#D4A853]/10
+                       {% if '/history' in request.path %}bg-[#D4A853]/15{% endif %}">
+                        <i class="fas fa-clock text-lg 
+                       {% if '/history' in request.path %}text-[#D4A853]{% else %}text-white/40{% endif %}"></i>
+                        <span class="text-[9px] font-bold tracking-wider 
+                       {% if '/history' in request.path %}text-[#D4A853]{% else %}text-white/30{% endif %}">Bookings</span>
+                    </a>
+                    
+                    <!-- Logout - Red -->
+                    <a href="{% url 'accounts:logout' %}" 
+                       class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-300 hover:bg-red-500/10">
+                        <i class="fas fa-sign-out-alt text-lg text-white/40 hover:text-red-400"></i>
+                        <span class="text-[9px] font-bold tracking-wider text-white/30 hover:text-red-400">Exit</span>
                     </a>
                     
                 {% elif user.is_venue_owner %}
                     
-                    <!-- Home -->
-                    <a href="{% url 'venues:owner_dashboard' %}" class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-300 hover:bg-white/5 {% if '/dashboard' in request.path %}bg-white/10{% endif %}">
-                        <i class="fas fa-home text-lg {% if '/dashboard' in request.path %}text-[#4F8CFF]{% else %}text-gray-400{% endif %}"></i>
-                        <span class="text-[9px] font-semibold tracking-wider {% if '/dashboard' in request.path %}text-[#4F8CFF]{% else %}text-gray-500{% endif %}">Home</span>
+                    <!-- Home - Gold -->
+                    <a href="{% url 'dashboard:owner_dashboard' %}" 
+                       class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-300 hover:bg-[#D4A853]/10
+                       {% if '/dashboard' in request.path %}bg-[#D4A853]/15{% endif %}">
+                        <i class="fas fa-home text-lg 
+                       {% if '/dashboard' in request.path %}text-[#D4A853]{% else %}text-white/40{% endif %}"></i>
+                        <span class="text-[9px] font-bold tracking-wider 
+                       {% if '/dashboard' in request.path %}text-[#D4A853]{% else %}text-white/30{% endif %}">Home</span>
                     </a>
                     
-                    <!-- Bookings -->
-                    <a href="{% url 'venues:booking_requests' %}" class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-300 hover:bg-white/5 {% if '/booking_requests' in request.path %}bg-white/10{% endif %}">
-                        <i class="fas fa-calendar text-lg {% if '/booking_requests' in request.path %}text-[#4F8CFF]{% else %}text-gray-400{% endif %}"></i>
-                        <span class="text-[9px] font-semibold tracking-wider {% if '/booking_requests' in request.path %}text-[#4F8CFF]{% else %}text-gray-500{% endif %}">Bookings</span>
+                    <!-- Bookings - Gold -->
+                    <a href="{% url 'venues:booking_requests' %}" 
+                       class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-300 hover:bg-[#D4A853]/10
+                       {% if '/booking_requests' in request.path %}bg-[#D4A853]/15{% endif %}">
+                        <i class="fas fa-calendar text-lg 
+                       {% if '/booking_requests' in request.path %}text-[#D4A853]{% else %}text-white/40{% endif %}"></i>
+                        <span class="text-[9px] font-bold tracking-wider 
+                       {% if '/booking_requests' in request.path %}text-[#D4A853]{% else %}text-white/30{% endif %}">Bookings</span>
                     </a>
                     
-                    <!-- Schedule -->
-                    <a href="{% url 'venues:field_schedule' 1 %}" class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-300 hover:bg-white/5 {% if '/schedule' in request.path %}bg-white/10{% endif %}">
-                        <i class="fas fa-calendar text-lg {% if '/schedule' in request.path %}text-[#4F8CFF]{% else %}text-gray-400{% endif %}"></i>
-                        <span class="text-[9px] font-semibold tracking-wider {% if '/schedule' in request.path %}text-[#4F8CFF]{% else %}text-gray-500{% endif %}">Schedule</span>
+                    <!-- Schedule - Gold -->
+                    <a href="{% url 'venues:field_schedule' 1 %}" 
+                       class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-300 hover:bg-[#D4A853]/10
+                       {% if '/schedule' in request.path %}bg-[#D4A853]/15{% endif %}">
+                        <i class="fas fa-calendar-alt text-lg 
+                       {% if '/schedule' in request.path %}text-[#D4A853]{% else %}text-white/40{% endif %}"></i>
+                        <span class="text-[9px] font-bold tracking-wider 
+                       {% if '/schedule' in request.path %}text-[#D4A853]{% else %}text-white/30{% endif %}">Schedule</span>
                     </a>
                     
-                    <!-- Logout -->
-                    <a href="{% url 'accounts:logout' %}" class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-300 hover:bg-red-500/10">
-                        <i class="fas fa-sign-out-alt text-lg text-gray-400 hover:text-red-500"></i>
-                        <span class="text-[9px] font-semibold tracking-wider text-gray-500 hover:text-red-500">Exit</span>
+                    <!-- Logout - Red -->
+                    <a href="{% url 'accounts:logout' %}" 
+                       class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-300 hover:bg-red-500/10">
+                        <i class="fas fa-sign-out-alt text-lg text-white/40 hover:text-red-400"></i>
+                        <span class="text-[9px] font-bold tracking-wider text-white/30 hover:text-red-400">Exit</span>
                     </a>
                     
                 {% endif %}
             {% else %}
                 
-                <!-- Guest - Login -->
-                <a href="{% url 'accounts:login' %}" class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-300 hover:bg-white/5">
-                    <i class="fas fa-sign-in-alt text-lg text-gray-400"></i>
-                    <span class="text-[9px] font-semibold tracking-wider text-gray-500">Login</span>
+                <!-- Guest - Login - Gold -->
+                <a href="{% url 'accounts:login' %}" 
+                   class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-300 hover:bg-[#D4A853]/10">
+                    <i class="fas fa-sign-in-alt text-lg text-white/40 hover:text-[#D4A853]"></i>
+                    <span class="text-[9px] font-bold tracking-wider text-white/30 hover:text-[#D4A853]">Login</span>
                 </a>
                 
-                <!-- Guest - Sign Up -->
-                <a href="{% url 'accounts:register_player' %}" class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-300 hover:bg-white/5">
-                    <i class="fas fa-user-plus text-lg text-gray-400"></i>
-                    <span class="text-[9px] font-semibold tracking-wider text-gray-500">Sign Up</span>
+                <!-- Guest - Sign Up - Gold -->
+                <a href="{% url 'accounts:register_player' %}" 
+                   class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1 rounded-xl transition-all duration-300 hover:bg-[#D4A853]/10">
+                    <i class="fas fa-user-plus text-lg text-white/40 hover:text-[#D4A853]"></i>
+                    <span class="text-[9px] font-bold tracking-wider text-white/30 hover:text-[#D4A853]">Sign Up</span>
                 </a>
                 
             {% endif %}

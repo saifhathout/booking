@@ -7,28 +7,28 @@
 
 <div class="animate-fade-up max-w-3xl mx-auto px-4">
 
-    <!-- ✅ Header -->
+    <!-- ✅ Header - Royal Style -->
     <div class="mb-8">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <h1 class="text-4xl font-black tracking-wide text-[#1A2A4A]">
-                    NOTIFI<span class="text-[#12E6FF]">CATIONS</span>
+                <h1 class="text-4xl font-black tracking-wide text-white">
+                    NOTIFI<span class="text-[#D4A853]">CATIONS</span>
                 </h1>
-                <p class="text-gray-500 mt-1">
+                <p class="text-white/50 mt-1">
                     Stay updated with your bookings and activities.
                 </p>
             </div>
             <div class="flex items-center gap-3">
-                <!-- ✅ Filter Tabs -->
-                <div class="flex rounded-full bg-white/80 backdrop-blur border border-white/40 shadow-sm p-1">
-                    <button id="filter-all" class="filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-[#1A2A4A] text-white transition">All</button>
-                    <button id="filter-unread" class="filter-btn px-4 py-1.5 rounded-full text-xs font-semibold text-gray-500 hover:text-[#1A2A4A] transition">Unread</button>
+                <!-- ✅ Filter Tabs - Royal Style -->
+                <div class="flex rounded-full bg-[#162035]/60 backdrop-blur border border-[#D4A853]/10 shadow-sm p-1">
+                    <button id="filter-all" class="filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-[#D4A853] text-[#0f1724] transition">All</button>
+                    <button id="filter-unread" class="filter-btn px-4 py-1.5 rounded-full text-xs font-semibold text-white/50 hover:text-white transition">Unread</button>
                 </div>
-                <!-- ✅ Mark All as Read -->
+                <!-- ✅ Mark All as Read - Gold -->
                 {% if unread_count > 0 %}
                     <form method="POST" action="{% url 'notifications:mark_all_read' %}">
                         {% csrf_token %}
-                        <button type="submit" class="text-xs text-[#12E6FF] hover:text-[#1A2A4A] transition font-semibold">
+                        <button type="submit" class="text-xs text-[#D4A853] hover:text-[#E8C96A] transition font-semibold">
                             Mark all read
                         </button>
                     </form>
@@ -43,26 +43,26 @@
         {% for group in day_groups %}
             <div class="mb-6">
                 <div class="flex items-center gap-2 mb-3">
-                    <span class="text-xs font-bold text-[#1A2A4A] uppercase tracking-wider">
+                    <span class="text-xs font-bold text-[#D4A853] uppercase tracking-wider">
                         {% if forloop.first %}Today{% else %}{{ group.grouper|date:"l, M d" }}{% endif %}
                     </span>
-                    <span class="flex-1 h-px bg-gray-200"></span>
-                    <span class="text-[10px] text-gray-400">{{ group.list|length }}</span>
+                    <span class="flex-1 h-px bg-[#D4A853]/20"></span>
+                    <span class="text-[10px] text-white/40">{{ group.list|length }}</span>
                 </div>
 
                 <div class="space-y-3">
                     {% for n in group.list %}
                         <a href="{% url 'notifications:read' n.id %}" 
-                           class="notification-item rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-5 flex items-start gap-4 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 overflow-hidden relative {% if n.is_read %}opacity-60{% endif %}"
+                           class="notification-item rounded-3xl bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 shadow-xl p-5 flex items-start gap-4 hover:-translate-y-1 hover:border-[#D4A853]/30 hover:shadow-[#D4A853]/10 transition-all duration-300 overflow-hidden relative {% if n.is_read %}opacity-50{% endif %}"
                            data-read="{% if n.is_read %}read{% else %}unread{% endif %}">
                             
-                            <!-- ✅ NEW Indicator - Cyan Line -->
+                            <!-- ✅ NEW Indicator - Gold Line -->
                             {% if not n.is_read %}
-                                <div class="absolute top-0 left-0 w-full h-1 rounded-t-3xl bg-[#12E6FF]"></div>
+                                <div class="absolute top-0 left-0 w-full h-1 rounded-t-3xl bg-gradient-to-r from-[#D4A853] to-[#E8C96A]"></div>
                             {% endif %}
                             
-                            <!-- ✅ Icon -->
-                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#1A2A4A] to-[#4e69ba] text-white flex items-center justify-center text-xl flex-shrink-0">
+                            <!-- ✅ Icon - Gold -->
+                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#D4A853] to-[#B8923E] text-[#0f1724] flex items-center justify-center text-xl flex-shrink-0 shadow-lg shadow-[#D4A853]/20">
                                 {% if n.notification_type == 'booking' %}
                                     📅
                                 {% elif n.notification_type == 'team' %}
@@ -80,20 +80,20 @@
                             
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2 flex-wrap">
-                                    <h3 class="text-lg font-bold text-[#1A2A4A] {% if n.is_read %}opacity-60{% endif %}">
+                                    <h3 class="text-lg font-bold text-white {% if n.is_read %}opacity-50{% endif %}">
                                         {{ n.title }}
                                     </h3>
                                     {% if not n.is_read %}
-                                        <span class="px-2 py-0.5 rounded-full bg-[#12E6FF] text-[#1A2A4A] text-[10px] font-bold">
+                                        <span class="px-2 py-0.5 rounded-full bg-[#D4A853] text-[#0f1724] text-[10px] font-bold">
                                             NEW
                                         </span>
                                     {% endif %}
                                 </div>
                                 
-                                <p class="text-sm text-gray-500 mt-1">{{ n.message }}</p>
+                                <p class="text-sm text-white/60 mt-1">{{ n.message }}</p>
                                 
-                                <!-- ✅ Time with exact date -->
-                                <p class="text-xs text-gray-400 mt-2">
+                                <!-- ✅ Time -->
+                                <p class="text-xs text-white/30 mt-2">
                                     {{ n.created_at|timesince }} ago
                                     <span class="mx-1">·</span>
                                     {{ n.created_at|date:"M d, g:i A" }}
@@ -101,7 +101,7 @@
                             </div>
                             
                             <!-- ✅ Arrow Icon -->
-                            <div class="text-gray-300 text-xl flex-shrink-0">
+                            <div class="text-[#D4A853]/30 text-xl flex-shrink-0">
                                 <i class="fas fa-chevron-right text-sm"></i>
                             </div>
                         </a>
@@ -110,19 +110,19 @@
             </div>
         {% endfor %}
     {% else %}
-        <!-- ✅ Empty State -->
-        <div class="rounded-3xl bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl p-20 text-center">
-            <div class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-br from-[#1A2A4A] to-[#4e69ba] text-white flex items-center justify-center text-4xl mb-6">
+        <!-- ✅ Empty State - Royal Style -->
+        <div class="rounded-3xl bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 shadow-xl p-20 text-center">
+            <div class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-br from-[#D4A853] to-[#B8923E] text-[#0f1724] flex items-center justify-center text-4xl mb-6 shadow-lg shadow-[#D4A853]/20">
                 🔔
             </div>
-            <h2 class="text-2xl font-bold text-[#1A2A4A] mb-2">No Notifications Yet</h2>
-            <p class="text-gray-500 max-w-md mx-auto">
+            <h2 class="text-2xl font-bold text-white mb-2">No Notifications Yet</h2>
+            <p class="text-white/50 max-w-md mx-auto">
                 We'll notify you when someone joins your room,<br>
                 your booking gets approved,<br>
                 or your payment is confirmed.
             </p>
             <a href="{% url 'booking:browse' %}" 
-               class="inline-block mt-6 bg-[#1A2A4A] hover:bg-[#24395E] text-white rounded-2xl px-6 py-3 font-semibold transition">
+               class="inline-block mt-6 bg-gradient-to-r from-[#D4A853] to-[#B8923E] hover:from-[#E8C96A] hover:to-[#C9A227] text-[#0f1724] rounded-2xl px-6 py-3 font-bold transition shadow-lg shadow-[#D4A853]/30 hover:shadow-[#D4A853]/50">
                 Explore Fields →
             </a>
         </div>
@@ -148,18 +148,18 @@
         }
 
         filterAll.addEventListener('click', function() {
-            filterAll.classList.add('bg-[#1A2A4A]', 'text-white');
-            filterAll.classList.remove('text-gray-500');
-            filterUnread.classList.remove('bg-[#1A2A4A]', 'text-white');
-            filterUnread.classList.add('text-gray-500');
+            filterAll.classList.add('bg-[#D4A853]', 'text-[#0f1724]');
+            filterAll.classList.remove('text-white/50');
+            filterUnread.classList.remove('bg-[#D4A853]', 'text-[#0f1724]');
+            filterUnread.classList.add('text-white/50');
             filterNotifications('all');
         });
 
         filterUnread.addEventListener('click', function() {
-            filterUnread.classList.add('bg-[#1A2A4A]', 'text-white');
-            filterUnread.classList.remove('text-gray-500');
-            filterAll.classList.remove('bg-[#1A2A4A]', 'text-white');
-            filterAll.classList.add('text-gray-500');
+            filterUnread.classList.add('bg-[#D4A853]', 'text-[#0f1724]');
+            filterUnread.classList.remove('text-white/50');
+            filterAll.classList.remove('bg-[#D4A853]', 'text-[#0f1724]');
+            filterAll.classList.add('text-white/50');
             filterNotifications('unread');
         });
     });
