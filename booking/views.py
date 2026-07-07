@@ -8,6 +8,7 @@ from django.db.models import Q
 from datetime import datetime, timedelta, date
 from django.utils import timezone  # ✅ مهم للـ timezone.now()
 from datetime import datetime, timedelta  # ✅ مهم للـ datetime.combine و timedelta
+from django.utils import timezone  # ✅ أضف هذا
 
 
 from accounts.decorators import player_required
@@ -48,26 +49,21 @@ def browse_fields(request):
 
 # booking/views.py - field_detail
 
+# booking/views.py
+
+from django.utils import timezone
+from datetime import datetime, timedelta, date
+
 @player_required
 def field_detail(request, field_id):
     field = get_object_or_404(Field, id=field_id, is_active=True)
     
-    today = now.date()
+    # ✅ استخدم timezone.now()
     now = timezone.now()
+    today = now.date()
     current_hour = now.hour
     
-    # ✅ جلب جميع السلوتات من قاعدة البيانات دفعة واحدة
-    end_date = today + timedelta(days=6)
-    all_slots = VenueSlot.objects.filter(
-        field=field,
-        date__range=[today, end_date]
-    ).select_related('field')
-    
-    # ✅ إنشاء قاموس للسلوتات للوصول السريع
-    slots_dict = {}
-    for slot in all_slots:
-        key = f"{slot.date}_{slot.start_time.hour}"
-        slots_dict[key] = slot
+    booked_set = get_booked_set(field, today, today + timedelta(days=6))
     
     all_slots_list = []
     available_today = 0
@@ -77,42 +73,14 @@ def field_detail(request, field_id):
         day_slots = []
         available_count = 0
         
-        for hour in range(1, 25):  # 1-24
-            # ✅ حساب التاريخ الفعلي للسلوت
-            if hour == 24:
-                slot_date = day + timedelta(days=1)
-                slot_hour = 0
-            else:
-                slot_date = day
-                slot_hour = hour
+        for hour in range(1, 25):
+            is_booked = f"{day}_{hour}" in booked_set
             
-            # ✅ البحث عن السلوت في القاموس
-            key = f"{slot_date}_{slot_hour}"
-            slot_obj = slots_dict.get(key)
-            
-            # ✅ تحديد حالة السلوت
-            is_booked = False
-            is_locked = False
-            is_available = False
-            
-            if slot_obj:
-                if slot_obj.slot_type == 'BOOKED':
-                    is_booked = True
-                elif slot_obj.slot_type == 'LOCKED':
-                    is_locked = True
-                elif slot_obj.is_available and slot_obj.slot_type == 'AVAILABLE':
-                    is_available = True
-            else:
-                # ✅ السلوت غير موجود => متاح
-                is_available = True
-            
-            # ✅ حساب السلوتات المتاحة اليوم
-            if is_available and day == today and hour > current_hour:
+            if not is_booked and day == today and hour > current_hour:
                 available_count += 1
                 if day == today:
                     available_today += 1
             
-            # ✅ تنسيق الوقت للعرض
             end_hour = hour + 1
             if end_hour == 25:
                 end_hour = 1
@@ -120,11 +88,17 @@ def field_detail(request, field_id):
             start_display = format_time(hour)
             end_display = format_time(end_hour)
             
-            # ✅ إنشاء slot_id فقط إذا كان السلوت متاحاً
-            if is_available:
-                slot_id = f"{field_id}_{slot_date}_{slot_hour}"
+            # حساب التاريخ الفعلي للسلوت
+            if hour == 24:
+                slot_date = day + timedelta(days=1)
+                slot_hour = 0
             else:
-                slot_id = None
+                slot_date = day
+                slot_hour = hour
+            
+            is_past = False
+            if day == today and hour <= current_hour:
+                is_past = True
             
             day_slots.append({
                 'hour': hour,
@@ -132,9 +106,9 @@ def field_detail(request, field_id):
                 'end_time': end_display,
                 'time': f"{start_display} - {end_display}",
                 'is_booked': is_booked,
-                'is_locked': is_locked,
-                'is_available': is_available,
-                'slot_id': slot_id,
+                'is_locked': False,
+                'is_past': is_past,
+                'slot_id': f"{field_id}_{slot_date}_{slot_hour}" if not is_booked and not is_past else None,
                 'slot_date': slot_date,
                 'slot_hour': slot_hour,
             })
@@ -173,6 +147,21 @@ def book_slot(request, slot_id):
             return redirect('booking:field_detail', field_id=field.id)
         
         slot_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        
+        # ✅ التحقق من أن الوقت لسه متاح (لم يعد)
+        from django.utils import timezone
+        now = timezone.now()
+        
+        # ✅ إذا كان التاريخ هو اليوم، تحقق من الساعة
+        if slot_date == now.date():
+            # ✅ التحقق من أن الساعة المطلوبة لم تمر
+            if store_hour < now.hour:
+                messages.error(request, '❌ هذا الوقت قد مضى!')
+                return redirect('booking:field_detail', field_id=field.id)
+            # ✅ إذا كانت الساعة هي نفسها، تأكد من الدقائق
+            elif store_hour == now.hour:
+                messages.error(request, '❌ هذا الوقت قد بدأ بالفعل!')
+                return redirect('booking:field_detail', field_id=field.id)
         
         try:
             with transaction.atomic():
