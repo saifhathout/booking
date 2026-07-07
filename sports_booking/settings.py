@@ -4,25 +4,13 @@ import os
 from pathlib import Path
 import dj_database_url
 
-# sports_booking/wsgi.py
-
-import os
-from django.core.wsgi import get_wsgi_application
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sports_booking.settings')
-
-# ✅ للتأكد من أن Vercel يجد التطبيق
-application = get_wsgi_application()
-app = application  # ✅ مهم لـ Vercel
 # ✅ Build paths
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ✅ SECRET_KEY
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dev-key-12345')
 
-
-# ✅ DEBUG - خليه False في Vercel
+# ✅ DEBUG
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 # ✅ ALLOWED_HOSTS
@@ -32,7 +20,7 @@ ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = [
     'https://*.railway.app',
     'https://*.up.railway.app',
-    'https://*.vercel.app',  # ✅ أضف Vercel
+    'https://*.vercel.app',
 ]
 
 # ✅ ========== DATABASE ==========
@@ -57,11 +45,11 @@ else:
         }
     }
 
-# ✅ ========== INSTALLED APPS ==========
+# ✅ ========== INSTALLED APPS (تأكد من كل التطبيقات) ==========
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
-    'django.contrib.contenttypes',
+    'django.contrib.contenttypes',  # ✅ ده مهم جداً
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -81,7 +69,7 @@ INSTALLED_APPS = [
 # ✅ ========== MIDDLEWARE ==========
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # ✅ لازم يكون أول middleware
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -118,8 +106,6 @@ LOGOUT_REDIRECT_URL = 'accounts:login'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-# ✅ Whitenoise Storage (مهم لـ Vercel)
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
@@ -137,9 +123,6 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880
 
-# ✅ ========== CHANNELS (اختياري) ==========
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-    }
-}
+# ✅ ========== WSGI ==========
+WSGI_APPLICATION = 'sports_booking.wsgi.application'
+ROOT_URLCONF = 'sports_booking.urls'
