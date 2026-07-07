@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "sports_booking/wsgi.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "15mb"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "sports_booking/wsgi.py"
+    }
+  ],
+  "build": {
+    "env": {
+      "DATABASE_URL": "postgresql://postgres.ewpihofudkixwtttxaij:01004663286Saif@aws-1-eu-central-2.pooler.supabase.com:6543/postgres?sslmode=require"
+    }
+  }
+}
