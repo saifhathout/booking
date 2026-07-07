@@ -11,3 +11,7 @@ pywebpush
 Django==6.0.3
 channels==4.1.0
 channels-redis==4.2.0
+Django==6.0.3
+whitenoise==6.4.0
+dj-database-url==2.1.0
+psycopg2-binary==2.9.9

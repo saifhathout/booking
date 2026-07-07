@@ -74,12 +74,38 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'sports_booking.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# sports_booking/settings.py
+
+# sports_booking/settings.py (أعلى الملف)
+
+from pathlib import Path
+import os
+import dj_database_url
+
+# ✅ Build paths inside the project
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# ✅ Database
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
+    DATABASES['default']['OPTIONS'] = {
+        'sslmode': 'require',
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }   
 
 AUTH_USER_MODEL = 'accounts.User'
 
