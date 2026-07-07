@@ -56,7 +56,7 @@ def register_player(request):
         email = request.POST.get('email')
         username = request.POST.get('username')
         password = request.POST.get('password')
-        full_name = request.POST.get('full_name')
+        full_name = request.POST.get('full_name', '')  # ✅ أو خليها اختيارية
         phone = request.POST.get('phone')
         city = request.POST.get('city')
         

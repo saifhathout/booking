@@ -74,7 +74,7 @@ class PlayerProfile(models.Model):
         on_delete=models.CASCADE, 
         related_name='player_profile'
     )
-    full_name = models.CharField(max_length=200)
+    full_name = models.CharField(max_length=255, blank=True, null=True)  # ✅ اختياري
     phone = models.CharField(max_length=15)
     city = models.CharField(max_length=100, db_index=True)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
