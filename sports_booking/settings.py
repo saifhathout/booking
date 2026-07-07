@@ -4,11 +4,23 @@ import os
 from pathlib import Path
 import dj_database_url
 
+# sports_booking/wsgi.py
+
+import os
+from django.core.wsgi import get_wsgi_application
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sports_booking.settings')
+
+# ✅ للتأكد من أن Vercel يجد التطبيق
+application = get_wsgi_application()
+app = application  # ✅ مهم لـ Vercel
 # ✅ Build paths
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ✅ SECRET_KEY
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dev-key-12345')
+
 
 # ✅ DEBUG - خليه False في Vercel
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
