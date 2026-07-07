@@ -90,8 +90,8 @@ def field_edit(request, field_id):
 def field_schedule_view(request, field_id):
     field = get_object_or_404(Field, id=field_id, venue__owner=request.user)
     
-    today = date.today()
-    now = datetime.now()
+    today = now.date()
+    now = timezone.now()
     current_hour = now.hour
     
     # ✅ جلب جميع السلوتات من قاعدة البيانات

@@ -92,10 +92,11 @@ LOGIN_REDIRECT_URL = 'dashboard:home'
 LOGOUT_REDIRECT_URL = 'accounts:login'
 
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Cairo'  # ✅ مصر
 USE_I18N = True
 USE_TZ = True
-
+if os.environ.get('RAILWAY_ENVIRONMENT'):
+    TIME_ZONE = 'Africa/Cairo'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'

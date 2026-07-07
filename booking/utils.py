@@ -16,10 +16,13 @@ def format_time(hour):
         return f'{hour - 12}:00 PM'
 
 
+# booking/utils.py
+
+from django.utils import timezone
+
 def get_booked_set(field, start_date, end_date):
-    """
-    إرجاع مجموعة من السلوتات غير المتاحة (محجوزة أو مقفلة)
-    """
+    from venues.models import VenueSlot
+    
     unavailable_slots = VenueSlot.objects.filter(
         field=field,
         date__range=[start_date, end_date],

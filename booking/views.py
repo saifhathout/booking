@@ -52,8 +52,8 @@ def browse_fields(request):
 def field_detail(request, field_id):
     field = get_object_or_404(Field, id=field_id, is_active=True)
     
-    today = date.today()
-    now = datetime.now()
+    today = now.date()
+    now = timezone.now()
     current_hour = now.hour
     
     # ✅ جلب جميع السلوتات من قاعدة البيانات دفعة واحدة
