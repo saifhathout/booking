@@ -11,39 +11,43 @@ User = get_user_model()
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard:home')
-    
+
     if request.method == 'POST':
-        login_input = request.POST.get('username')  # username or email
+        login_input = request.POST.get('username')
         password = request.POST.get('password')
-        
-        # Try to find user by email first, then by username
+
+        print("LOGIN INPUT:", login_input)
+
         from accounts.models import User
         user = None
-        
-        if '@' in login_input:
-            # Login with email
-            try:
+
+        try:
+            if '@' in login_input:
                 user_obj = User.objects.get(email=login_input)
-                user = authenticate(request, username=user_obj.email, password=password)
-            except User.DoesNotExist:
-                pass
-        else:
-            # Login with username
-            try:
+            else:
                 user_obj = User.objects.get(username=login_input)
-                user = authenticate(request, username=user_obj.email, password=password)
-            except User.DoesNotExist:
-                pass
-        
+
+            print("FOUND USER:", user_obj.email)
+            print("CHECK PASSWORD:", user_obj.check_password(password))
+
+            user = authenticate(
+                request,
+                username=user_obj.email,
+                password=password
+            )
+
+            print("AUTH RESULT:", user)
+
+        except Exception as e:
+            print("ERROR:", e)
+
         if user is not None:
             login(request, user)
-            messages.success(request, f'Welcome back, {user.username or user.email}!')
             return redirect('dashboard:home')
-        else:
-            messages.error(request, 'Invalid username/email or password.')
-    
-    return render(request, 'accounts/login.html')
 
+        messages.error(request, "Invalid username/email or password.")
+
+    return render(request, "accounts/login.html")
 
 def logout_view(request):
     logout(request)
