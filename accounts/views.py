@@ -29,6 +29,10 @@ def login_view(request):
 
             print("FOUND USER:", user_obj.email)
             print("CHECK PASSWORD:", user_obj.check_password(password))
+            print("HASH:", user_obj.password)
+            from django.conf import settings
+            print("DB:", settings.DATABASES["default"]["HOST"])
+            print("USER:", settings.DATABASES["default"]["USER"])
 
             user = authenticate(
                 request,
