@@ -46,24 +46,25 @@
         </div>
         
 
-        <!-- ✅ Screenshot - Royal Style -->
-        <div class="rounded-3xl bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 shadow-xl p-6 mb-6 hover:border-[#D4A853]/30 transition">
-            <h3 class="font-bold text-white mb-3 flex items-center gap-2">
-                <span>📸</span> Payment Screenshot
-            </h3>
-           <!-- payment/templates/payment/verify_payment.html -->
+ <!-- payment/templates/payment/verify_payment.html -->
 
-{% if payment.screenshot_url %}
-    <div class="rounded-2xl overflow-hidden border border-[#D4A853]/20">
-        <img src="{{ payment.screenshot_url }}" alt="Payment Screenshot" class="w-full">
-    </div>
-{% else %}
-    <div class="text-center py-8 text-white/30">
-        <span class="text-4xl block mb-2">📷</span>
-        <p>No screenshot uploaded yet</p>
-    </div>
-{% endif %}
+<!-- ✅ عرض الصورة -->
+<div class="rounded-3xl bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 shadow-xl p-6 mb-6">
+    <h3 class="font-bold text-white mb-3 flex items-center gap-2">
+        <span>📸</span> Payment Screenshot
+    </h3>
+    {% if payment.screenshot_url %}
+        <div class="rounded-2xl overflow-hidden border border-[#D4A853]/20">
+            <img src="{{ payment.screenshot_url }}" alt="Payment Screenshot" class="w-full">
         </div>
+        <p class="text-xs text-white/40 mt-2">🔗 {{ payment.screenshot_url|truncatechars:60 }}</p>
+    {% else %}
+        <div class="text-center py-8 text-white/30">
+            <span class="text-4xl block mb-2">📷</span>
+            <p>No screenshot uploaded yet</p>
+        </div>
+    {% endif %}
+</div>
 
         <!-- ✅ Actions - Royal Style -->
         <div class="rounded-3xl bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 shadow-xl p-6 hover:border-[#D4A853]/30 transition">
