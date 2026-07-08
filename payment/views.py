@@ -59,61 +59,46 @@ def initiate_instapay_payment(request, booking_id):
 
 # payment/views.py
 
+# payment/views.py
+
+from payment.utils import upload_screenshot_to_supabase, delete_screenshot_from_supabase
+
+
 @player_required
 def upload_screenshot(request, payment_id):
     payment = get_object_or_404(InstaPayPayment, id=payment_id, user=request.user)
     booking = payment.booking
     
-    # ✅ التحقق من صلاحية القفل
-    if booking.is_locked_expired():
-        # ✅ تحرير السلوتات
-        booking.release_slots()
-        booking.status = 'EXPIRED'
-        booking.save()
-        
-        # ✅ عرض الصفحة مع رسالة انتهاء الصلاحية
-        messages.error(request, '⏰ انتهت صلاحية الحجز! يرجى إعادة الحجز.')
-        return render(request, 'payment/upload_screenshot.html', {
-            'payment': payment,
-            'booking': booking,
-            'is_expired': True,
-        })
-    
-    if request.method == 'GET':
-        return render(request, 'payment/upload_screenshot.html', {
-            'payment': payment,
-            'booking': booking,
-            'is_expired': False,
-        })
-    
     if request.method == 'POST' and request.FILES.get('screenshot'):
-        # ✅ حفظ الصورة
-        payment.screenshot = request.FILES['screenshot']
-        payment.status = 'manual_review'
-        payment.notes = "في انتظار المراجعة من قبل الإدارة"
-        payment.save()
+        # ✅ رفع الصورة لـ Supabase
+        file = request.FILES['screenshot']
+        public_url = upload_screenshot_to_supabase(file, booking.id)
         
-        # ✅ جلب المالك
-        owner = payment.booking.field.venue.owner
+        if public_url:
+            # ✅ حفظ الرابط
+            payment.screenshot_url = public_url
+            payment.status = 'manual_review'
+            payment.save()
+            
+            # ✅ إشعار للمالك
+            owner = payment.booking.field.venue.owner
+            create_notification(
+                user=owner,
+                title="📸 طلب دفع جديد يحتاج مراجعة",
+                message=f"قام {request.user.username} برفع صورة دفع لحجز ملعب {payment.booking.field.name}.",
+                url=f"/payment/verify/{payment.id}/"
+            )
+            
+            messages.success(request, "✅ تم رفع الصورة، سيتم مراجعتها من قبل الإدارة")
+        else:
+            messages.error(request, "❌ فشل رفع الصورة، حاول مرة أخرى")
         
-        # ✅ إنشاء إشعار للمالك
-        create_notification(
-            user=owner,
-            title="📸 طلب دفع جديد يحتاج مراجعة",
-            message=f"قام {request.user.username} برفع صورة دفع لحجز ملعب {payment.booking.field.name}. المبلغ: {payment.amount} EGP",
-            url=f"/payment/verify/{payment.id}/"
-        )
-        
-        messages.success(request, "✅ تم رفع الصورة، سيتم مراجعتها من قبل الإدارة")
         return redirect('booking:history')
     
-    messages.error(request, "❌ لم يتم اختيار صورة")
     return render(request, 'payment/upload_screenshot.html', {
         'payment': payment,
         'booking': booking,
-        'is_expired': False,
     })
-
 
 @player_required
 def payment_pending(request, payment_id):
@@ -150,6 +135,20 @@ from django.db import transaction
 from venues.models import Booking, VenueSlot
 from notifications.utils import create_notification
 from .models import InstaPayPayment
+
+
+# payment/views.py
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from django.db import transaction
+
+from venues.models import Booking, VenueSlot
+from notifications.utils import create_notification
+from .models import InstaPayPayment
+from .utils import delete_screenshot_from_supabase  # ✅ استيراد دالة الحذف
 
 
 @login_required
@@ -218,6 +217,12 @@ def verify_payment(request, payment_id):
                     # ✅ تأكيد الحجز (قفل السلوتات)
                     booking.confirm_booking()
                     
+                    # ✅ ✅ ✅ حذف الصورة من Supabase بعد الموافقة
+                    if payment.screenshot_url:
+                        delete_screenshot_from_supabase(payment.screenshot_url)
+                        payment.screenshot_url = None
+                        payment.save()
+                    
                     # ✅ إشعار للاعب
                     create_notification(
                         user=booking.player,
@@ -242,6 +247,12 @@ def verify_payment(request, payment_id):
                     # ✅ تحرير السلوتات
                     booking.release_slots()
                     
+                    # ✅ ✅ ✅ حذف الصورة من Supabase بعد الرفض
+                    if payment.screenshot_url:
+                        delete_screenshot_from_supabase(payment.screenshot_url)
+                        payment.screenshot_url = None
+                        payment.save()
+                    
                     # ✅ إشعار للاعب
                     create_notification(
                         user=booking.player,
@@ -258,7 +269,6 @@ def verify_payment(request, payment_id):
         return redirect('dashboard:owner_dashboard')
     
     return redirect('dashboard:owner_dashboard')
-
 
 # payment/views.py
 

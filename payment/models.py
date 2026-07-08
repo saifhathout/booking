@@ -32,11 +32,9 @@ class InstaPayPayment(models.Model):
     sender_phone = models.CharField(max_length=20, blank=True, null=True)
     note_code = models.CharField(max_length=10, blank=True, null=True)
 
-    screenshot = models.ImageField(
-        upload_to='payments/screenshots/%Y/%m/%d/', 
-        null=True, 
-        blank=True
-    )
+    screenshot_url = models.URLField(max_length=500, blank=True, null=True)
+    screenshot_path = models.CharField(max_length=500, blank=True, null=True)
+
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     confidence_score = models.FloatField(default=0.0)

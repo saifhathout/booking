@@ -96,6 +96,14 @@ TEMPLATES = [
     },
 ]
 
+# sports_booking/settings.py
+
+import os
+
+# ✅ Supabase Storage Config
+SUPABASE_URL = os.environ.get('SUPABASE_URL')
+SUPABASE_KEY = os.environ.get('SUPABASE_ANON_KEY')
+SUPABASE_BUCKET = 'payment_screenshots'
 # ✅ ========== AUTH ==========
 AUTH_USER_MODEL = 'accounts.User'
 LOGIN_URL = 'accounts:login'
