@@ -36,69 +36,22 @@ from django.conf import settings
 
 # payment/utils.py
 
-def upload_screenshot_to_supabase(file, booking_id):
-    """رفع الصورة إلى Supabase Storage باستخدام requests"""
-    
-    # ✅ بيانات Supabase
-    url = settings.SUPABASE_URL
-    key = settings.SUPABASE_KEY or settings.SUPABASE_ANON_KEY
-    bucket = settings.SUPABASE_BUCKET or 'payment_screenshots'
-    
-    print(f"🔍 SUPABASE_URL: {url}")
-    print(f"🔍 SUPABASE_KEY: {key[:20] if key else 'None'}...")
-    print(f"🔍 SUPABASE_BUCKET: {bucket}")
-    
-    if not url or not key:
-        print("❌ Supabase credentials missing!")
-        return None
-    
-    try:
-        # ✅ قراءة الملف
-        file_content = file.read()
-        
-        print(f"📸 File read: {len(file_content)} bytes")
-        
-        # ✅ إنشاء اسم فريد
-        import uuid
-        file_extension = os.path.splitext(file.name)[1]
-        file_name = f"booking_{booking_id}_{uuid.uuid4().hex}{file_extension}"
-        file_path = f"{file_name}"
-        
-        # ✅ رفع الصورة
-        upload_url = f"{url}/storage/v1/object/{bucket}/{file_path}"
-        
-        headers = {
-            "Authorization": f"Bearer {key}",
-            "Content-Type": file.content_type,
-        }
-        
-        print(f"📤 Upload URL: {upload_url}")
-        print(f"📤 Headers: {headers}")
-        
-        response = requests.post(
-            upload_url,
-            data=file_content,
-            headers=headers,
-        )
-        
-        print(f"📤 Response Status: {response.status_code}")
-        print(f"📤 Response Text: {response.text}")
-        
-        if response.status_code in [200, 201]:
-            # ✅ جلب الـ URL العام
-            public_url = f"{url}/storage/v1/object/public/{bucket}/{file_path}"
-            print(f"✅ Public URL: {public_url}")
-            return public_url
-        else:
-            print(f"❌ Upload failed: {response.status_code} - {response.text}")
-            return None
-        
-    except Exception as e:
-        print(f"❌ Error uploading: {e}")
-        import traceback
-        traceback.print_exc()
-        return None
+# payment/utils.py
 
+import cloudinary.uploader
+
+def upload_screenshot_to_cloudinary(file, booking_id):
+    """رفع الصورة إلى Cloudinary"""
+    try:
+        result = cloudinary.uploader.upload(
+            file,
+            folder=f"bookings/{booking_id}",
+            public_id=f"payment_{booking_id}",
+        )
+        return result.get('secure_url')
+    except Exception as e:
+        print(f"❌ Error uploading to Cloudinary: {e}")
+        return None
 
 def delete_screenshot_from_supabase(file_url):
     """حذف الصورة من Supabase Storage"""
