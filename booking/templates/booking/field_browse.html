@@ -29,16 +29,14 @@
 
     <!-- ✅ Dynamic Slider -->
     <section class="relative w-full overflow-hidden mb-12">
-            <p>{{ field.sport_type }}</p>
 
         <div class="flex gap-4 overflow-x-auto px-4 no-scrollbar snap-x snap-mandatory" id="hero-slider">
-                <p>{{ field.sport_type }}</p>
 
             {% for field in fields|slice:":6" %}
-                <p>{{ field.sport_type }}</p>
+                
 
             <div class="min-w-[85vw] md:min-w-[60vw] lg:min-w-[40vw] aspect-[4/5] relative rounded-3xl overflow-hidden snap-center group">
-                <!-- Image -->    <p>{{ field.sport_type }}</p>
+                <!-- Image -->
 
                 {% if field.image %}
                     <img src="{{ field.image.url }}" alt="{{ field.name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
@@ -46,7 +44,7 @@
                     <img src="{% static 'img/fields/volta.webp' %}" alt="Football" class="w-full h-full object-cover">
                 {% elif field.sport_type == 'PADEL' %}
                     <img src="{% static 'img/fields/20220522_Campo_padel_MONDO_superficie.jpg' %}" alt="Padel" class="w-full h-full object-cover">
-                {% elif field.sport_type == 'BASKETBALL' %}
+                {% elif field.sport_type == 'PADOAL' %}
                     <img src="{% static 'img/fields/panoramic-ملاعب-بادبول.webp' %}" alt="Basketball" class="w-full h-full object-cover">
                 {% else %}
                     <div class="w-full h-full bg-gradient-to-br from-[#1A2A4A] to-[#24395E] flex items-center justify-center text-7xl opacity-30">
