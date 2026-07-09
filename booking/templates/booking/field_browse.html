@@ -94,7 +94,7 @@
                         <img src="{% static 'img/fields/volta.webp' %}" alt="Football" class="w-full h-full object-cover">
                     {% elif field.sport_type == 'PADEL' %}
                         <img src="{% static 'img/fields/20220522_Campo_padel_MONDO_superficie.jpg' %}" alt="Padel" class="w-full h-full object-cover">
-                    {% elif field.sport_type == 'PADOAL' %}
+                    {% elif field.sport_type == 'Padol ' %}
                         <img src="{% static 'img/fields/panoramic-ملاعب-بادبول.webp' %}" alt="Basketball" class="w-full h-full object-cover">
                     {% elif field.sport_type == 'TENNIS' %}
                         <img src="{% static 'img/fields/tennis.jpg' %}" alt="Tennis" class="w-full h-full object-cover">
@@ -106,6 +106,7 @@
                         <div class="w-full h-full bg-gradient-to-br from-[#0f1724] to-[#1A2A4A] flex items-center justify-center text-8xl">
                             {% if field.sport_type == 'FOOTBALL' %}⚽
                             {% elif field.sport_type == 'PADEL' %}🎾
+                            <!-- {% elif field.sport_type == 'BASKETBALL' %}🏀 -->
                             {% elif field.sport_type == 'TENNIS' %}🎾
                             {% elif field.sport_type == 'CRICKET' %}🏏
                             {% elif field.sport_type == 'VOLLEYBALL' %}🏐
