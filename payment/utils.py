@@ -47,52 +47,32 @@ def get_supabase_client():
         return None
 
 
-def upload_screenshot_to_supabase(file, booking_id):
-    """رفع الصورة إلى Supabase Storage"""
+# payment/utils.py
+
+def upload_screenshot_to_supabase_bytes(file_content, file_name, content_type, booking_id):
+    """رفع الصورة باستخدام bytes"""
     
     client = get_supabase_client()
     if not client:
-        print("❌ No Supabase client")
         return None
     
     try:
-        # ✅ حفظ الملف في مكان مؤقت
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.jpg') as tmp_file:
-            # ✅ كتابة الملف بالـ chunks
-            for chunk in file.chunks():
-                tmp_file.write(chunk)
-            tmp_file.flush()
-            tmp_file.close()
-            
-            # ✅ قراءة الملف المؤقت
-            with open(tmp_file.name, 'rb') as f:
-                file_content = f.read()
+        file_extension = os.path.splitext(file_name)[1]
+        new_file_name = f"booking_{booking_id}_{uuid.uuid4().hex}{file_extension}"
+        file_path = f"screenshots/{new_file_name}"
         
-        # ✅ إنشاء اسم فريد للملف
-        file_extension = os.path.splitext(file.name)[1]
-        file_name = f"booking_{booking_id}_{uuid.uuid4().hex}{file_extension}"
-        file_path = f"screenshots/{file_name}"
-        
-        # ✅ رفع الصورة لـ Supabase
         response = client.storage.from_('payment_screenshots').upload(
             file_path,
             file_content,
             {
-                "content-type": file.content_type,
+                "content-type": content_type,
             }
         )
         
         print(f"📤 Upload response: {response}")
         
-        # ✅ جلب الـ URL العام
         public_url = client.storage.from_('payment_screenshots').get_public_url(file_path)
         print(f"✅ Public URL: {public_url}")
-        
-        # ✅ حذف الملف المؤقت
-        try:
-            os.unlink(tmp_file.name)
-        except:
-            pass
         
         return public_url
         
