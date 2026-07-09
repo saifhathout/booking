@@ -1,138 +1,219 @@
+<!-- teams/templates/teams/room_list.html -->
+
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Game Rooms{% endblock %}
+{% block title %}K-HUB | Game Rooms{% endblock %}
 
 {% block content %}
 
-<div class="max-w-7xl mx-auto animate-fade-up px-4">
+<div class="text-white min-h-screen">
 
-    <!-- Header - Royal Style -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-        <div>
-            <h1 class="text-4xl font-black tracking-wide text-white">
-                GAME <span class="text-[#D4A853]">ROOMS</span>
-            </h1>
-            <div class="gold-line mt-1"></div>
-            <p class="text-white/50 mt-2">
-                Join an existing room or create your own.
-            </p>
-        </div>
-        <a href="{% url 'teams:create_room' %}"
-           class="bg-gradient-to-r from-[#D4A853] to-[#B8923E] hover:from-[#E8C96A] hover:to-[#C9A227] text-[#0f1724] px-6 py-3 rounded-2xl font-bold transition shadow-lg shadow-[#D4A853]/30 hover:shadow-[#D4A853]/50">
-            + Host Room
-        </a>
-    </div>
+    <!-- Atmospheric Background Layers -->
+    <div class="fixed inset-0 stadium-grid z-0"></div>
+    <div class="geometric-pattern"></div>
 
-    {% if rooms %}
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    <div class="relative z-10 pt-6 md:pt-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pb-32">
 
-            {% for room in rooms %}
-                <div class="rounded-3xl bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 shadow-xl p-6 hover:-translate-y-1 hover:border-[#D4A853]/30 hover:shadow-[#D4A853]/10 transition relative">
-
-                    <!-- Status Badge - Royal Style -->
-                    <!-- <div class="absolute top-4 right-4">
-                        {% if room.status == 'OPEN' %}
-                            <span class="px-3 py-1 rounded-full bg-[#D4A853]/20 text-[#D4A853] text-xs font-bold border border-[#D4A853]/30">🟢 Open</span>
-                        {% elif room.status == 'FULL' %}
-                            <span class="px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs font-bold border border-red-500/30">🔴 Full</span>
-                        {% elif room.status == 'CANCELLED' %}
-                            <span class="px-3 py-1 rounded-full bg-white/10 text-white/40 text-xs font-bold border border-white/10">❌ Cancelled</span>
-                        {% else %}
-                            <span class="px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-400 text-xs font-bold border border-yellow-500/30">⏳ Started</span>
-                        {% endif %}
-                    </div> -->
-
-                    <!-- Top -->
-                    <div class="flex justify-between items-start mb-5">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#D4A853] to-[#B8923E] text-[#0f1724] flex items-center justify-center font-bold text-lg shadow-lg shadow-[#D4A853]/20">
-                                {{ room.host.username|first|upper }}
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-lg text-white">{{ room.title }}</h3>
-                                <p class="text-sm text-white/40">Host: {{ room.host.username }}</p>
-                            </div>
-                        </div>
-                        <span class="px-3 py-1 rounded-full bg-[#D4A853]/10 text-[#D4A853] text-xs font-bold border border-[#D4A853]/20">
-                            {{ room.sport_type }}
-                        </span>
-                    </div>
-
-                    <!-- Players - Gold Style -->
-                    <div class="flex gap-2 mb-5">
-                        {% for i in "12345678910"|make_list %}
-                            {% if forloop.counter <= room.max_players %}
-                                {% if forloop.counter <= room.players_joined %}
-                                    <div class="w-9 h-9 rounded-xl bg-[#D4A853] text-[#0f1724] font-bold flex items-center justify-center shadow-lg shadow-[#D4A853]/20">
-                                        ✓
-                                    </div>
-                                {% else %}
-                                    <div class="w-9 h-9 rounded-xl border-2 border-dashed border-[#D4A853]/30 bg-white/5 text-white/30 flex items-center justify-center">
-                                        +
-                                    </div>
-                                {% endif %}
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-
-                    <!-- Info - White Text -->
-                    <div class="space-y-2 mb-6">
-                        <p class="text-sm text-white/60">🎾 {{ room.get_sport_type_display }}</p>
-                        <p class="text-sm text-white/60">📅 {{ room.date|date:"D, M d" }}</p>
-                        <p class="text-sm text-white/60">⏰ {{ room.time|time:"g:i A" }}</p>
-                        <p class="text-sm text-white/60">👥 {{ room.players_joined }}/{{ room.max_players }} Players</p>
-                    </div>
-
-                    <!-- Button - Gold Style -->
-                    {% if room.status == 'OPEN' or room.status == 'FULL' %}
-                        {% if request.user != room.host and room.spots_left > 0 %}
-                            <a href="{% url 'teams:join_room' room.id %}"
-                               class="block text-center bg-gradient-to-r from-[#D4A853] to-[#B8923E] hover:from-[#E8C96A] hover:to-[#C9A227] text-[#0f1724] rounded-2xl py-3 font-bold transition shadow-lg shadow-[#D4A853]/30 hover:shadow-[#D4A853]/50">
-                                Join Room
-                            </a>
-                        {% elif request.user == room.host %}
-                            <a href="{% url 'teams:room_detail' room.id %}"
-                               class="block text-center border-2 border-[#D4A853] text-[#D4A853] rounded-2xl py-3 font-bold hover:bg-[#D4A853] hover:text-[#0f1724] transition">
-                                Open Room
-                            </a>
-                        {% else %}
-                            <div class="text-center text-white/30 text-sm font-semibold py-3">
-                                Room is full
-                            </div>
-                        {% endif %}
-                    {% else %}
-                        <div class="text-center text-white/30 text-sm font-semibold py-3">
-                            Room is not available
-                        </div>
-                    {% endif %}
-                </div>
-            {% endfor %}
-
-        </div>
-    {% else %}
-        <!-- Empty State - Royal Style -->
-        <div class="rounded-3xl bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 shadow-xl p-20 text-center">
-            <div class="text-6xl mb-5"></div>
-            <h2 class="text-3xl font-bold text-white mb-2">No Rooms Yet</h2>
-            <p class="text-white/50 mb-8">Create the first room and invite your friends.</p>
-            <a href="{% url 'teams:create_room' %}"
-               class="inline-block bg-gradient-to-r from-[#D4A853] to-[#B8923E] hover:from-[#E8C96A] hover:to-[#C9A227] text-[#0f1724] px-8 py-3 rounded-2xl font-bold transition shadow-lg shadow-[#D4A853]/30 hover:shadow-[#D4A853]/50">
-                Create Room
+        <!-- ✅ Section Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-6 md:mb-8">
+            <div class="space-y-1">
+                <h1 class="text-2xl sm:text-3xl md:text-4xl font-black uppercase flex items-center gap-2 sm:gap-3">
+                    <span class="text-white">GAME</span>
+                    <span class="text-[#e9c349]">ROOMS</span>
+                </h1>
+                <p class="text-sm text-white/60">Join an existing room or create your own.</p>
+            </div>
+            <a href="{% url 'teams:create_room' %}" 
+               class="px-5 sm:px-6 py-2 rounded-full border-2 border-[#e9c349] text-[#e9c349] font-bold text-sm flex items-center gap-2 hover:bg-[#e9c349]/10 transition-all active:scale-95">
+                <span class="material-symbols-outlined text-[18px]">add</span>
+                HOST ROOM
             </a>
         </div>
-    {% endif %}
 
+        <!-- ✅ Rooms Grid -->
+        {% if rooms %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {% for room in rooms %}
+            <div class="glass-card rounded-2xl md:rounded-3xl p-4 md:p-6 hover:border-[#e9c349]/30 transition border border-white/10">
+                
+                <!-- Host & Status -->
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#e9c349] to-[#af8d11] text-[#0f1724] font-bold flex items-center justify-center text-sm">
+                            {{ room.host.username|first|upper }}
+                        </div>
+                        <div>
+                            <p class="font-bold text-white text-sm">{{ room.title }}</p>
+                            <p class="text-xs text-white/40">Host: {{ room.host.username }}</p>
+                        </div>
+                    </div>
+                    {% if room.status == 'OPEN' %}
+                        <span class="text-[10px] bg-[#e9c349]/20 text-[#e9c349] px-2 py-1 rounded-full border border-[#e9c349]/30">🟢 Open</span>
+                    {% elif room.status == 'FULL' %}
+                        <span class="text-[10px] bg-red-500/20 text-red-400 px-2 py-1 rounded-full border border-red-500/30">🔴 Full</span>
+                    {% elif room.status == 'CANCELLED' %}
+                        <span class="text-[10px] bg-white/10 text-white/40 px-2 py-1 rounded-full border border-white/10">❌ Cancelled</span>
+                    {% else %}
+                        <span class="text-[10px] bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-full border border-yellow-500/30">⏳ Started</span>
+                    {% endif %}
+                </div>
+
+                <!-- Players -->
+                <div class="flex gap-1.5 mb-4">
+                    {% for i in "12345678910"|make_list %}
+                        {% if forloop.counter <= room.max_players %}
+                            {% if forloop.counter <= room.players_joined %}
+                                <div class="w-8 h-8 rounded-xl bg-[#e9c349] text-[#0f1724] font-bold flex items-center justify-center text-xs">
+                                    ✓
+                                </div>
+                            {% else %}
+                                <div class="w-8 h-8 rounded-xl border-2 border-dashed border-[#e9c349]/30 bg-white/5 text-white/30 flex items-center justify-center text-xs">
+                                    +
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <!-- Info -->
+                <div class="space-y-1 mb-4 text-xs md:text-sm text-white/50">
+                    <p>{{ room.get_sport_type_display }}</p>
+                    <p>📅 {{ room.date|date:"D, M d" }}</p>
+                    <p>⏰ {{ room.time|time:"g:i A" }}</p>
+                    <p>👥 {{ room.players_joined }}/{{ room.max_players }} Players</p>
+                </div>
+
+                <!-- Buttons -->
+                {% if room.status == 'OPEN' or room.status == 'FULL' %}
+                    {% if request.user != room.host and room.spots_left > 0 %}
+                        <a href="{% url 'teams:join_room' room.id %}"
+                           class="block w-full text-center bg-gradient-to-r from-[#e9c349] to-[#af8d11] hover:from-[#ffe088] hover:to-[#e9c349] text-[#0f1724] rounded-xl py-2.5 font-bold text-sm transition shadow-lg shadow-[#e9c349]/20 hover:shadow-[#e9c349]/40">
+                            Join Room
+                        </a>
+                    {% elif request.user == room.host %}
+                        <a href="{% url 'teams:room_detail' room.id %}"
+                           class="block w-full text-center border-2 border-[#e9c349] text-[#e9c349] rounded-xl py-2.5 font-bold text-sm hover:bg-[#e9c349] hover:text-[#0f1724] transition">
+                            Open Room
+                        </a>
+                    {% else %}
+                        <div class="text-center text-white/30 text-sm font-semibold py-2.5">
+                            Room is full
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center text-white/30 text-sm font-semibold py-2.5">
+                        Not available
+                    </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <!-- ✅ Empty State -->
+        <div class="glass-card rounded-3xl min-h-[420px] flex flex-col items-center justify-center p-8 md:p-12 text-center relative overflow-hidden">
+            <!-- Background Decoration -->
+            <div class="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
+                <span class="material-symbols-outlined text-[200px] absolute -top-10 -right-10 rotate-12">sports_soccer</span>
+                <span class="material-symbols-outlined text-[150px] absolute -bottom-10 -left-10 -rotate-12">groups</span>
+            </div>
+            
+            <div class="relative z-10 space-y-6 max-w-md">
+                <div class="w-20 h-20 md:w-24 md:h-24 mx-auto bg-[#1f2a3f] rounded-full flex items-center justify-center border border-white/5 shadow-2xl">
+                    <span class="material-symbols-outlined text-4xl md:text-5xl text-white/40">groups</span>
+                </div>
+                <div>
+                    <h2 class="text-xl md:text-2xl font-black text-white tracking-[0.1em] uppercase">NO ROOMS YET</h2>
+                    <p class="text-sm md:text-base text-white/50 max-w-[280px] mx-auto">Create the first room and invite your friends to start playing.</p>
+                </div>
+                <a href="{% url 'teams:create_room' %}" 
+                   class="w-full bg-gradient-to-r from-[#e9c349] to-[#af8d11] hover:from-[#ffe088] hover:to-[#e9c349] text-[#0f1724] font-bold py-3 md:py-4 rounded-full shadow-xl shadow-[#e9c349]/20 flex items-center justify-center gap-2 hover:brightness-110 transition-all active:scale-95 uppercase tracking-widest text-sm">
+                    <span class="material-symbols-outlined">add_circle</span>
+                    Create Room
+                </a>
+            </div>
+        </div>
+
+        <!-- Trending Section (Empty State) -->
+        <div class="mt-6 md:mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+            <div class="glass-card p-4 md:p-6 rounded-2xl flex items-center gap-4">
+                <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#00daf3]/20 flex items-center justify-center text-[#00daf3]">
+                    <span class="material-symbols-outlined">trending_up</span>
+                </div>
+                <div>
+                    <div class="font-bold text-sm md:text-base text-white">Trending Sports</div>
+                    <div class="text-xs md:text-sm text-white/50">Football &amp; Basketball</div>
+                </div>
+            </div>
+            <div class="glass-card p-4 md:p-6 rounded-2xl flex items-center gap-4">
+                <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-[#e9c349]/20 flex items-center justify-center text-[#e9c349]">
+                    <span class="material-symbols-outlined">verified</span>
+                </div>
+                <div>
+                    <div class="font-bold text-sm md:text-base text-white">Verified Hosts</div>
+                    <div class="text-xs md:text-sm text-white/50">Top rated community leads</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
 </div>
 
 <style>
-    .gold-line {
-        width: 50px;
-        height: 2px;
-        background: linear-gradient(90deg, #D4A853, #E8C96A);
-        border-radius: 4px;
-        margin: 4px 0 8px 0;
+    /* ✅ Background Patterns */
+    .stadium-grid {
+        background-image: radial-gradient(circle at 2px 2px, rgba(186, 200, 220, 0.05) 1px, transparent 0);
+        background-size: 40px 40px;
+    }
+    
+    .geometric-pattern {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.15;
+        background-image: 
+            radial-gradient(circle at 50% 50%, transparent 40%, #bac8dc 41%, transparent 42%),
+            radial-gradient(circle at 10% 20%, transparent 60%, #bac8dc 61%, transparent 62%);
+        background-size: 300px 300px, 500px 500px;
+    }
+
+    /* ✅ Glassmorphism */
+    .glass-card {
+        background: rgba(20, 32, 52, 0.6);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* ✅ Gold Glow */
+    .gold-glow {
+        box-shadow: 0 0 25px -5px rgba(233, 195, 73, 0.4);
+    }
+
+    /* ✅ Button Shine */
+    .btn-shine {
+        position: relative;
+        overflow: hidden;
+    }
+    .btn-shine::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+        transform: rotate(45deg);
+        transition: 0.5s;
+    }
+    .btn-shine:hover::after {
+        left: 100%;
     }
 </style>
 
-{% endblock %}a
+{% endblock %}
