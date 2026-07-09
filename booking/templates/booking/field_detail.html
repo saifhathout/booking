@@ -5,87 +5,89 @@
 
 {% block content %}
 
-<div class="animate-fade-up max-w-6xl mx-auto px-4">
+<div class="text-white min-h-screen">
 
-    <!-- ✅ Back Button - Gold -->
-    <div class="mb-4">
-        <a href="{% url 'booking:browse' %}" class="inline-flex items-center gap-2 text-sm text-[#D4A853] hover:text-[#E8C96A] transition">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-            </svg>
-            Back
-        </a>
-    </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
 
-    <!-- ✅ Header Card - Royal Navy + Gold -->
-    <div class="rounded-3xl bg-[#162035]/80 backdrop-blur-xl border border-[#D4A853]/10 shadow-xl p-6 mb-6 hover:border-[#D4A853]/30 transition">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div class="flex items-center gap-4">
-                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D4A853] to-[#B8923E] text-[#0f1724] flex items-center justify-center text-2xl shadow-lg shadow-[#D4A853]/20">
-                    {% if field.sport_type == 'FOOTBALL' %}⚽
-                    {% elif field.sport_type == 'PADEL' %}🎾
-                    {% elif field.sport_type == 'BASKETBALL' %}🏀
-                    {% elif field.sport_type == 'TENNIS' %}🎾
-                    {% else %}🏟️{% endif %}
-                </div>
-                <div>
-                    <h1 class="text-2xl font-bold text-white">{{ field.name }}</h1>
-                    <p class="text-sm text-white/50">{{ field.venue.name }}</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-3">
-                <span class="bg-gradient-to-r from-[#D4A853] to-[#B8923E] text-[#0f1724] px-4 py-2 rounded-full text-sm font-bold shadow-lg shadow-[#D4A853]/20">
-                    EGP {{ field.price_per_hour }}/hr
-                </span>
-                {% if user.is_venue_owner %}
-                    <a href="{% url 'venues:field_edit' field.id %}" class="text-sm text-[#D4A853] hover:text-[#E8C96A] transition">✏️ Edit</a>
-                {% endif %}
-            </div>
+        <!-- ✅ Back Button - Gold -->
+        <div class="mb-4 md:mb-6">
+            <a href="{% url 'booking:browse' %}" class="inline-flex items-center gap-2 text-sm text-[#e9c349] hover:text-[#ffe088] transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Back
+            </a>
         </div>
-    </div>
 
-    <!-- ✅ Stats - Royal Style -->
-    <div class="grid grid-cols-3 gap-4 mb-6">
-        <div class="rounded-2xl bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 shadow-md p-4 text-center hover:border-[#D4A853]/30 transition">
-            <p class="text-xs text-white/40">Today's Hours</p>
-            <p class="text-sm font-bold text-white">8:00 AM – 12:00 AM</p>
-        </div>
-        <div class="rounded-2xl bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 shadow-md p-4 text-center hover:border-[#D4A853]/30 transition">
-            <p class="text-xs text-white/40">Max Players</p>
-            <p class="text-sm font-bold text-white">{{ field.max_players|default:"10" }}</p>
-        </div>
-        <div class="rounded-2xl bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 shadow-md p-4 text-center hover:border-[#D4A853]/30 transition">
-            <p class="text-xs text-white/40">Available Today</p>
-            <p class="text-sm font-bold text-[#D4A853]">{{ available_today|default:"6" }}</p>
-        </div>
-    </div>
-
-    <!-- Days -->
-    {% for day_data in all_slots_list %}
-        <div class="rounded-3xl bg-[#162035]/60 backdrop-blur-xl border border-[#D4A853]/10 shadow-xl mb-5 overflow-hidden hover:border-[#D4A853]/30 transition">
-
-            <!-- ✅ Day Header -->
-            <div class="px-5 py-4 border-b border-[#D4A853]/10 flex justify-between items-center">
-                <div>
-                    <h3 class="font-bold text-lg text-white">{{ day_data.date|date:"l" }}</h3>
-                    <p class="text-xs text-white/40">{{ day_data.date|date:"M d, Y" }}</p>
+        <!-- ✅ Header Card -->
+        <div class="glass-panel rounded-2xl md:rounded-3xl p-4 md:p-6 mb-6 border border-[#e9c349]/20 hover:border-[#e9c349]/40 transition">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br from-[#e9c349] to-[#af8d11] text-[#0f1724] flex items-center justify-center text-2xl shadow-lg shadow-[#e9c349]/20">
+                        {% if field.sport_type == 'FOOTBALL' %}⚽
+                        {% elif field.sport_type == 'PADEL' %}🎾
+                        {% elif field.sport_type == 'BASKETBALL' %}🏀
+                        {% elif field.sport_type == 'TENNIS' %}🎾
+                        {% else %}🏟️{% endif %}
+                    </div>
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-bold text-white">{{ field.name }}</h1>
+                        <p class="text-sm text-white/50">{{ field.venue.name }}</p>
+                    </div>
                 </div>
                 <div class="flex items-center gap-3">
-                    <span class="text-xs bg-[#D4A853]/10 text-[#D4A853] px-3 py-1 rounded-full font-semibold border border-[#D4A853]/20">
+                    <span class="bg-gradient-to-r from-[#e9c349] to-[#af8d11] text-[#0f1724] px-4 py-2 rounded-full text-sm font-bold shadow-lg shadow-[#e9c349]/20">
+                        EGP {{ field.price_per_hour }}/hr
+                    </span>
+                    {% if user.is_venue_owner %}
+                        <a href="{% url 'venues:field_edit' field.id %}" class="text-sm text-[#e9c349] hover:text-[#ffe088] transition">✏️ Edit</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ✅ Stats -->
+        <div class="grid grid-cols-3 gap-3 md:gap-4 mb-6">
+            <div class="glass-panel rounded-xl md:rounded-2xl p-3 md:p-4 text-center border border-white/10">
+                <p class="text-[10px] md:text-xs text-white/40">Today's Hours</p>
+                <p class="text-sm md:text-base font-bold text-white">8:00 AM – 12:00 AM</p>
+            </div>
+            <div class="glass-panel rounded-xl md:rounded-2xl p-3 md:p-4 text-center border border-white/10">
+                <p class="text-[10px] md:text-xs text-white/40">Max Players</p>
+                <p class="text-sm md:text-base font-bold text-white">{{ field.max_players|default:"10" }}</p>
+            </div>
+            <div class="glass-panel rounded-xl md:rounded-2xl p-3 md:p-4 text-center border border-white/10">
+                <p class="text-[10px] md:text-xs text-white/40">Available Today</p>
+                <p class="text-sm md:text-base font-bold text-[#e9c349]">{{ available_today|default:"6" }}</p>
+            </div>
+        </div>
+
+        <!-- Days -->
+        {% for day_data in all_slots_list %}
+        <div class="glass-panel rounded-2xl md:rounded-3xl border border-white/10 mb-4 md:mb-5 overflow-hidden hover:border-[#e9c349]/30 transition">
+
+            <!-- Day Header -->
+            <div class="px-4 md:px-6 py-3 md:py-4 border-b border-white/10 flex flex-wrap justify-between items-center gap-2">
+                <div>
+                    <h3 class="font-bold text-lg md:text-xl text-white">{{ day_data.date|date:"l" }}</h3>
+                    <p class="text-xs text-white/40">{{ day_data.date|date:"M d, Y" }}</p>
+                </div>
+                <div class="flex items-center gap-2 md:gap-3">
+                    <span class="text-[10px] md:text-xs bg-[#e9c349]/10 text-[#e9c349] px-3 py-1 rounded-full font-semibold border border-[#e9c349]/20">
                         {{ day_data.available_count|default:"0" }} available
                     </span>
                     {% if day_data.date == today %}
-                        <span class="text-xs bg-[#D4A853] text-[#0f1724] px-3 py-1 rounded-full font-semibold">Today</span>
+                        <span class="text-[10px] md:text-xs bg-[#e9c349] text-[#0f1724] px-3 py-1 rounded-full font-semibold">Today</span>
                     {% endif %}
                 </div>
             </div>
 
-            <!-- ✅ Slots with Legend -->
-            <div class="px-5 py-4">
-                <!-- Mini Legend -->
-                <div class="flex flex-wrap gap-4 mb-4 text-xs">
+            <!-- Slots -->
+            <div class="px-4 md:px-6 py-4 md:py-5">
+                <!-- Legend -->
+                <div class="flex flex-wrap gap-3 md:gap-4 mb-4 text-[10px] md:text-xs">
                     <span class="flex items-center gap-1.5">
-                        <span class="w-3 h-3 rounded-full bg-[#D4A853]"></span>
+                        <span class="w-3 h-3 rounded-full bg-[#e9c349]"></span>
                         Available
                     </span>
                     <span class="flex items-center gap-1.5">
@@ -102,48 +104,48 @@
                     </span>
                 </div>
 
-                <!-- ✅ Slots Grid -->
-                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
+                <!-- Slots Grid -->
+                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 md:gap-3">
                     {% for slot in day_data.slots %}
                         {% if slot.is_booked %}
-                            <!-- ✅ Booked Slot -->
-                            <div class="rounded-2xl bg-[#1A2A4A] text-white py-4 px-2 text-center flex flex-col items-center gap-1 relative group border border-[#D4A853]/10">
-                                <span class="text-xs font-medium">🔒</span>
-                                <span class="text-sm font-bold">{{ slot.time }}</span>
-                                <div class="absolute bottom-full mb-2 hidden group-hover:block bg-[#0f1724] border border-[#D4A853]/20 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap">
+                            <!-- Booked -->
+                            <div class="rounded-xl md:rounded-2xl bg-[#1A2A4A] text-white py-3 md:py-4 px-2 text-center flex flex-col items-center gap-0.5 md:gap-1 relative group border border-white/10">
+                                <span class="text-xs">🔒</span>
+                                <span class="text-xs md:text-sm font-bold">{{ slot.time }}</span>
+                                <div class="absolute bottom-full mb-2 hidden group-hover:block bg-[#0f1724] border border-[#e9c349]/20 text-white text-[10px] md:text-xs rounded-lg px-3 py-2 whitespace-nowrap">
                                     Booked
                                 </div>
                             </div>
                             
                         {% elif slot.is_locked %}
-                            <!-- ✅ Locked Slot (Pending Payment) -->
-                            <div class="rounded-2xl bg-yellow-500/20 border-2 border-yellow-500/50 text-yellow-400 py-4 px-2 text-center flex flex-col items-center gap-1 relative group">
-                                <span class="text-xs font-medium">⏳</span>
-                                <span class="text-sm font-bold">{{ slot.time }}</span>
-                                <span class="text-[10px] font-medium">Pending</span>
-                                <div class="absolute bottom-full mb-2 hidden group-hover:block bg-[#0f1724] border border-[#D4A853]/20 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap">
-                                    ⏳ Waiting for payment confirmation
+                            <!-- Locked -->
+                            <div class="rounded-xl md:rounded-2xl bg-yellow-500/20 border-2 border-yellow-500/50 text-yellow-400 py-3 md:py-4 px-2 text-center flex flex-col items-center gap-0.5 md:gap-1 relative group">
+                                <span class="text-xs">⏳</span>
+                                <span class="text-xs md:text-sm font-bold">{{ slot.time }}</span>
+                                <span class="text-[8px] md:text-[10px] font-medium">Pending</span>
+                                <div class="absolute bottom-full mb-2 hidden group-hover:block bg-[#0f1724] border border-[#e9c349]/20 text-white text-[10px] md:text-xs rounded-lg px-3 py-2 whitespace-nowrap">
+                                    ⏳ Waiting for payment
                                 </div>
                             </div>
                             
                         {% elif slot.hour <= current_hour and day_data.date == today %}
-                            <!-- ✅ Past Slot -->
-                            <div class="rounded-2xl bg-white/5 text-white/30 py-4 px-2 text-center flex flex-col items-center gap-1">
+                            <!-- Past -->
+                            <div class="rounded-xl md:rounded-2xl bg-white/5 text-white/30 py-3 md:py-4 px-2 text-center flex flex-col items-center gap-0.5 md:gap-1">
                                 <span class="text-xs">⏰</span>
-                                <span class="text-sm font-medium">{{ slot.time }}</span>
+                                <span class="text-xs md:text-sm font-medium">{{ slot.time }}</span>
                             </div>
                             
                         {% else %}
-                            <!-- ✅ Available Slot -->
+                            <!-- Available -->
                             {% if slot.slot_id %}
                                 <a href="{% url 'booking:book_slot' slot.slot_id %}" 
-                                   class="rounded-2xl bg-[#D4A853]/10 hover:bg-[#D4A853]/20 text-white py-4 px-2 text-center font-bold transition hover:scale-105 border border-[#D4A853]/20 hover:border-[#D4A853]/50">
-                                    <span class="text-sm">{{ slot.time }}</span>
+                                   class="rounded-xl md:rounded-2xl bg-[#e9c349]/10 hover:bg-[#e9c349]/20 text-white py-3 md:py-4 px-2 text-center font-bold transition hover:scale-105 border border-[#e9c349]/20 hover:border-[#e9c349]/50">
+                                    <span class="text-xs md:text-sm">{{ slot.time }}</span>
                                 </a>
                             {% else %}
-                                <div class="rounded-2xl bg-white/5 text-white/20 py-4 px-2 text-center flex flex-col items-center gap-1">
+                                <div class="rounded-xl md:rounded-2xl bg-white/5 text-white/20 py-3 md:py-4 px-2 text-center flex flex-col items-center gap-0.5 md:gap-1">
                                     <span class="text-xs">🚫</span>
-                                    <span class="text-sm font-medium">{{ slot.time }}</span>
+                                    <span class="text-xs md:text-sm font-medium">{{ slot.time }}</span>
                                 </div>
                             {% endif %}
                         {% endif %}
@@ -151,11 +153,20 @@
                 </div>
             </div>
         </div>
-    {% endfor %}
+        {% endfor %}
+
+    </div>
 </div>
 
 <style>
-    /* ✅ Smooth hover effects */
+    /* ✅ Glassmorphism */
+    .glass-panel {
+        background: rgba(20, 32, 52, 0.6);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
     .group:hover .group-hover\:block {
         display: block !important;
     }
