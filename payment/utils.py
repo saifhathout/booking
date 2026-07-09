@@ -22,6 +22,8 @@ def get_supabase_client():
         return None
 
 
+# payment/utils.py
+
 def upload_screenshot_to_supabase(file, booking_id):
     """رفع الصورة إلى Supabase Storage"""
     
@@ -31,6 +33,9 @@ def upload_screenshot_to_supabase(file, booking_id):
         return None
     
     try:
+        # ✅ اتأكد من بداية الملف
+        file.seek(0)  # ✅ أضف هذا
+        
         # ✅ قراءة الملف
         file_content = file.read()
         
@@ -59,7 +64,6 @@ def upload_screenshot_to_supabase(file, booking_id):
     except Exception as e:
         print(f"❌ Error uploading: {e}")
         return None
-
 
 def delete_screenshot_from_supabase(file_url):
     """حذف الصورة من Supabase Storage"""
