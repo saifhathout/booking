@@ -29,10 +29,17 @@
 
     <!-- ✅ Dynamic Slider -->
     <section class="relative w-full overflow-hidden mb-12">
+            <p>{{ field.sport_type }}</p>
+
         <div class="flex gap-4 overflow-x-auto px-4 no-scrollbar snap-x snap-mandatory" id="hero-slider">
+                <p>{{ field.sport_type }}</p>
+
             {% for field in fields|slice:":6" %}
+                <p>{{ field.sport_type }}</p>
+
             <div class="min-w-[85vw] md:min-w-[60vw] lg:min-w-[40vw] aspect-[4/5] relative rounded-3xl overflow-hidden snap-center group">
-                <!-- Image -->
+                <!-- Image -->    <p>{{ field.sport_type }}</p>
+
                 {% if field.image %}
                     <img src="{{ field.image.url }}" alt="{{ field.name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                 {% elif field.sport_type == 'FOOTBALL' %}
