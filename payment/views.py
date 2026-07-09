@@ -61,10 +61,8 @@ def initiate_instapay_payment(request, booking_id):
 
 # payment/views.py
 
-from payment.utils import upload_screenshot_to_supabase_bytes, delete_screenshot_from_supabase
+from payment.utils import upload_screenshot_to_supabase, delete_screenshot_from_supabase
 
-
-# payment/views.py
 
 @player_required
 def upload_screenshot(request, payment_id):
@@ -72,25 +70,35 @@ def upload_screenshot(request, payment_id):
     booking = payment.booking
     
     if request.method == 'POST' and request.FILES.get('screenshot'):
+        # ✅ رفع الصورة لـ Supabase
         file = request.FILES['screenshot']
-        
-        # ✅ قراءة الملف كـ bytes
-        file_content = file.read()
-        
-        # ✅ جرب رفع الملف مباشرة
-        public_url = upload_screenshot_to_supabase_bytes(file_content, file.name, file.content_type, booking.id)
+        public_url = upload_screenshot_to_supabase(file, booking.id)
         
         if public_url:
+            # ✅ حفظ الرابط
             payment.screenshot_url = public_url
             payment.status = 'manual_review'
             payment.save()
-            messages.success(request, "✅ تم رفع الصورة")
+            
+            # ✅ إشعار للمالك
+            owner = payment.booking.field.venue.owner
+            create_notification(
+                user=owner,
+                title="📸 طلب دفع جديد يحتاج مراجعة",
+                message=f"قام {request.user.username} برفع صورة دفع لحجز ملعب {payment.booking.field.name}.",
+                url=f"/payment/verify/{payment.id}/"
+            )
+            
+            messages.success(request, "✅ تم رفع الصورة، سيتم مراجعتها من قبل الإدارة")
         else:
-            messages.error(request, "❌ فشل رفع الصورة")
+            messages.error(request, "❌ فشل رفع الصورة، حاول مرة أخرى")
         
         return redirect('booking:history')
     
-    return render(request, 'payment/upload_screenshot.html', {'payment': payment})
+    return render(request, 'payment/upload_screenshot.html', {
+        'payment': payment,
+        'booking': booking,
+    })
 
 @player_required
 def payment_pending(request, payment_id):
