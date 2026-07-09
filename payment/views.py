@@ -69,18 +69,30 @@ from payment.utils import upload_screenshot_to_supabase, delete_screenshot_from_
 from payment.utils import upload_screenshot_to_supabase
 
 
+# payment/views.py
+
 @player_required
 def upload_screenshot(request, payment_id):
     payment = get_object_or_404(InstaPayPayment, id=payment_id, user=request.user)
     booking = payment.booking
     
+    print("=" * 50)
+    print(f"📸 Upload Screenshot - Payment ID: {payment_id}")
+    print(f"📸 Booking ID: {booking.id}")
+    print(f"📸 Method: {request.method}")
+    print(f"📸 FILES: {request.FILES}")
+    
     if request.method == 'POST' and request.FILES.get('screenshot'):
         file = request.FILES['screenshot']
         
-        print(f"📸 Uploading file: {file.name}, {file.size} bytes")
+        print(f"📸 File: {file.name}")
+        print(f"📸 Size: {file.size} bytes")
+        print(f"📸 Type: {file.content_type}")
         
         # ✅ رفع الصورة
         public_url = upload_screenshot_to_supabase(file, booking.id)
+        
+        print(f"📸 Public URL: {public_url}")
         
         if public_url:
             payment.screenshot_url = public_url
@@ -88,7 +100,7 @@ def upload_screenshot(request, payment_id):
             payment.notes = "في انتظار المراجعة"
             payment.save()
             
-            print(f"✅ Saved URL: {payment.screenshot_url}")
+            print(f"✅ Payment saved with URL: {payment.screenshot_url}")
             
             # ✅ إشعار للمالك
             owner = payment.booking.field.venue.owner
@@ -101,6 +113,7 @@ def upload_screenshot(request, payment_id):
             
             messages.success(request, "✅ تم رفع الصورة")
         else:
+            print("❌ Upload failed - public_url is None")
             messages.error(request, "❌ فشل رفع الصورة")
         
         return redirect('booking:history')

@@ -34,6 +34,8 @@ import requests
 from django.conf import settings
 
 
+# payment/utils.py
+
 def upload_screenshot_to_supabase(file, booking_id):
     """رفع الصورة إلى Supabase Storage باستخدام requests"""
     
@@ -41,6 +43,10 @@ def upload_screenshot_to_supabase(file, booking_id):
     url = settings.SUPABASE_URL
     key = settings.SUPABASE_KEY or settings.SUPABASE_ANON_KEY
     bucket = settings.SUPABASE_BUCKET or 'payment_screenshots'
+    
+    print(f"🔍 SUPABASE_URL: {url}")
+    print(f"🔍 SUPABASE_KEY: {key[:20] if key else 'None'}...")
+    print(f"🔍 SUPABASE_BUCKET: {bucket}")
     
     if not url or not key:
         print("❌ Supabase credentials missing!")
@@ -50,12 +56,15 @@ def upload_screenshot_to_supabase(file, booking_id):
         # ✅ قراءة الملف
         file_content = file.read()
         
+        print(f"📸 File read: {len(file_content)} bytes")
+        
         # ✅ إنشاء اسم فريد
+        import uuid
         file_extension = os.path.splitext(file.name)[1]
         file_name = f"booking_{booking_id}_{uuid.uuid4().hex}{file_extension}"
         file_path = f"{file_name}"
         
-        # ✅ رفع الصورة باستخدام requests
+        # ✅ رفع الصورة
         upload_url = f"{url}/storage/v1/object/{bucket}/{file_path}"
         
         headers = {
@@ -63,8 +72,8 @@ def upload_screenshot_to_supabase(file, booking_id):
             "Content-Type": file.content_type,
         }
         
-        print(f"📤 Uploading to: {upload_url}")
-        print(f"📤 File size: {len(file_content)} bytes")
+        print(f"📤 Upload URL: {upload_url}")
+        print(f"📤 Headers: {headers}")
         
         response = requests.post(
             upload_url,
@@ -72,8 +81,8 @@ def upload_screenshot_to_supabase(file, booking_id):
             headers=headers,
         )
         
-        print(f"📤 Upload status: {response.status_code}")
-        print(f"📤 Upload response: {response.text}")
+        print(f"📤 Response Status: {response.status_code}")
+        print(f"📤 Response Text: {response.text}")
         
         if response.status_code in [200, 201]:
             # ✅ جلب الـ URL العام
@@ -81,11 +90,13 @@ def upload_screenshot_to_supabase(file, booking_id):
             print(f"✅ Public URL: {public_url}")
             return public_url
         else:
-            print(f"❌ Upload failed: {response.text}")
+            print(f"❌ Upload failed: {response.status_code} - {response.text}")
             return None
         
     except Exception as e:
         print(f"❌ Error uploading: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 
