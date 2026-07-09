@@ -64,21 +64,31 @@ def initiate_instapay_payment(request, booking_id):
 from payment.utils import upload_screenshot_to_supabase, delete_screenshot_from_supabase
 
 
+# payment/views.py
+
+from payment.utils import upload_screenshot_to_supabase
+
+
 @player_required
 def upload_screenshot(request, payment_id):
     payment = get_object_or_404(InstaPayPayment, id=payment_id, user=request.user)
     booking = payment.booking
     
     if request.method == 'POST' and request.FILES.get('screenshot'):
-        # ✅ رفع الصورة لـ Supabase
         file = request.FILES['screenshot']
+        
+        print(f"📸 Uploading file: {file.name}, {file.size} bytes")
+        
+        # ✅ رفع الصورة
         public_url = upload_screenshot_to_supabase(file, booking.id)
         
         if public_url:
-            # ✅ حفظ الرابط
             payment.screenshot_url = public_url
             payment.status = 'manual_review'
+            payment.notes = "في انتظار المراجعة"
             payment.save()
+            
+            print(f"✅ Saved URL: {payment.screenshot_url}")
             
             # ✅ إشعار للمالك
             owner = payment.booking.field.venue.owner
@@ -89,9 +99,9 @@ def upload_screenshot(request, payment_id):
                 url=f"/payment/verify/{payment.id}/"
             )
             
-            messages.success(request, "✅ تم رفع الصورة، سيتم مراجعتها من قبل الإدارة")
+            messages.success(request, "✅ تم رفع الصورة")
         else:
-            messages.error(request, "❌ فشل رفع الصورة، حاول مرة أخرى")
+            messages.error(request, "❌ فشل رفع الصورة")
         
         return redirect('booking:history')
     
