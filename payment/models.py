@@ -21,7 +21,11 @@ class InstaPayPayment(models.Model):
     
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, 
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+                null=True,  # ✅ اختياري للضيوف
+                        blank=True
+
+
     )
 
     # بيانات الدفع

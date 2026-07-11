@@ -104,14 +104,7 @@ def player_dashboard(request):
     return render(request, 'dashboard/player_dashboard.html', context)
 
 
-@login_required
-def home(request):
-    """توجيه حسب نوع المستخدم"""
-    if request.user.is_venue_owner:
-        return redirect('dashboard:owner_dashboard')
-    return redirect('dashboard:player_dashboard')
-
-@login_required
+# @login_required
 def home(request):
     if request.user.is_authenticated:
         if request.user.is_player:

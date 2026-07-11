@@ -17,8 +17,13 @@ from .utils import format_time, get_booked_set, normalize_hour, get_slot_range
 
 
 
-@player_required
+# booking/views.py
+
+# ❌ شيل @player_required من السطر ده
+# @player_required
 def browse_fields(request):
+    """عرض جميع الملاعب - الصفحة الرئيسية (عامة للجميع)"""
+    
     sport_type = request.GET.get('sport_type', '')
     city = request.GET.get('city', '')
     date_val = request.GET.get('date', '')
@@ -30,7 +35,7 @@ def browse_fields(request):
     if city:
         fields = fields.filter(venue__city__icontains=city)
     
-    # Stats حقيقية
+    # ✅ Stats حقيقية
     total_fields = fields.count()
     total_bookings = Booking.objects.filter(field__in=fields, status='CONFIRMED').count()
     total_players = Booking.objects.filter(field__in=fields, status='CONFIRMED').values('player').distinct().count()
@@ -45,10 +50,9 @@ def browse_fields(request):
         'total_players': total_players,
     })
 
-
 # booking/views.py - field_detail
 
-@player_required
+# @player_required
 def field_detail(request, field_id):
     field = get_object_or_404(Field, id=field_id, is_active=True)
     
@@ -153,7 +157,7 @@ def field_detail(request, field_id):
         'current_hour': current_hour,
         'available_today': available_today,
     })
-@player_required
+
 def book_slot(request, slot_id):
     parts = slot_id.split('_')
     field_id = parts[0]
@@ -165,14 +169,48 @@ def book_slot(request, slot_id):
     # ✅ الساعة الفعلية (0-23)
     store_hour = slot_hour
     
+    # ✅ التحقق من أن الوقت لسه متاح (لم يعد)
+    now = timezone.now()
+    
+    # ✅ إذا كان التاريخ هو اليوم، تحقق من الساعة
+    slot_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    if slot_date == now.date():
+        if store_hour < now.hour:
+            messages.error(request, '❌ هذا الوقت قد مضى!')
+            return redirect('booking:field_detail', field_id=field.id)
+        elif store_hour == now.hour:
+            messages.error(request, '❌ هذا الوقت قد بدأ بالفعل!')
+            return redirect('booking:field_detail', field_id=field.id)
+    
     if request.method == 'POST':
         duration = int(request.POST.get('duration', 1))
+        
+        # ✅ جلب بيانات المستخدم (ضيف أو مسجل)
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
         
         if duration <= 0:
             messages.error(request, '❌ المدة يجب أن تكون أكبر من صفر!')
             return redirect('booking:field_detail', field_id=field.id)
         
-        slot_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        # ✅ التحقق من بيانات المستخدم
+        if not name or not email or not phone:
+            messages.error(request, '❌ Please fill all your details')
+            return render(request, 'booking/book_slot.html', {
+                'field': field,
+                'date': date_str,
+                'hour': slot_hour,
+                'price': field.price_per_hour,
+                'show_guest_form': True,
+                'start_time_display': format_time(store_hour),
+                'end_time_display': format_time(store_hour + 1),
+            })
+        
+        # ✅ حفظ بيانات المستخدم في الـ session
+        request.session['guest_name'] = name
+        request.session['guest_email'] = email
+        request.session['guest_phone'] = phone
         
         try:
             with transaction.atomic():
@@ -226,16 +264,19 @@ def book_slot(request, slot_id):
                 if end_hour == 0:
                     end_hour = 24
                 
-                # ✅ إنشاء الحجز
+                # ✅ إنشاء الحجز مع بيانات الضيف
                 booking = Booking.objects.create(
                     field=field,
-                    player=request.user,
+                    player=request.user if request.user.is_authenticated else None,  # ✅ اختياري
                     booking_date=slot_date,
                     start_time=f"{store_hour:02d}:00:00",
                     end_time=f"{end_hour:02d}:00:00",
                     status='LOCKED',
                     payment_status='PENDING',
                     total_price=field.price_per_hour * duration,
+                    guest_name=name,      # ✅ حفظ اسم الضيف
+                    guest_email=email,    # ✅ حفظ ايميل الضيف
+                    guest_phone=phone,    # ✅ حفظ رقم الضيف
                 )
                 
                 # ✅ ربط السلوتات
@@ -261,11 +302,21 @@ def book_slot(request, slot_id):
             messages.error(request, f'❌ حدث خطأ: {str(e)}')
             return redirect('booking:field_detail', field_id=field.id)
     
+    # ✅ GET - عرض الصفحة مع فورم الضيف
+    start_time_display = format_time(store_hour)
+    end_time_display = format_time(store_hour + 1)
+    
     return render(request, 'booking/book_slot.html', {
         'field': field,
         'date': date_str,
         'hour': slot_hour,
         'price': field.price_per_hour,
+        'start_time_display': start_time_display,
+        'end_time_display': end_time_display,
+        'show_guest_form': True,
+        'guest_name': request.session.get('guest_name', ''),
+        'guest_email': request.session.get('guest_email', ''),
+        'guest_phone': request.session.get('guest_phone', ''),
     })
 @player_required
 def booking_history(request):

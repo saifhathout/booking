@@ -16,9 +16,22 @@ import random
 import string
 
 
-@player_required
+# payment/views.py
+
 def initiate_instapay_payment(request, booking_id):
-    booking = get_object_or_404(Booking, id=booking_id, player=request.user)
+    # ✅ جلب الحجز (من غير فلتر player عشان الضيف)
+    booking = get_object_or_404(Booking, id=booking_id)
+    
+    # ✅ التحقق من أن المستخدم هو صاحب الحجز (لو مسجل)
+    if request.user.is_authenticated:
+        if booking.player and booking.player != request.user:
+            messages.error(request, "❌ هذا الحجز ليس لك!")
+            return redirect('booking:browse')
+    else:
+        # ✅ لو ضيف، تأكد من الـ session
+        if not request.session.get('guest_name'):
+            messages.error(request, "❌ يرجى إدخال بياناتك أولاً")
+            return redirect('booking:browse')
     
     # ✅ المدة = عدد السلوتات
     duration = booking.slots.count()
@@ -32,9 +45,12 @@ def initiate_instapay_payment(request, booking_id):
         note_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
         unique_amount = total_amount + (random.randint(10, 99) / 100)
         
+        # ✅ استخدم request.user لو مسجل، وإلا None
+        user = request.user if request.user.is_authenticated else None
+        
         payment = InstaPayPayment.objects.create(
             booking=booking,
-            user=request.user,
+            user=user,  # ✅ معرفة
             amount=unique_amount,
             note_code=note_code,
         )
@@ -74,6 +90,15 @@ from payment.utils import upload_screenshot_to_supabase
 @player_required
 def upload_screenshot(request, payment_id):
     payment = get_object_or_404(InstaPayPayment, id=payment_id, user=request.user)
+    if request.user.is_authenticated:
+                if payment.user and payment.user != request.user:
+                                messages.error(request, "❌ هذا الدفع ليس لك!")
+                                return redirect('booking:browse')
+    else:
+                if not request.session.get('guest_name'):
+                                 messages.error(request, "❌ يرجى تسجيل الدخول أولاً")
+                                 return redirect('accounts:login')
+
     booking = payment.booking
     
     print("=" * 50)

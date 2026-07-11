@@ -18,7 +18,6 @@ class Venue(models.Model):
         ('VOLLEYBALL', 'Volleyball'),
         ('MULTI', 'Multi-Sport'),
     ]
-    
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='venues')
     name = models.CharField(max_length=200)
     address = models.TextField()
@@ -99,8 +98,14 @@ class Booking(models.Model):
         ('EXPIRED', 'Expired'),
     ]
     
+    guest_name = models.CharField(max_length=100, blank=True, null=True)
+    guest_email = models.EmailField(blank=True, null=True)
+    guest_phone = models.CharField(max_length=20, blank=True, null=True)
+
     field = models.ForeignKey(Field, on_delete=models.CASCADE, related_name='bookings')
-    player = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='bookings')
+    player = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='bookings',null=True,        blank=True
+  # ✅ اختياري
+)
     
     # ✅ مصدر الحقيقة - جميع السلوتات
     slots = models.ManyToManyField(

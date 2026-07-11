@@ -18,6 +18,8 @@ def room_list(request):
     return render(request, 'teams/room_list.html', {'rooms': rooms})
 
 
+# teams/views.py
+
 @player_required
 def create_room(request):
     if request.method == 'POST':
@@ -26,9 +28,8 @@ def create_room(request):
         max_players = request.POST.get('max_players', 4)
         date = request.POST.get('date')
         time = request.POST.get('time')
-        court_name = request.POST.get('court_name', '')
-        description = request.POST.get('description', '')
         
+        # ✅ استخدم الحقول الموجودة فقط
         room = GameRoom.objects.create(
             host=request.user,
             title=title,
@@ -36,11 +37,10 @@ def create_room(request):
             max_players=int(max_players),
             date=date,
             time=time,
-            court_name=court_name,
-            description=description,
             status='OPEN'
         )
         
+        # ✅ المضيف ينضم تلقائياً
         RoomPlayer.objects.create(room=room, player=request.user)
         
         messages.success(request, f'✅ Room "{room.title}" created successfully!')

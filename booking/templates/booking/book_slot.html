@@ -7,20 +7,19 @@
 
 {% block content %}
 
-<div class="text-white min-h-screen">
+<div class="bg-[#071327] text-white min-h-screen">
 
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
 
-        <!-- Back Button - Gold -->
-        <a href="{% url 'booking:field_detail' field.id %}" class="inline-flex items-center gap-2 text-sm text-[#e9c349] hover:text-[#ffe088] transition mb-4 md:mb-6">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-            </svg>
+        <!-- Back Button -->
+        <a href="{% url 'booking:field_detail' field.id %}" 
+           class="inline-flex items-center gap-2 text-sm text-[#e9c349] hover:text-[#ffe088] transition mb-4 md:mb-6">
+            <span class="material-symbols-outlined text-base">arrow_back</span>
             Back
         </a>
 
-        <!-- Hero Card - Glassmorphism -->
-        <div class="glass-panel rounded-2xl md:rounded-3xl p-4 md:p-6 mb-6 border border-[#e9c349]/20 hover:border-[#e9c349]/40 transition">
+        <!-- Hero Card -->
+        <div class="glass-card rounded-2xl md:rounded-3xl p-4 md:p-6 mb-6 border border-[#e9c349]/20 hover:border-[#e9c349]/40 transition">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br from-[#e9c349] to-[#af8d11] text-[#0f1724] flex items-center justify-center text-2xl shadow-lg shadow-[#e9c349]/20">
                     {% if field.sport_type == 'FOOTBALL' %}⚽
@@ -39,84 +38,93 @@
             </div>
         </div>
 
-        <!-- Summary Cards -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mb-6">
-            <div class="glass-panel rounded-xl md:rounded-2xl p-3 text-center border border-white/10 hover:border-[#e9c349]/30 transition">
-                <p class="text-[10px] text-white/40 uppercase tracking-wide">Start</p>
-                <p class="text-sm md:text-base font-bold text-white" id="start-display">{{ start_time_display }}</p>
-            </div>
-            <div class="glass-panel rounded-xl md:rounded-2xl p-3 text-center border border-white/10 hover:border-[#e9c349]/30 transition">
-                <p class="text-[10px] text-white/40 uppercase tracking-wide">End</p>
-                <p class="text-sm md:text-base font-bold text-white" id="end-display">{{ end_time_display }}</p>
-            </div>
-            <div class="glass-panel rounded-xl md:rounded-2xl p-3 text-center border border-white/10 hover:border-[#e9c349]/30 transition">
-                <p class="text-[10px] text-white/40 uppercase tracking-wide">Duration</p>
-                <p class="text-sm md:text-base font-bold text-white" id="duration-display">1 hr</p>
-            </div>
-            <div class="glass-panel rounded-xl md:rounded-2xl p-3 text-center border border-white/10 hover:border-[#e9c349]/30 transition">
-                <p class="text-[10px] text-white/40 uppercase tracking-wide">Day</p>
-                <p class="text-sm md:text-base font-bold text-white">{{ date|date:"D" }}</p>
-            </div>
-        </div>
-
-        <!-- Booking Form -->
-        <div class="glass-panel rounded-2xl md:rounded-3xl p-4 md:p-6 border border-white/10 hover:border-[#e9c349]/30 transition">
-
+        <!-- ✅ Guest Data Form -->
+        <div class="glass-card rounded-2xl md:rounded-3xl p-4 md:p-6 mb-6 border border-[#e9c349]/20">
+            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <span class="text-[#e9c349]">👤</span> Your Details
+            </h3>
+            
             <form method="post" id="booking-form">
                 {% csrf_token %}
-
-                <!-- Duration Section -->
-                <div class="bg-white/5 rounded-xl md:rounded-2xl p-4 md:p-5 mb-6 border border-white/10">
-                    <p class="text-[10px] md:text-xs text-white/40 font-semibold uppercase tracking-wider text-center">Select Duration</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-[#e9c349] mb-2">Full Name</label>
+                        <input type="text" 
+                               name="name" 
+                               class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 outline-none focus:border-[#e9c349]/50 transition"
+                               placeholder="Enter your full name"
+                               value="{{ request.session.guest_name|default:'' }}"
+                               required>
+                    </div>
                     
-                    <!-- Time Range Display -->
-                    <div class="text-center py-3">
-                        <span class="text-xl md:text-2xl font-black text-[#e9c349]" id="time-range">
-                            {{ start_time_display }} — {{ end_time_display }}
-                        </span>
+                    <div>
+                        <label class="block text-sm font-semibold text-[#e9c349] mb-2">Email</label>
+                        <input type="email" 
+                               name="email" 
+                               class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 outline-none focus:border-[#e9c349]/50 transition"
+                               placeholder="Enter your email"
+                               value="{{ request.session.guest_email|default:'' }}"
+                               required>
                     </div>
-
-                    <!-- Duration Pills -->
-                    <div class="flex gap-2 md:gap-3" id="duration-buttons">
-                        <button type="button" data-duration="1" 
-                                class="duration-btn flex-1 py-2 md:py-3 px-2 rounded-full bg-[#e9c349] text-[#0f1724] font-bold transition-all duration-300 hover:scale-105 shadow-lg shadow-[#e9c349]/20 text-[10px] md:text-sm">
-                            1H
-                        </button>
-                        <button type="button" data-duration="2" 
-                                class="duration-btn flex-1 py-2 md:py-3 px-2 rounded-full bg-white/10 text-white/60 font-bold transition-all duration-300 hover:scale-105 hover:bg-white/20 text-[10px] md:text-sm">
-                            2H
-                        </button>
-                        <button type="button" data-duration="3" 
-                                class="duration-btn flex-1 py-2 md:py-3 px-2 rounded-full bg-white/10 text-white/60 font-bold transition-all duration-300 hover:scale-105 hover:bg-white/20 text-[10px] md:text-sm">
-                            3H
-                        </button>
-                        <button type="button" data-duration="4" 
-                                class="duration-btn flex-1 py-2 md:py-3 px-2 rounded-full bg-white/10 text-white/60 font-bold transition-all duration-300 hover:scale-105 hover:bg-white/20 text-[10px] md:text-sm">
-                            4H
-                        </button>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-[#e9c349] mb-2">Phone Number</label>
+                        <input type="tel" 
+                               name="phone" 
+                               class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 outline-none focus:border-[#e9c349]/50 transition"
+                               placeholder="Enter your phone number"
+                               value="{{ request.session.guest_phone|default:'' }}"
+                               required>
                     </div>
-                    <input type="hidden" name="duration" id="selected-duration" value="1">
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-[#e9c349] mb-2">Duration</label>
+                        <div class="flex gap-2" id="duration-buttons">
+                            <button type="button" data-duration="1" 
+                                    class="duration-btn flex-1 py-2 rounded-full bg-[#e9c349] text-[#0f1724] font-bold transition text-sm shadow-lg shadow-[#e9c349]/20">
+                                1H
+                            </button>
+                            <button type="button" data-duration="2" 
+                                    class="duration-btn flex-1 py-2 rounded-full bg-white/10 text-white/60 font-bold hover:bg-white/20 transition text-sm">
+                                2H
+                            </button>
+                            <button type="button" data-duration="3" 
+                                    class="duration-btn flex-1 py-2 rounded-full bg-white/10 text-white/60 font-bold hover:bg-white/20 transition text-sm">
+                                3H
+                            </button>
+                            <button type="button" data-duration="4" 
+                                    class="duration-btn flex-1 py-2 rounded-full bg-white/10 text-white/60 font-bold hover:bg-white/20 transition text-sm">
+                                4H
+                            </button>
+                        </div>
+                        <input type="hidden" name="duration" id="selected-duration" value="1">
+                    </div>
                 </div>
 
-                <!-- Total Price - Gold Style -->
-                <div class="rounded-xl md:rounded-2xl bg-gradient-to-r from-[#e9c349]/20 to-[#af8d11]/20 border border-[#e9c349]/20 p-4 md:p-6 text-center mb-6 transition-all duration-300" id="total-card">
-                    <p class="text-[10px] md:text-xs text-[#e9c349] font-semibold uppercase tracking-wider">Total Price</p>
-                    <p class="text-2xl md:text-4xl font-black text-white mt-1 transition-all duration-300" id="total-price">
-                        EGP {{ price|floatformat:"0" }}
-                    </p>
+                <!-- Summary -->
+                <div class="mt-4 p-4 rounded-xl bg-white/5 border border-white/10">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-sm text-white/40">Time Range</p>
+                            <p class="text-lg font-bold text-[#e9c349]" id="time-range">
+                                {{ start_time_display }} — {{ end_time_display }}
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-white/40">Total</p>
+                            <p class="text-2xl font-black text-white" id="total-price">
+                                EGP {{ price|floatformat:"0" }}
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Buttons -->
-                <div class="flex items-center gap-3 md:gap-4">
-                    <button type="submit" 
-                            class="flex-1 bg-gradient-to-r from-[#e9c349] to-[#af8d11] hover:from-[#ffe088] hover:to-[#e9c349] text-[#0f1724] font-bold py-3 md:py-4 px-4 md:px-6 rounded-xl md:rounded-2xl transition duration-300 shadow-lg shadow-[#e9c349]/30 hover:shadow-[#e9c349]/50 text-sm md:text-lg">
-                        Confirm Booking →
-                    </button>
-                    <a href="{% url 'booking:field_detail' field.id %}" 
-                       class="text-xs md:text-sm text-white/40 hover:text-white/60 transition font-medium px-2 md:px-3 py-2">
-                        Cancel
-                    </a>
-                </div>
+                <!-- Submit -->
+                <button type="submit" 
+                        class="w-full mt-4 bg-gradient-to-r from-[#e9c349] to-[#af8d11] hover:from-[#ffe088] hover:to-[#e9c349] text-[#0f1724] font-bold py-3 md:py-4 rounded-xl transition shadow-lg shadow-[#e9c349]/30 hover:shadow-[#e9c349]/50 text-sm md:text-lg">
+                    Confirm Booking →
+                </button>
             </form>
         </div>
 
@@ -124,11 +132,9 @@
 </div>
 
 <style>
-    /* ✅ Glassmorphism */
-    .glass-panel {
+    .glass-card {
         background: rgba(20, 32, 52, 0.6);
         backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
         border: 1px solid rgba(255, 255, 255, 0.08);
     }
 </style>
@@ -139,10 +145,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const hiddenInput = document.getElementById('selected-duration');
     const timeRange = document.getElementById('time-range');
     const totalPrice = document.getElementById('total-price');
-    const startDisplay = document.getElementById('start-display');
-    const endDisplay = document.getElementById('end-display');
-    const durationDisplay = document.getElementById('duration-display');
-    const totalCard = document.getElementById('total-card');
     
     const startHour = parseInt("{{ hour|escapejs }}");
     const startTime = "{{ start_time_display|escapejs }}";
@@ -157,7 +159,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateBookingInfo(duration) {
         hiddenInput.value = duration;
-        durationDisplay.textContent = duration + ' hr' + (duration > 1 ? 's' : '');
         
         let endHour = startHour + duration;
         if (endHour >= 24) endHour = endHour - 24;
@@ -165,17 +166,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const endTime = formatTimeDisplay(endHour);
         
         timeRange.textContent = startTime + ' — ' + endTime;
-        startDisplay.textContent = startTime;
-        endDisplay.textContent = endTime;
-        
         const total = pricePerHour * duration;
-        totalCard.classList.add('opacity-50');
-        setTimeout(() => {
-            totalPrice.textContent = "EGP " + total;
-            totalCard.classList.remove('opacity-50');
-        }, 150);
-        
-        console.log('✅ Duration set to:', duration);
+        totalPrice.textContent = "EGP " + total;
     }
 
     buttons.forEach(btn => {

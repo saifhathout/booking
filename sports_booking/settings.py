@@ -102,7 +102,7 @@ TEMPLATES = [
 # ✅ ========== AUTH ==========
 AUTH_USER_MODEL = 'accounts.User'
 LOGIN_URL = 'accounts:login'
-LOGIN_REDIRECT_URL = 'dashboard:home'
+LOGIN_REDIRECT_URL = 'booking:browse'  # ✅ بعد تسجيل الدخول يروح على الصفحة الرئيسية
 LOGOUT_REDIRECT_URL = 'accounts:login'
 
 # ✅ ========== STATIC ==========
