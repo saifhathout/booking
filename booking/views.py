@@ -14,7 +14,7 @@ from notifications.utils import create_notification
 from .utils import format_time, get_booked_set, normalize_hour, get_slot_range
 
 
-@player_required
+# @player_required
 def browse_fields(request):
     """عرض جميع الملاعب - الصفحة الرئيسية"""
     sport_type = request.GET.get('sport_type', '')
@@ -43,7 +43,7 @@ def browse_fields(request):
     })
 
 
-@player_required
+# @player_required
 def field_detail(request, field_id):
     """تفاصيل الملعب مع السلوتات"""
     field = get_object_or_404(Field, id=field_id, is_active=True)
