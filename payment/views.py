@@ -228,17 +228,17 @@ from .models import InstaPayPayment
 from .utils import delete_screenshot_from_supabase  # ✅ استيراد دالة الحذف
 
 
+# payment/views.py
+
 @login_required
 def verify_payment(request, payment_id):
     payment = get_object_or_404(InstaPayPayment, id=payment_id)
     booking = payment.booking
     
-    # ✅ التحقق من الصلاحية - المالك بس
     if request.user != booking.field.venue.owner:
         messages.error(request, "❌ ليس لديك صلاحية")
         return redirect('dashboard:owner_dashboard')
     
-    # ✅ منع الضغط المكرر
     if payment.status == 'approved':
         messages.warning(request, '⚠️ هذا الدفع تم تأكيده بالفعل')
         return redirect('dashboard:owner_dashboard')
@@ -247,14 +247,6 @@ def verify_payment(request, payment_id):
         messages.warning(request, '⚠️ هذا الدفع مرفوض سابقاً')
         return redirect('dashboard:owner_dashboard')
     
-    # ✅ عرض الصفحة
-    if request.method == 'GET':
-        return render(request, 'payment/verify_payment.html', {
-            'payment': payment,
-            'booking': booking,
-        })
-    
-    # ✅ معالجة POST (Approve / Reject)
     if request.method == 'POST':
         action = request.POST.get('action')
         
@@ -292,13 +284,7 @@ def verify_payment(request, payment_id):
                     payment.save()
                     
                     # ✅ تأكيد الحجز (قفل السلوتات)
-                    booking.confirm_booking()
-                    
-                    # ✅ ✅ ✅ حذف الصورة من Supabase بعد الموافقة
-                    if payment.screenshot_url:
-                        delete_screenshot_from_supabase(payment.screenshot_url)
-                        payment.screenshot_url = None
-                        payment.save()
+                    booking.confirm_booking()  # ✅ دي بتحول LOCKED → CONFIRMED
                     
                     # ✅ إشعار للاعب
                     create_notification(
@@ -317,20 +303,10 @@ def verify_payment(request, payment_id):
         elif action == 'reject':
             try:
                 with transaction.atomic():
-                    # ✅ رفض الدفع
                     payment.status = 'rejected'
                     payment.save()
-                    
-                    # ✅ تحرير السلوتات
                     booking.release_slots()
                     
-                    # ✅ ✅ ✅ حذف الصورة من Supabase بعد الرفض
-                    if payment.screenshot_url:
-                        delete_screenshot_from_supabase(payment.screenshot_url)
-                        payment.screenshot_url = None
-                        payment.save()
-                    
-                    # ✅ إشعار للاعب
                     create_notification(
                         user=booking.player,
                         title="❌ تم رفض حجزك",
@@ -345,8 +321,10 @@ def verify_payment(request, payment_id):
         
         return redirect('dashboard:owner_dashboard')
     
-    return redirect('dashboard:owner_dashboard')
-
+    return render(request, 'payment/verify_payment.html', {
+        'payment': payment,
+        'booking': booking,
+    })
 # payment/views.py
 
 @player_required
