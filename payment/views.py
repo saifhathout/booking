@@ -88,68 +88,77 @@ from payment.utils import upload_screenshot_to_supabase
 # payment/views.py
 
 # @player_required
-def upload_screenshot(request, payment_id):
-    payment = get_object_or_404(InstaPayPayment, id=payment_id, user=request.user)
-    if request.user.is_authenticated:
-                if payment.user and payment.user != request.user:
-                                messages.error(request, "❌ هذا الدفع ليس لك!")
-                                return redirect('booking:browse')
-    else:
-                if not request.session.get('guest_name'):
-                                 messages.error(request, "❌ يرجى تسجيل الدخول أولاً")
-                                 return redirect('accounts:login')
+# payment/views.py
 
+def upload_screenshot(request, payment_id):
+    # ✅ جلب الدفع (من غير فلتر user)
+    payment = get_object_or_404(InstaPayPayment, id=payment_id)
     booking = payment.booking
     
-    print("=" * 50)
-    print(f"📸 Upload Screenshot - Payment ID: {payment_id}")
-    print(f"📸 Booking ID: {booking.id}")
-    print(f"📸 Method: {request.method}")
-    print(f"📸 FILES: {request.FILES}")
+    # ✅ التحقق من الصلاحية
+    if request.user.is_authenticated:
+        # ✅ مسجل - اتأكد إنه صاحب الحجز
+        if booking.player and booking.player != request.user:
+            messages.error(request, "❌ هذا الحجز ليس لك!")
+            return redirect('booking:browse')
+    else:
+        # ✅ ضيف - اتأكد من بياناته في الـ session
+        guest_name = request.session.get('guest_name')
+        if not guest_name:
+            messages.error(request, "❌ يرجى تسجيل الدخول أولاً")
+            return redirect('accounts:login')
+        
+        # ✅ اتأكد إن ده حجز الضيف
+        if booking.guest_name != guest_name:
+            messages.error(request, "❌ هذا الحجز ليس لك!")
+            return redirect('booking:browse')
+    
+    # ✅ التحقق من صلاحية القفل
+    if booking.is_locked_expired():
+        booking.release_slots()
+        booking.status = 'EXPIRED'
+        booking.save()
+        messages.error(request, '⏰ انتهت صلاحية الحجز، يرجى إعادة المحاولة')
+        return redirect('booking:field_detail', field_id=booking.field.id)
+    
+    if request.method == 'GET':
+        return render(request, 'payment/upload_screenshot.html', {
+            'payment': payment,
+            'booking': booking,
+            'is_expired': False,
+        })
     
     if request.method == 'POST' and request.FILES.get('screenshot'):
+        # ✅ حفظ الصورة
         file = request.FILES['screenshot']
         
-        print(f"📸 File: {file.name}")
-        print(f"📸 Size: {file.size} bytes")
-        print(f"📸 Type: {file.content_type}")
+        # ✅ رفع الصورة (لو عندك)
+        # public_url = upload_screenshot_to_supabase(file, booking.id)
         
-        # ✅ رفع الصورة
-        public_url = upload_screenshot_to_supabase(file, booking.id)
+        # ✅ مؤقتاً - حفظ الصورة محلياً (للتجربة)
+        payment.screenshot = file
+        payment.status = 'manual_review'
+        payment.notes = "في انتظار المراجعة من قبل الإدارة"
+        payment.save()
         
-        print(f"📸 Public URL: {public_url}")
+        # ✅ إرسال إشعار للمالك
+        owner = payment.booking.field.venue.owner
+        create_notification(
+            user=owner,
+            title="📸 طلب دفع جديد يحتاج مراجعة",
+            message=f"قام {request.user.username if request.user.is_authenticated else booking.guest_name} برفع صورة دفع لحجز ملعب {payment.booking.field.name}.",
+            url=f"/payment/verify/{payment.id}/"
+        )
         
-        if public_url:
-            payment.screenshot_url = public_url
-            payment.status = 'manual_review'
-            payment.notes = "في انتظار المراجعة"
-            payment.save()
-            
-            print(f"✅ Payment saved with URL: {payment.screenshot_url}")
-            
-            # ✅ إشعار للمالك
-            owner = payment.booking.field.venue.owner
-            create_notification(
-                user=owner,
-                title="📸 طلب دفع جديد يحتاج مراجعة",
-                message=f"قام {request.user.username} برفع صورة دفع لحجز ملعب {payment.booking.field.name}.",
-                url=f"/payment/verify/{payment.id}/"
-            )
-            
-            messages.success(request, "✅ تم رفع الصورة")
-            return redirect('payment:payment_pending', payment_id=payment.id)  # ✅ الصفحة الجديدة
-
-        else:
-            print("❌ Upload failed - public_url is None")
-            messages.error(request, "❌ فشل رفع الصورة")
-        
-        return redirect('booking:history')
+        messages.success(request, "✅ تم رفع الصورة، سيتم مراجعتها من قبل الإدارة")
+        return redirect('payment:payment_pending', payment_id=payment.id)
     
+    messages.error(request, "❌ لم يتم اختيار صورة")
     return render(request, 'payment/upload_screenshot.html', {
         'payment': payment,
         'booking': booking,
+        'is_expired': False,
     })
-
 # payment/views.py
 
 # payment/views.py
