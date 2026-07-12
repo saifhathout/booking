@@ -166,59 +166,39 @@ def upload_screenshot(request, payment_id):
 
 # payment/views.py
 
+# payment/views.py
+
+# payment/views.py
+
 def payment_pending(request, payment_id):
     payment = get_object_or_404(InstaPayPayment, id=payment_id)
     booking = payment.booking
     
-    # ✅ التحقق من الصلاحية
+    # ✅ تحديد نوع المستخدم
     if request.user.is_authenticated:
-        if booking.player and booking.player != request.user:
-            messages.error(request, "❌ هذا الحجز ليس لك!")
-            return redirect('booking:browse')
-        # ✅ مسجل → استخدم بيانات المستخدم
-        user_name = request.user.username
-        user_email = request.user.email
-        user_phone = request.user.phone if hasattr(request.user, 'phone') else ''
         is_guest = False
     else:
-        # ✅ ضيف → استخدم بيانات الضيف من الحجز
-        guest_name = request.session.get('guest_name')
-        if not guest_name:
-            messages.error(request, "❌ يرجى تسجيل الدخول أولاً")
-            return redirect('accounts:login')
-        
-        if booking.guest_name != guest_name:
-            messages.error(request, "❌ هذا الحجز ليس لك!")
-            return redirect('booking:browse')
-        
-        user_name = booking.guest_name
-        user_email = booking.guest_email
-        user_phone = booking.guest_phone
         is_guest = True
     
     # ✅ حالة الحجز
     status_map = {
-        'LOCKED': {'text': '⏳ قيد المراجعة', 'color': 'text-yellow-400', 'bg': 'bg-yellow-500/20 border-yellow-500/30'},
-        'CONFIRMED': {'text': '✅ تم التأكيد', 'color': 'text-green-400', 'bg': 'bg-green-500/20 border-green-500/30'},
-        'REJECTED': {'text': '❌ مرفوض', 'color': 'text-red-400', 'bg': 'bg-red-500/20 border-red-500/30'},
-        'CANCELLED': {'text': '❌ ملغي', 'color': 'text-red-400', 'bg': 'bg-red-500/20 border-red-500/30'},
-        'EXPIRED': {'text': '⏰ منتهي', 'color': 'text-white/40', 'bg': 'bg-white/10 border-white/10'},
+        'LOCKED': {'text': '⏳ قيد المراجعة', 'color': 'text-yellow-400', 'bg': 'bg-yellow-500/20', 'border': 'border-yellow-500/30'},
+        'CONFIRMED': {'text': '✅ تم التأكيد', 'color': 'text-green-400', 'bg': 'bg-green-500/20', 'border': 'border-green-500/30'},
+        'REJECTED': {'text': '❌ مرفوض', 'color': 'text-red-400', 'bg': 'bg-red-500/20', 'border': 'border-red-500/30'},
+        'CANCELLED': {'text': '❌ ملغي', 'color': 'text-red-400', 'bg': 'bg-red-500/20', 'border': 'border-red-500/30'},
+        'EXPIRED': {'text': '⏰ منتهي', 'color': 'text-white/40', 'bg': 'bg-white/10', 'border': 'border-white/10'},
     }
     
-    status_info = status_map.get(booking.status, {'text': '⏳ قيد المعالجة', 'color': 'text-yellow-400', 'bg': 'bg-yellow-500/20 border-yellow-500/30'})
+    status_info = status_map.get(booking.status, {'text': '⏳ قيد المعالجة', 'color': 'text-yellow-400', 'bg': 'bg-yellow-500/20', 'border': 'border-yellow-500/30'})
     
     context = {
         'payment': payment,
         'booking': booking,
         'status_info': status_info,
-        'user_name': user_name,
-        'user_email': user_email,
-        'user_phone': user_phone,
         'is_guest': is_guest,
     }
     
     return render(request, 'payment/payment_pending.html', context)
-
 # payment/views.py
 
 # payment/views.py
