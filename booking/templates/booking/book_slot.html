@@ -38,79 +38,80 @@
             </div>
         </div>
 
-        <!-- ✅ Guest Data Form -->
+        <!-- ✅ Form -->
         <div class="glass-card rounded-2xl md:rounded-3xl p-4 md:p-6 mb-6 border border-[#e9c349]/20">
             <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                <span class="text-[#e9c349]">👤</span> Your Details
+                <span class="text-[#e9c349]">📋</span> Booking Details
             </h3>
             
             <form method="post" id="booking-form">
                 {% csrf_token %}
                 
-{% if not user.is_authenticated %}
-    <!-- ✅ فورم بيانات الضيف (يظهر للغير مسجلين بس) -->
-    <div class="glass-card rounded-2xl p-4 md:p-6 mb-6 border border-[#e9c349]/20">
-        <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-            <span class="text-[#e9c349]">👤</span> Your Details
-        </h3>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label class="block text-sm font-semibold text-[#e9c349] mb-2">Full Name</label>
-                <input type="text" 
-                       name="name" 
-                       class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 outline-none focus:border-[#e9c349]/50 transition"
-                       placeholder="Enter your full name"
-                       value="{{ request.session.guest_name|default:'' }}"
-                       required>
-            </div>
-            
-            <div>
-                <label class="block text-sm font-semibold text-[#e9c349] mb-2">Email</label>
-                <input type="email" 
-                       name="email" 
-                       class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 outline-none focus:border-[#e9c349]/50 transition"
-                       placeholder="Enter your email"
-                       value="{{ request.session.guest_email|default:'' }}"
-                       required>
-            </div>
-            
-            <div>
-                <label class="block text-sm font-semibold text-[#e9c349] mb-2">Phone Number</label>
-                <input type="tel" 
-                       name="phone" 
-                       class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 outline-none focus:border-[#e9c349]/50 transition"
-                       placeholder="Enter your phone number"
-                       value="{{ request.session.guest_phone|default:'' }}"
-                       required>
-            </div>
-        </div>
-    </div>
-{% endif %}
-                        <label class="block text-sm font-semibold text-[#e9c349] mb-2">Duration</label>
-                        <div class="flex gap-2" id="duration-buttons">
-                            <button type="button" data-duration="1" 
-                                    class="duration-btn flex-1 py-2 rounded-full bg-[#e9c349] text-[#0f1724] font-bold transition text-sm shadow-lg shadow-[#e9c349]/20">
-                                1H
-                            </button>
-                            <button type="button" data-duration="2" 
-                                    class="duration-btn flex-1 py-2 rounded-full bg-white/10 text-white/60 font-bold hover:bg-white/20 transition text-sm">
-                                2H
-                            </button>
-                            <button type="button" data-duration="3" 
-                                    class="duration-btn flex-1 py-2 rounded-full bg-white/10 text-white/60 font-bold hover:bg-white/20 transition text-sm">
-                                3H
-                            </button>
-                            <button type="button" data-duration="4" 
-                                    class="duration-btn flex-1 py-2 rounded-full bg-white/10 text-white/60 font-bold hover:bg-white/20 transition text-sm">
-                                4H
-                            </button>
+                <!-- ✅ 1. بيانات الضيف (لغير المسجلين بس) -->
+                {% if not user.is_authenticated %}
+                    <div class="mb-6 p-4 rounded-xl bg-[#e9c349]/5 border border-[#e9c349]/20">
+                        <h4 class="text-sm font-bold text-[#e9c349] mb-3 flex items-center gap-2">
+                            <span>👤</span> Your Details
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-[#e9c349] mb-2">Full Name</label>
+                                <input type="text" 
+                                       name="name" 
+                                       class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 outline-none focus:border-[#e9c349]/50 transition"
+                                       placeholder="Enter your full name"
+                                       value="{{ request.session.guest_name|default:'' }}"
+                                       required>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-[#e9c349] mb-2">Email</label>
+                                <input type="email" 
+                                       name="email" 
+                                       class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 outline-none focus:border-[#e9c349]/50 transition"
+                                       placeholder="Enter your email"
+                                       value="{{ request.session.guest_email|default:'' }}"
+                                       required>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-[#e9c349] mb-2">Phone Number</label>
+                                <input type="tel" 
+                                       name="phone" 
+                                       class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 outline-none focus:border-[#e9c349]/50 transition"
+                                       placeholder="Enter your phone number"
+                                       value="{{ request.session.guest_phone|default:'' }}"
+                                       required>
+                            </div>
                         </div>
-                        <input type="hidden" name="duration" id="selected-duration" value="1">
                     </div>
+                {% endif %}
+                
+                <!-- ✅ 2. المدة (للمسجلين والضيوف) -->
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-[#e9c349] mb-2">Duration</label>
+                    <div class="flex gap-2" id="duration-buttons">
+                        <button type="button" data-duration="1" 
+                                class="duration-btn flex-1 py-2 rounded-full bg-[#e9c349] text-[#0f1724] font-bold transition text-sm shadow-lg shadow-[#e9c349]/20">
+                            1H
+                        </button>
+                        <button type="button" data-duration="2" 
+                                class="duration-btn flex-1 py-2 rounded-full bg-white/10 text-white/60 font-bold hover:bg-white/20 transition text-sm">
+                            2H
+                        </button>
+                        <button type="button" data-duration="3" 
+                                class="duration-btn flex-1 py-2 rounded-full bg-white/10 text-white/60 font-bold hover:bg-white/20 transition text-sm">
+                            3H
+                        </button>
+                        <button type="button" data-duration="4" 
+                                class="duration-btn flex-1 py-2 rounded-full bg-white/10 text-white/60 font-bold hover:bg-white/20 transition text-sm">
+                            4H
+                        </button>
+                    </div>
+                    <input type="hidden" name="duration" id="selected-duration" value="1">
                 </div>
 
-                <!-- Summary -->
+                <!-- ✅ 3. Summary -->
                 <div class="mt-4 p-4 rounded-xl bg-white/5 border border-white/10">
                     <div class="flex justify-between items-center">
                         <div>
@@ -128,7 +129,7 @@
                     </div>
                 </div>
 
-                <!-- Submit -->
+                <!-- ✅ 4. Submit -->
                 <button type="submit" 
                         class="w-full mt-4 bg-gradient-to-r from-[#e9c349] to-[#af8d11] hover:from-[#ffe088] hover:to-[#e9c349] text-[#0f1724] font-bold py-3 md:py-4 rounded-xl transition shadow-lg shadow-[#e9c349]/30 hover:shadow-[#e9c349]/50 text-sm md:text-lg">
                     Confirm Booking →
