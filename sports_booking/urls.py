@@ -10,7 +10,7 @@ urlpatterns = [
     path('', include('booking.urls')),  # ✅ الصفحة الرئيسية من booking
     path('accounts/', include('accounts.urls')),
     path('venues/', include('venues.urls')),
-            path('teams/', include('teams.urls')),
+    path('teams/', include('teams.urls')),
     path('tournaments/', include('tournaments.urls')),
     path('notifications/', include('notifications.urls')),
     path('payment/', include('payment.urls')),

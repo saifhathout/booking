@@ -87,7 +87,7 @@ from payment.utils import upload_screenshot_to_supabase
 
 # payment/views.py
 
-@player_required
+# @player_required
 def upload_screenshot(request, payment_id):
     payment = get_object_or_404(InstaPayPayment, id=payment_id, user=request.user)
     if request.user.is_authenticated:
