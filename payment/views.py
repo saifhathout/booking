@@ -170,15 +170,14 @@ def upload_screenshot(request, payment_id):
 
 # payment/views.py
 
+# payment/views.py
+
 def payment_pending(request, payment_id):
     payment = get_object_or_404(InstaPayPayment, id=payment_id)
     booking = payment.booking
     
     # ✅ تحديد نوع المستخدم
-    if request.user.is_authenticated:
-        is_guest = False
-    else:
-        is_guest = True
+    is_guest = not request.user.is_authenticated
     
     # ✅ حالة الحجز
     status_map = {

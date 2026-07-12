@@ -63,52 +63,55 @@
         </div>
 
         <!-- ✅ Guest Info -->
-        <div class="glass-card rounded-2xl p-4 border border-white/10 mb-6">
-            <p class="text-xs text-white/40 text-center">
-                {% if is_guest %}
-                    بيانات الحجز مسجلة باسم
-                {% else %}
-                    مرحباً 👋
-                {% endif %}
-            </p>
-            
-            <p class="text-center font-bold text-white">
-                {% if booking.guest_name %}
-                    {{ booking.guest_name }}
-                {% elif booking.player %}
-                    {{ booking.player.username }}
-                {% else %}
-                    ضيف
-                {% endif %}
-            </p>
-            
-            <p class="text-center text-sm text-white/40">
-                {% if booking.guest_email %}
-                    {{ booking.guest_email }}
-                {% elif booking.player %}
-                    {{ booking.player.email }}
-                {% else %}
-                    لا يوجد بريد إلكتروني
-                {% endif %}
-            </p>
-            
-            {% if booking.guest_phone %}
-                <p class="text-center text-sm text-white/40">📱 {{ booking.guest_phone }}</p>
-            {% endif %}
-            
-            <div class="mt-2 text-center">
-                {% if is_guest %}
-                    <span class="text-[10px] bg-[#e9c349]/10 text-[#e9c349] px-3 py-1 rounded-full border border-[#e9c349]/20">
-                        👤 ضيف
-                    </span>
-                {% else %}
-                    <span class="text-[10px] bg-green-500/10 text-green-400 px-3 py-1 rounded-full border border-green-500/20">
-                        ✅ عضو
-                    </span>
-                {% endif %}
-            </div>
-        </div>
+        <!-- payment/templates/payment/payment_pending.html -->
 
+<!-- ✅ Guest Info -->
+<div class="glass-card rounded-2xl p-4 border border-white/10 mb-6">
+    <p class="text-xs text-white/40 text-center">
+        {% if is_guest %}
+            بيانات الحجز مسجلة باسم
+        {% else %}
+            مرحباً 👋
+        {% endif %}
+    </p>
+    
+    <!-- ✅ استخدم guest_name لو موجود، وإلا استخدم player.username -->
+    <p class="text-center font-bold text-white">
+        {% if booking.guest_name %}
+            {{ booking.guest_name }}
+        {% elif booking.player %}
+            {{ booking.player.username }}
+        {% else %}
+            ضيف
+        {% endif %}
+    </p>
+    
+    <p class="text-center text-sm text-white/40">
+        {% if booking.guest_email %}
+            {{ booking.guest_email }}
+        {% elif booking.player %}
+            {{ booking.player.email }}
+        {% else %}
+            لا يوجد بريد إلكتروني
+        {% endif %}
+    </p>
+    
+    {% if booking.guest_phone %}
+        <p class="text-center text-sm text-white/40">📱 {{ booking.guest_phone }}</p>
+    {% endif %}
+    
+    <div class="mt-2 text-center">
+        {% if is_guest %}
+            <span class="text-[10px] bg-[#e9c349]/10 text-[#e9c349] px-3 py-1 rounded-full border border-[#e9c349]/20">
+                👤 ضيف
+            </span>
+        {% else %}
+            <span class="text-[10px] bg-green-500/10 text-green-400 px-3 py-1 rounded-full border border-green-500/20">
+                ✅ عضو
+            </span>
+        {% endif %}
+    </div>
+</div>
         <!-- ✅ Actions -->
         <div class="space-y-3">
             {% if booking.status == 'LOCKED' %}
