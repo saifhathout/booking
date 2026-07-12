@@ -90,8 +90,11 @@ from payment.utils import upload_screenshot_to_supabase
 # @player_required
 # payment/views.py
 
+# payment/views.py
+
+# @player_required
 def upload_screenshot(request, payment_id):
-    # ✅ جلب الدفع (من غير فلتر user)
+    # ✅ جلب الدفع (من غير فلتر user عشان الضيف)
     payment = get_object_or_404(InstaPayPayment, id=payment_id)
     booking = payment.booking
     
@@ -132,16 +135,16 @@ def upload_screenshot(request, payment_id):
         # ✅ حفظ الصورة
         file = request.FILES['screenshot']
         
-        # ✅ رفع الصورة (لو عندك)
+        # ✅ رفع الصورة (لو عندك Supabase)
         # public_url = upload_screenshot_to_supabase(file, booking.id)
         
-        # ✅ مؤقتاً - حفظ الصورة محلياً (للتجربة)
+        # ✅ مؤقتاً - حفظ الصورة محلياً
         payment.screenshot = file
         payment.status = 'manual_review'
         payment.notes = "في انتظار المراجعة من قبل الإدارة"
         payment.save()
         
-        # ✅ إرسال إشعار للمالك
+        # ✅ إشعار للمالك
         owner = payment.booking.field.venue.owner
         create_notification(
             user=owner,
